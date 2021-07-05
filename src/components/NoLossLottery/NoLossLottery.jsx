@@ -34,7 +34,7 @@ class NoLossLottery extends Component {
             fetchingGlobalVars: false,
 
             // User vars
-            algoAddress: "PQZ46R4RKOST3NJQS6OHHRSUGC63LEISCQHKWO5OFHRPIC65JR4DK33AIY", //null,
+            algoAddress: null,
             userTime: null,
             userAmount: null,
             // Contract global vars
@@ -147,8 +147,8 @@ class NoLossLottery extends Component {
                 <h6>Yiedly NLL Contract: <a href="https://algoexplorer.io/application/233725844">233725844</a></h6>
 
                 <p>
-                    Insert your Algorand address that you use with Yiedly to automatically gather the user values required. 
-                    The app only uses your address to query the <a href="https://algoexplorer.io">algoexplorer.io</a> API and gather these values.
+                    Insert your Algorand address that you have used with Yiedly to automatically gather the values required. 
+                    This app only uses your address to query the <a href="https://algoexplorer.io">algoexplorer.io</a> API to gather the required values.
                     Click the button after the wallet address to estimate your rewards
                 </p>
 
@@ -156,7 +156,7 @@ class NoLossLottery extends Component {
                     <h6>Algorand Address:</h6>
                     <Form.Control 
                         type="text" 
-                        placeholder="ALGO ADDRESS" 
+                        placeholder="Your Algorand Address that has interacted with the Yieldly platform" 
                         value={this.state.algoAddress} 
                         onChange={(e) => this.setState({ algoAddress: e.target.value })} />
                     <Button 

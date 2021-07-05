@@ -9,9 +9,12 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
+import CONFIG from "../../config.json";
+
 import "./Header.css";
 
 let pkg = require('../../../package.json');
+
 
 class Header extends Component {
     render() {
@@ -32,7 +35,7 @@ class Header extends Component {
                         </Nav>
                         <a 
                             className="ml-auto"
-                            href="https://github.com/JoshLmao/foresight">
+                            href={CONFIG.github_link}>
                             <Button variant="outline-secondary">
                                 <FontAwesomeIcon icon={faGithub} />
                             </Button>
