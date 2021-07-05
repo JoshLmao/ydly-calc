@@ -21,7 +21,7 @@ class Header extends Component {
                     <Navbar.Brand 
                         className="navbar-brand-name"
                         to="/" as={Link}>
-                        YDLY Rewards Calculator
+                        YDLY Rewards Estimator
                     </Navbar.Brand>
 
                     <Navbar.Collapse id="basic-navbar-nav">

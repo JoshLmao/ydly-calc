@@ -20,7 +20,7 @@ class About extends Component {
                     <div>
                         {/* App title */}
                         <h1>
-                            Yiedly Rewards Calculator
+                            Yiedly Rewards Estimator
                         </h1>
                         {/* Sub text & action */}
                         <div>
