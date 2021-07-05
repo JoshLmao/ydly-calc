@@ -5,7 +5,22 @@ import {
     Form,
     Button
 } from 'react-bootstrap';
-import { getContractValues, getUserStateValues } from '../../js/AlgoExplorerAPI';
+import { 
+    getContractValues, 
+    getUserStateValues 
+} from '../../js/AlgoExplorerAPI';
+import { 
+    calculateClaimableUserRewards, 
+    calculateGlobalStakingShares,
+    calculateUserStakingShares
+} from '../../js/YDLYCalculation';
+import {
+    daysToUnix, microAlgoToAlgo
+} from "../../js/utility";
+
+import "./NLL.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 class NoLossLottery extends Component {
     constructor(props) {
@@ -15,47 +30,54 @@ class NoLossLottery extends Component {
             // Contract ID to use
             contractID: 233725844,
 
-            fetchingVars: false,
             fetchingUsrVars: false,
+            fetchingGlobalVars: false,
 
             // User vars
-            algoAddress: null,
+            algoAddress: "PQZ46R4RKOST3NJQS6OHHRSUGC63LEISCQHKWO5OFHRPIC65JR4DK33AIY", //null,
             userTime: null,
             userAmount: null,
             // Contract global vars
             globalTime: null,
             globalAmount: null,
+            nllGlobalUnlock: null,
 
             // Calculated values
             globalStakingShares: null,
             userStakingShares: null, 
             totalClaimableRewards: null,
+
+            timePeriodDays: 1,
+            currentBlockTimestamp: new Date(),
+
+            totalUnlockRewards: 2362900,
+
+            usrVarsErrorMsg: null,
         };
 
-        this.fetchContractValues = this.fetchContractValues.bind(this);
         this.fetchUserVariables = this.fetchUserVariables.bind(this);
+        this.updateResults = this.updateResults.bind(this);
+        this.onTimePeriodChanged = this.onTimePeriodChanged.bind(this);
     }
 
-    fetchContractValues() {
-        if (this.state.contractID != null && !this.state.fetchingVars)
-        {
+    componentDidMount() {
+        // Load global values on mount, update state
+        this.setState({
+            fetchingGlobalVars: true,
+        });
+        getContractValues(this.state.contractID, (contractVars) => {
             this.setState({
-                fetchingVars: true
-            });
-            console.log(`Fetching Contract '${this.state.contractID}' vars`);
+                globalTime: contractVars.globalTime,
+                globalAmount: contractVars.globalAmount,
+                nllGlobalUnlock: contractVars.totalYiedlyUnlock,
 
-            getContractValues(this.state.contractID, (contractVars) => {
-                this.setState({
-                    globalTime: contractVars.globalTime,
-                    globalAmount: contractVars.globalAmount,
-
-                    fetchingVars: false,
-                });
+                fetchingGlobalVars: false,
             });
-        }
+        });
     }
 
     fetchUserVariables () {
+        // Only fetch user vars if address is given.
         if (this.state.algoAddress && !this.state.fetchingUsrVars) {
             this.setState({
                 fetchingUsrVars: true,
@@ -63,121 +85,236 @@ class NoLossLottery extends Component {
             console.log("Retrieving user state vars...");
 
             getUserStateValues(this.state.algoAddress, this.state.contractID, (data) => {
-                this.setState({
-                    fetchingUsrVars: false,
-                    userTime: data.userTime,
-                    userAmount: data.userAmount,
-                });
-            })
+                if (data) {
+                    this.setState({
+                        fetchingUsrVars: false,
+                        userTime: data?.userTime,
+                        userAmount: data?.userAmount,
+                    }, () => {
+                        this.updateResults();
+                    });
+                } else {
+                    console.error("No user state values in address!");
+                    this.setState({
+                        usrVarsErrorMsg: "Address hasn't interacted with Yiedly contract or another error",
+                    });
+                }
+            });
+        }
+        else {
+            console.error("Algo address is empty or currently updating values!");
+            this.setState({
+                usrVarsErrorMsg: "Algorand address is empty or already updating values! Please try again",
+            });
+        }
+    }
+
+    onTimePeriodChanged(e) {
+        // Make sure value is more than 0
+        let val;
+        if (parseInt(e.target.value) <= 0) {
+            val = 1;
+        } else {
+            val = parseInt(e.target.value);
+        }
+
+        this.setState({ 
+            timePeriodDays: val,
+        }, () => {
+            this.updateResults();
+        });
+    }
+
+    updateResults() {
+        // Check required variables are valid
+        if (this.state.userTime != null && this.state.userAmount != null && this.state.globalAmount != null && this.state.globalTime != null) {
+            let unixTimePeriod = daysToUnix(this.state.timePeriodDays);
+            let globalStakingShares = calculateGlobalStakingShares(this.state.currentBlockTimestamp, this.state.globalTime, unixTimePeriod, this.state.globalAmount);
+            let usrStakingShares = calculateUserStakingShares(this.state.currentBlockTimestamp, this.state.userTime, unixTimePeriod, this.state.userAmount);
+            let totalClaimable = calculateClaimableUserRewards(usrStakingShares, globalStakingShares, this.state.totalUnlockRewards);
+            this.setState({
+                globalStakingShares: globalStakingShares,
+                userStakingShares: usrStakingShares,
+                totalClaimableRewards: totalClaimable,
+            });
         }
     }
 
     render() {
         return (
-            <Row>
-                {/* User Variables, from user address App's section in algoexplorer.io */}
-                <Col md={4}>
-                    <h1>User Variables</h1>
-                    <p>Navigate to <a href="https://algoexplorer.io">algoexplorer.io</a>, find your address, click the 'Apps' tab and click the Eye icon on "ID 233725844", the No Loss Lottery contract by the Yiedly Team </p>
-                    <div className="d-flex">
-                        <h6>Algorand Address:</h6>
-                        <Form.Control type="text" placeholder="ALGO ADDRESS" onChange={(e) => this.setState({ algoAddress: e.target.value })} />
-                    </div>
+            <div className="main-background">
+                <h1>No Loss Lottery</h1>
+                <h6>Yiedly NLL Contract: <a href="https://algoexplorer.io/application/233725844">233725844</a></h6>
+
+                <p>
+                    Insert your Algorand address that you use with Yiedly to automatically gather the user values required. 
+                    The app only uses your address to query the <a href="https://algoexplorer.io">algoexplorer.io</a> API and gather these values.
+                    Click the button after the wallet address to estimate your rewards
+                </p>
+
+                <div className="d-flex">
+                    <h6>Algorand Address:</h6>
+                    <Form.Control 
+                        type="text" 
+                        placeholder="ALGO ADDRESS" 
+                        value={this.state.algoAddress} 
+                        onChange={(e) => this.setState({ algoAddress: e.target.value })} />
                     <Button 
-                        className="my-2"
+                        className="mx-2"
                         onClick={this.fetchUserVariables}>
-                            Fetch User Values
+                            <FontAwesomeIcon icon={faChevronRight} />
                     </Button>
+                </div>
+
+                {/* Display error message if one is set*/}
+                {
+                    this.state.usrVarsErrorMsg &&
+                        <div style={{ color: "rgb(255, 50, 50)" }}>
+                            { this.state.usrVarsErrorMsg }
+                        </div>
+                }
+
+                {/* Separator */}
+                <div className="py-3" />
+
+                <Row>
+                    {/* User Variables, from user address App's section in algoexplorer.io */}
+                    <Col md={6}>
+                        <h3>User Variables</h3>
+                        <Row>
+                            <Col md={6}>
+                                <h6>
+                                    User Time (UT)
+                                </h6>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Control 
+                                    type="text" 
+                                    placeholder="User Time (UT)" 
+                                    value={this.state.userTime}
+                                    onChange={(e) => this.setState({ userTime: e.target.value })} 
+                                    disabled/>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={6}>
+                                <h6>
+                                    User Amount (UA)
+                                </h6>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Control 
+                                    type="text" 
+                                    placeholder="User Amount (UA)"
+                                    value={this.state.userAmount}
+                                    onChange={(e) => this.setState({ userAmount: e.target.value })} 
+                                    disabled/>
+                            </Col>
+                        </Row>
+                    </Col>
+
+                    {/* Global Values */}
+                    <Col md={6}>
+                        <h3>Contract Variables</h3>
+                        <Row>
+                            <Col md={6}>
+                                <h6>Global Time (GT)</h6>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Control type="text" placeholder="Global Time (GT)" value={this.state.globalTime} disabled />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={6}>
+                                <h6>Global Amount (GA)</h6>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Control type="text" placeholder="Global Amount (GA)" value={this.state.globalAmount} disabled />
+                            </Col>
+                        </Row>
+                    </Col>
+                </Row>
+
+                <div>
+                    <h3>Time Period (days)</h3>
                     <Row>
                         <Col md={6}>
-                            <h6>
-                                User Time (UT)
-                            </h6>
+                            <p>Set a custom time period to see how many rewards you could earn in that period.</p>
                         </Col>
                         <Col md={6}>
                             <Form.Control 
-                                type="text" 
-                                placeholder="UT value" 
-                                value={this.state.userTime}
-                                onChange={(e) => this.setState({ userTime: e.target.value })} />
+                                type="number" 
+                                value={this.state.timePeriodDays} 
+                                onChange={this.onTimePeriodChanged} />
                         </Col>
                     </Row>
+                </div>
+
+                <div>
+                    <h3>
+                        Global Unlock Rewards
+                    </h3>
                     <Row>
-                        <Col md={6}>
-                            <h6>
-                                User Amount (UA)
-                            </h6>
+                        <Col>
+                            <div>Total YDLY available in the pool to be claimed</div>
                         </Col>
-                        <Col md={6}>
+                        <Col>
                             <Form.Control 
-                                type="text" 
-                                placeholder="UA value" 
-                                value={this.state.userAmount}
-                                onChange={(e) => this.setState({ userAmount: e.target.value })} />
+                                type="text"
+                                value={ microAlgoToAlgo(this.state.nllGlobalUnlock).toFixed(0) }
+                                disabled
+                                />
                         </Col>
                     </Row>
-                </Col>
+                </div>
 
-                {/* Global Values */}
-                <Col md={4}>
-                    <h1>Contract Variables</h1>
-                    <p>Variables loaded as part of the contract. Automatically loaded by parsing the values from the contract's <a href="https://algoexplorer.io">algoexplorer.io</a> page.</p>
-                    <Button
-                        className="my-2"
-                        onClick={() => this.fetchContractValues()}>
-                        Fetch Latest Contract Variables
-                    </Button>
+                <div className="py-2">
+                    <h3>Results</h3>
                     <Row>
                         <Col md={6}>
-                            <h6>Global Time (GT)</h6>
+                            <Row>
+                                <Col md={6}>
+                                    Global Staking Shares
+                                </Col>
+                                <Col>
+                                <Form.Control 
+                                    type="text" 
+                                    placeholder="TBD" 
+                                    value={this.state.globalStakingShares} 
+                                    disabled />
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    User Staking Shares
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Control 
+                                        type="text" 
+                                        placeholder="TBD" 
+                                        value={this.state.userStakingShares} 
+                                        disabled />
+                                </Col>
+                            </Row>
                         </Col>
-                        <Col md={6}>
-                            <Form.Control type="text" placeholder="GT value" value={this.state.globalTime} disabled />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md={6}>
-                            <h6>Global Amount (GA)</h6>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Control type="text" placeholder="GA value" value={this.state.globalAmount} disabled />
-                        </Col>
-                    </Row>
-                </Col>
 
-                <Col md={4}>
-                    <h1>Results</h1>
-                    <p></p>
-                    <Row>
                         <Col md={6}>
-                            Time Period
-                        </Col>
-                        <Col md={6}>
-                            Time Period Selector
+                            <Row>
+                                <Col md={6}>
+                                    Rewards Claimable for User
+                                </Col>
+                                <Col md={6}>
+                                    <Form.Control 
+                                        type="text" 
+                                        placeholder="TBD" 
+                                        value={this.state.totalClaimableRewards} 
+                                        disabled />
+                                </Col>
+                            </Row>
                         </Col>
                     </Row>
-
-                    <Row>
-                        <Col>
-                            Global Staking Shares
-                            <Form.Control type="text" placeholder="TBD" value={this.state.globalStakingShares} disabled />
-                        </Col>
-                        <Col>
-                            User Staking Shares
-                            <Form.Control type="text" placeholder="TBD" value={this.state.userStakingShares} disabled />
-                        </Col>
-                    </Row>
-
-                    <Row>
-                        <Col md={6}>
-                            Rewards Claimable for User
-                        </Col>
-                        <Col md={6}>
-                            <Form.Control type="text" placeholder="-1" value={this.state.totalClaimableRewards} disabled></Form.Control>
-                        </Col>
-                    </Row>
-                </Col>
-            </Row>
+                </div>
+            </div>
         );
     }
 }

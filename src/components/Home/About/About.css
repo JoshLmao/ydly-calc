@@ -1,0 +1,8 @@
+.stretched-background {
+    background: #252525;
+    color: white;
+}
+
+.stretched-background .h1 {
+    color: white;
+}
