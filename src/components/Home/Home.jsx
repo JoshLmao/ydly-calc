@@ -34,7 +34,8 @@ class Home extends Component {
                     <p>
                         Insert your Algorand address that you have used with Yiedly to automatically gather the user variables required.
                         This app only uses your address to query the <a href="https://algoexplorer.io">algoexplorer.io</a> API to gather the required values.
-                        Click the button after the wallet address to estimate your rewards
+                        <br/>
+                        The app will update the sections below automatically once given an address. If you are having issues, try removing the address and trying again.
                     </p>
 
                     <div className="d-flex">

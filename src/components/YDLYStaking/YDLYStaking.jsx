@@ -20,6 +20,7 @@ import {
 
 import ALGO_ICON from "../../svg/algo-icon.svg";
 import YDLY_ICON from "../../svg/ydly-icon.svg";
+import { calculateYDLYRewardsFromDayPeriod } from '../../js/YDLYCalculation';
 
 class YDLYStaking extends Component {
     constructor(props) {
@@ -45,10 +46,14 @@ class YDLYStaking extends Component {
             daysPeriod: 1,
 
             usrVarsErrorMsg: null,
+
+            claimableYdlyRewards: null,
+            claimableAlgoRewards: null,
         };
 
         this.fetchUserVariables = this.fetchUserVariables.bind(this);
         this.onDaysPeriodChanged = this.onDaysPeriodChanged.bind(this);
+        this.updateRewards = this.updateRewards.bind(this);
     }
 
     componentDidMount() {
@@ -97,6 +102,8 @@ class YDLYStaking extends Component {
 
         this.setState({
             daysPeriod: newVal,
+        }, () => {
+            this.updateRewards();
         });
     }
 
@@ -108,7 +115,6 @@ class YDLYStaking extends Component {
         }
 
         if (this.state.algoAddress && !this.state.fetchingUsrVars) {
-
             // Check address is valid
             if (isStringBlank(this.state.algoAddress)) {
                 return;
@@ -128,7 +134,7 @@ class YDLYStaking extends Component {
                         userAmount: data.userAmount,
                         userStakingShares: data.userStakingShares,
                     }, () => {
-                        //this.updateResults();
+                        this.updateRewards();
                     });
                 } else {
                     //console.error("No user state values in address!");
@@ -144,6 +150,17 @@ class YDLYStaking extends Component {
             this.setState({
                 usrVarsErrorMsg: "Algorand address is empty or already updating values! Please try entering a new Algorand address",
                 fetchingUsrVars: false,
+            });
+        }
+    }
+
+    updateRewards() {
+        if (this.state.userAmount) {
+            let totalYdlyRewards = calculateYDLYRewardsFromDayPeriod(this.state.userStakingShares, this.state.daysPeriod, this.state.userAmount, this.state.globalStakingShares, this.state.totalYdlyRewards);
+            let totalAlgoRewards = calculateYDLYRewardsFromDayPeriod(this.state.userStakingShares, this.state.daysPeriod, this.state.userAmount, this.state.globalStakingShares, this.state.totalAlgoRewards);
+            this.setState({
+                claimableYdlyRewards: totalYdlyRewards,
+                claimableAlgoRewards: totalAlgoRewards,
             });
         }
     }
@@ -349,6 +366,7 @@ class YDLYStaking extends Component {
                                 />
                             <Form.Control
                                 type="text"
+                                value={ this.state.claimableAlgoRewards ? formatNumber(this.state.claimableAlgoRewards.toFixed(3)) : "" }
                                 placeholder="TBD | ALGO rewards"
                                 disabled
                                 />
@@ -368,6 +386,7 @@ class YDLYStaking extends Component {
                                 />
                             <Form.Control
                                 type="text"
+                                value={ this.state.claimableYdlyRewards ? formatNumber( this.state.claimableYdlyRewards.toFixed(0)) : "" }
                                 placeholder="TBD | YDLY rewards"
                                 disabled
                                 />
