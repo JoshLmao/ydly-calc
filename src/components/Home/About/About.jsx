@@ -20,7 +20,7 @@ class About extends Component {
                     <div>
                         {/* App title */}
                         <h1>
-                            Yiedly Rewards Estimator
+                            Yieldly Rewards Estimator
                         </h1>
                         {/* Sub text & action */}
                         <div>
@@ -32,22 +32,34 @@ class About extends Component {
                                 This website is not affiliated with Yieldly.
                             </h6>
                         </div>
-                        <div className="d-flex my-3">
-                            <a href={CONFIG.github_link}>
+                        <div className="d-flex my-2">
+                            <a 
+                                className="mr-1"
+                                href={CONFIG.github_link + "/issues"}>
+                                <Button variant="danger">
+                                    Report an Issue
+                                </Button>
+                            </a>
+                            <a 
+                                className="mx-1"
+                                href={CONFIG.github_link}>
                                 <Button>
                                     <FontAwesomeIcon icon={faGithub} />
                                 </Button>
                             </a>
-                            <a href={CONFIG.twitter_link} className="mx-2">
+                            <a 
+                                className="mx-1"
+                                href={CONFIG.twitter_link}>
                                 <Button>
                                     <FontAwesomeIcon icon={faTwitter} />
                                 </Button>
                             </a>
-                            <div className="pr-2 my-auto">
+                            <div className="mx-1 pr-2 my-auto">
                                 Created by 
                                 <a className="mx-1" href={CONFIG.creator_link}>JoshLmao</a>
                             </div>
                         </div>
+                        
                         <div>
                             <h6 className="mb-2 pb-0">Support/ALGO donations</h6>
                             <img

@@ -3,7 +3,7 @@ import axios from "axios";
 /// Gets the global contract values from  the 
 export function getContractValues(contractId, callback) {
     let endpoint = `applications/${contractId}`;
-    queryAlgoExplorerAPI(endpoint, (data) => {
+    queryAlgoExplorerAPI("v2", endpoint, (data) => {
         let contractVars = {};
         for(let kvp of data.params["global-state"]) {
             // Check for Global Time (GT)
@@ -15,8 +15,11 @@ export function getContractValues(contractId, callback) {
                 contractVars.globalAmount = kvp.value.uint;
             }
             // Total Yiedly Global Unlock Rewards (TYUL)
-            else if (kvp.key == btoa("TYUL")) {
+            else if (kvp.key === btoa("TYUL")) {
                 contractVars.totalYiedlyUnlock = kvp.value.uint;
+            }
+            else if (kvp.key === btoa("GSS")) {
+                contractVars.globalStakingShares = kvp.value.uint;
             }
         }
         if (callback)
@@ -27,7 +30,7 @@ export function getContractValues(contractId, callback) {
 // Gets the UserTime and UserAmount values from the 
 export function getUserStateValues (algoAddress, contractID, callback) {
     let endpoint = `accounts/${algoAddress}`;
-    queryAlgoExplorerAPI(endpoint, (data) => {
+    queryAlgoExplorerAPI("v2", endpoint, (data) => {
         if (data) {
             // Get all app states
             let appStates = data["apps-local-state"];
@@ -47,7 +50,7 @@ export function getUserStateValues (algoAddress, contractID, callback) {
                                 userValues.userAmount = kvp.value.uint;
                             }
                             else if (kvp.key === btoa("USS")) {
-                                userValues.uss = kvp.value.uint;
+                                userValues.userStakingShares = kvp.value.uint;
                             }
                         }
                         // Once successful, use callback
@@ -69,8 +72,8 @@ export function getUserStateValues (algoAddress, contractID, callback) {
 }
 
 // Queries the AlgoExplorer API with the given endpoint and uses the response callback if data is found
-export function queryAlgoExplorerAPI (endpointUrl, response) {
-    let baseUrl = `https://algoexplorerapi.io/v2/${endpointUrl}`;
+export function queryAlgoExplorerAPI (endpointPrefix, endpointUrl, response) {
+    let baseUrl = `https://algoexplorerapi.io/${endpointPrefix}/${endpointUrl}`;
 
     axios({
         url: `${baseUrl}`,
@@ -82,4 +85,23 @@ export function queryAlgoExplorerAPI (endpointUrl, response) {
             console.error(`Problem quering Algoexplorer API at ${endpointUrl}`);
         }
     });
+}
+
+// Gets the last block timestamp
+export function getCurrentBlockTimestamp(callback) {
+    let endpoint = "health"
+    queryAlgoExplorerAPI("idx2", endpoint, (data) => {
+        if (data && data.round) {
+            let lastRound = data.round;
+
+            let blockEndpoint = `blocks/${lastRound}?format=json`;
+            queryAlgoExplorerAPI("v2", blockEndpoint, (data) => {
+                if (data && data.block && data.block.ts) {
+                    if (callback) {
+                        callback(lastRound, data.block.ts);
+                    }
+                }
+            })
+        }
+    })
 }
