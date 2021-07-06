@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 
 import {
-    Container,
-    Row
+    Container
 } from 'react-bootstrap';
 
 import NoLossLottery from '../NoLossLottery/NoLossLottery';

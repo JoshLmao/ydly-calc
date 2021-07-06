@@ -19,7 +19,10 @@ let pkg = require('../../../package.json');
 class Header extends Component {
     render() {
         return (
-            <Navbar className="calc-header">
+            <Navbar 
+                id="estimator-navbar"
+                navbarScroll
+                className="calc-header">
                 <Container>
                     <Navbar.Brand 
                         className="navbar-brand-name"
@@ -29,9 +32,10 @@ class Header extends Component {
 
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <Nav.Link to="/" as={Link}>Home</Nav.Link>
-                            <Nav.Link to="/#nll" as={Link}>No Loss Lottery</Nav.Link>
-                            <Nav.Link to="/#ydly-staking" as={Link}>YDLY Staking</Nav.Link>
+                            <a class="nav-link" href="#no-loss-lottery">No Loss Lottery</a>
+                            <a class="nav-link" href="#no-loss-lottery">YDLY Staking</a>
+                            {/* <Nav.Link to="#no-loss-lottery">No Loss Lottery</Nav.Link>
+                            <Nav.Link to="#ydly-staking" as={Link}>YDLY Staking</Nav.Link> */}
                         </Nav>
                         <a 
                             className="ml-auto"

@@ -11,14 +11,9 @@ import {
     getUserStateValues 
 } from '../../js/AlgoExplorerAPI';
 import { 
-    calculateClaimableUserRewards, 
-    calculateGlobalStakingShares,
-    calculateUserStakingShares,
-    calculateYDLYRewards,
     calculateYDLYRewardsFromDayPeriod
 } from '../../js/YDLYCalculation';
 import {
-    daysToUnix, 
     microAlgoToAlgo,
     fromMicroValue
 } from "../../js/utility";
@@ -112,6 +107,7 @@ class NoLossLottery extends Component {
 
             getUserStateValues(this.state.algoAddress, this.state.contractID, (data) => {
                 if (data) {
+                    console.log(`Successfully got user variables from application '${this.state.contractID}' on address '${this.state.algoAddress}'`);
                     this.setState({
                         fetchingUsrVars: false,
                         userTime: data.userTime,
@@ -124,6 +120,7 @@ class NoLossLottery extends Component {
                     console.error("No user state values in address!");
                     this.setState({
                         usrVarsErrorMsg: "Address hasn't interacted with Yiedly contract or another error",
+                        fetchingUsrVars: false,
                     });
                 }
             });
@@ -165,8 +162,8 @@ class NoLossLottery extends Component {
 
     render() {
         return (
-            <div className="main-background">
-                <h1>No Loss Lottery</h1>
+            <div className="main-background" data-spy="scroll" data-target="#estimator-navbar">
+                <h1 id="no-loss-lottery">No Loss Lottery</h1>
                 <h6>NLL Application (Contract): <a href="https://algoexplorer.io/application/233725844">233725844</a></h6>
 
                 <p>
@@ -226,7 +223,7 @@ class NoLossLottery extends Component {
                                 </h6>
                             </Col>
                             <Col md={6} className="d-flex">
-                                <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} />
+                                <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} alt="Algorand icon" />
                                 <Form.Control 
                                     type="text" 
                                     placeholder="User Amount (UA)"
@@ -272,7 +269,7 @@ class NoLossLottery extends Component {
                                 <h6>Total ALGO (tickets) in Lottery</h6>
                             </Col>
                             <Col md={6} className="d-flex">
-                                <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} />
+                                <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} alt="Algorand icon" />
                                 <Form.Control 
                                     type="text" 
                                     placeholder="Global Amount (GA)" 
@@ -321,7 +318,7 @@ class NoLossLottery extends Component {
                         <Col className="d-flex">
                             <img
                                 className="my-auto mr-2" 
-                                src={YDLY_ICON} width={25} height={25} />
+                                src={YDLY_ICON} width={25} height={25} alt="Yieldly icon" />
                             <Form.Control 
                                 type="text"
                                 value={ formatNumber(microAlgoToAlgo(this.state.nllGlobalUnlock).toFixed(0)) }
@@ -332,15 +329,16 @@ class NoLossLottery extends Component {
                 </div>
 
                 <div className="py-2">
-                    <h3>Results</h3>
+                    <h3>YDLY Claimable Rewards</h3>
                     <Row>
                         <Col md={6}>
-                            The amount of rewards available to user <b>with the current global unlock rewards pool</b> after the given day period above
+                            The amount of rewards available to current address after the given day period above, <b>with the current global unlock rewards pool at '{ formatNumber((this.state.nllGlobalUnlock / 1000).toFixed(0)) }'</b>
                         </Col>
                         <Col md={6} className="d-flex">
                             <img
                                 className="my-auto mr-2" 
-                                src={YDLY_ICON} width={25} height={25} />
+                                src={YDLY_ICON} width={25} height={25} 
+                                alt="Yieldly icon" />
                             <Form.Control 
                                 className="my-auto"
                                 type="text" 

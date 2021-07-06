@@ -64,6 +64,7 @@ class About extends Component {
                             <h6 className="mb-2 pb-0">Support/ALGO donations</h6>
                             <img
                                 className="mx-2" 
+                                alt="Algorand Icon"
                                 src={process.env.PUBLIC_URL + "/images/algorand_circle_white.png"} style={{
                                 height: "25px",
                                 width: "25px"

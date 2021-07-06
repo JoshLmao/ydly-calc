@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-    HashRouter,
+    BrowserRouter,
     Route,
     Switch,
 } from 'react-router-dom';
@@ -12,14 +12,14 @@ import FourOhFour from "../FourOhFour";
 class App extends Component {
     render() {
         return (
-            <HashRouter>
+            <BrowserRouter basename={process.env.PUBLIC_URL}>
                 <Header />
 
                 <Switch>
                     <Route exact path="/" component={Home} />
                     <Route component={FourOhFour} />
                 </Switch>
-            </HashRouter>
+            </BrowserRouter>
         );
     }
 }
