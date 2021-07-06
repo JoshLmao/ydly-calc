@@ -14,7 +14,8 @@ import {
     calculateClaimableUserRewards, 
     calculateGlobalStakingShares,
     calculateUserStakingShares,
-    calculateYDLYRewards
+    calculateYDLYRewards,
+    calculateYDLYRewardsFromDayPeriod
 } from '../../js/YDLYCalculation';
 import {
     daysToUnix, 
@@ -25,6 +26,9 @@ import {
 import "./NLL.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+
+import YDLY_ICON from "../../svg/ydly-icon.svg";
+import ALGO_ICON from "../../svg/algo-icon.svg";
 
 // https://blog.abelotech.com/posts/number-currency-formatting-javascript/
 function formatNumber(num) {
@@ -135,8 +139,8 @@ class NoLossLottery extends Component {
     onTimePeriodChanged(e) {
         // Make sure value is more than 0
         let val;
-        if (parseInt(e.target.value) <= 0) {
-            val = 1;
+        if (parseInt(e.target.value) < 0) {
+            val = 0;
         } else {
             val = parseInt(e.target.value);
         }
@@ -151,7 +155,8 @@ class NoLossLottery extends Component {
     updateResults() {
         // Check required variables are valid
         if (this.state.userTime != null && this.state.userAmount != null && this.state.globalAmount != null && this.state.globalTime != null) {
-            let totalRewards = calculateYDLYRewards(this.state.userStakingShares, this.state.userTime, this.state.globalTime, this.state.userAmount, this.state.globalStakingShares, this.state.nllGlobalUnlock);
+            //let totalRewards = calculateYDLYRewards(this.state.userStakingShares, this.state.userTime, this.state.globalTime, this.state.userAmount, this.state.globalStakingShares, this.state.nllGlobalUnlock);
+            let totalRewards = calculateYDLYRewardsFromDayPeriod(this.state.userStakingShares, this.state.timePeriodDays, this.state.userAmount, this.state.globalStakingShares, this.state.nllGlobalUnlock);
             this.setState({
                 totalClaimableRewards: totalRewards,
             });
@@ -220,7 +225,8 @@ class NoLossLottery extends Component {
                                     Tickets
                                 </h6>
                             </Col>
-                            <Col md={6}>
+                            <Col md={6} className="d-flex">
+                                <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} />
                                 <Form.Control 
                                     type="text" 
                                     placeholder="User Amount (UA)"
@@ -265,7 +271,8 @@ class NoLossLottery extends Component {
                             <Col md={6}>
                                 <h6>Total ALGO (tickets) in Lottery</h6>
                             </Col>
-                            <Col md={6}>
+                            <Col md={6} className="d-flex">
+                                <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} />
                                 <Form.Control 
                                     type="text" 
                                     placeholder="Global Amount (GA)" 
@@ -311,7 +318,10 @@ class NoLossLottery extends Component {
                         <Col>
                             <div>Total YDLY available in the pool for everyone to claim from</div>
                         </Col>
-                        <Col>
+                        <Col className="d-flex">
+                            <img
+                                className="my-auto mr-2" 
+                                src={YDLY_ICON} width={25} height={25} />
                             <Form.Control 
                                 type="text"
                                 value={ formatNumber(microAlgoToAlgo(this.state.nllGlobalUnlock).toFixed(0)) }
@@ -327,11 +337,15 @@ class NoLossLottery extends Component {
                         <Col md={6}>
                             The amount of rewards available to user <b>with the current global unlock rewards pool</b> after the given day period above
                         </Col>
-                        <Col md={6}>
+                        <Col md={6} className="d-flex">
+                            <img
+                                className="my-auto mr-2" 
+                                src={YDLY_ICON} width={25} height={25} />
                             <Form.Control 
+                                className="my-auto"
                                 type="text" 
                                 placeholder="TBD" 
-                                value={ this.state.totalClaimableRewards }
+                                value={ this.state.totalClaimableRewards?.toFixed(2) }
                                 disabled />
                         </Col>
                     </Row>
