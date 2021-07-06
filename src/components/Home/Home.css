@@ -1,0 +1,16 @@
+.all-text-white {
+    color: white;
+}
+
+.all-text-white .h1 {
+    color:white;
+}
+
+/* Primary background color, light dark*/
+.primary-background {
+    background: #303030;
+}
+/* Secondary: deep dark */
+.secondary-background {
+    background: #252525;
+}

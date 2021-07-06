@@ -1,27 +1,21 @@
 import axios from "axios";
 
 /// Gets the global contract values from  the 
-export function getContractValues(contractId, callback) {
+export function getContractValues(contractId, keys, callback) {
+    // Query endpoint with id
     let endpoint = `applications/${contractId}`;
     queryAlgoExplorerAPI("v2", endpoint, (data) => {
         let contractVars = {};
+        // Iterate through all application state values
         for(let kvp of data.params["global-state"]) {
-            // Check for Global Time (GT)
-            if (kvp.key === btoa("GT")) {
-                contractVars.globalTime = kvp.value.uint;
-            }
-            // Global Amount (GA) of ALGO deposited
-            else if (kvp.key === btoa("GA")) {
-                contractVars.globalAmount = kvp.value.uint;
-            }
-            // Total Yiedly Global Unlock Rewards (TYUL)
-            else if (kvp.key === btoa("TYUL")) {
-                contractVars.totalYiedlyUnlock = kvp.value.uint;
-            }
-            else if (kvp.key === btoa("GSS")) {
-                contractVars.globalStakingShares = kvp.value.uint;
+            // Iterate through given keys and store in dict if a match
+            for (let key of keys) {
+                if (kvp.key === btoa(key)) {
+                    contractVars[key] = kvp.value.uint
+                }
             }
         }
+        // Callback if supplied
         if (callback)
             callback(contractVars);
     });
@@ -73,8 +67,9 @@ export function getUserStateValues (algoAddress, contractID, callback) {
 
 // Queries the AlgoExplorer API with the given endpoint and uses the response callback if data is found
 export function queryAlgoExplorerAPI (endpointPrefix, endpointUrl, response) {
+    // Use base URL of API, with the given prefix and url
     let baseUrl = `https://algoexplorerapi.io/${endpointPrefix}/${endpointUrl}`;
-
+    // Send off request
     axios({
         url: `${baseUrl}`,
         method: 'GET',
@@ -87,9 +82,9 @@ export function queryAlgoExplorerAPI (endpointPrefix, endpointUrl, response) {
     });
 }
 
-// Gets the last block timestamp
+// Gets the last block id and timestamp
 export function getCurrentBlockTimestamp(callback) {
-    let endpoint = "health"
+    let endpoint = "health";
     queryAlgoExplorerAPI("idx2", endpoint, (data) => {
         if (data && data.round) {
             let lastRound = data.round;

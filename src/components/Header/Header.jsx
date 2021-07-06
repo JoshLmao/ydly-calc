@@ -32,7 +32,7 @@ class Header extends Component {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
                             <a className="nav-link" href="#no-loss-lottery">No Loss Lottery</a>
-                            <a className="nav-link" href="#no-loss-lottery">YDLY Staking</a>
+                            <a className="nav-link" href="#ydly-staking">YDLY Staking</a>
                             {/* <Nav.Link to="#no-loss-lottery">No Loss Lottery</Nav.Link>
                             <Nav.Link to="#ydly-staking" as={Link}>YDLY Staking</Nav.Link> */}
                         </Nav>

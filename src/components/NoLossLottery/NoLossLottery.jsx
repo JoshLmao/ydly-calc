@@ -15,29 +15,22 @@ import {
 } from '../../js/YDLYCalculation';
 import {
     microAlgoToAlgo,
-    fromMicroValue
+    fromMicroValue,
+    formatNumber,
+    isStringBlank
 } from "../../js/utility";
-
-import "./NLL.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import YDLY_ICON from "../../svg/ydly-icon.svg";
 import ALGO_ICON from "../../svg/algo-icon.svg";
-
-// https://blog.abelotech.com/posts/number-currency-formatting-javascript/
-function formatNumber(num) {
-    if (num)
-        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
-    else 
-        return null;
-}
 
 class NoLossLottery extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            // User vars
+            algoAddress: this.props.userAlgoAddress,
+
             // Contract ID to use
             contractID: 233725844,
 
@@ -45,23 +38,19 @@ class NoLossLottery extends Component {
             fetchingGlobalVars: false,
 
             // User vars
-            algoAddress: null,
             userTime: null,
             userAmount: null,
+            userStakingShares: null, 
             // Contract global vars
             globalTime: null,
             globalAmount: null,
+            globalStakingShares: null,
             nllGlobalUnlock: null,
 
-            // Calculated values
-            globalStakingShares: null,
-            userStakingShares: null, 
             totalClaimableRewards: null,
 
             timePeriodDays: 1,
-            currentBlockTimestamp: new Date().getTime(),
-
-            totalUnlockRewards: 2362900,
+            currentBlockTimestamp: null,
 
             usrVarsErrorMsg: null,
         };
@@ -76,13 +65,20 @@ class NoLossLottery extends Component {
         this.setState({
             fetchingGlobalVars: true,
         });
-        getContractValues(this.state.contractID, (contractVars) => {
-            this.setState({
-                globalTime: contractVars.globalTime,
-                globalAmount: contractVars.globalAmount,
-                globalStakingShares: contractVars.globalStakingShares,
 
-                nllGlobalUnlock: contractVars.totalYiedlyUnlock,
+        // Keys to retrieve from the contract's state. 
+        // Global Time (GT), Global Amount (GA), Global Staking Shares (GSS), Total Yieldly (TYUL)
+        let allKeys = [
+            "GT", "GA", "TYUL", "GSS"
+        ];
+        // Call API and get keys
+        getContractValues(this.state.contractID, allKeys, (contractVars) => {
+            this.setState({
+                globalTime: contractVars["GT"],
+                globalAmount: contractVars["GA"],
+                globalStakingShares: contractVars["GSS"],
+
+                nllGlobalUnlock: contractVars["TYUL"],
 
                 fetchingGlobalVars: false,
             });
@@ -97,13 +93,33 @@ class NoLossLottery extends Component {
         });
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.userAlgoAddress != this.props.userAlgoAddress) {
+            this.setState({
+                algoAddress: this.props.userAlgoAddress,
+            }, () => {
+                this.fetchUserVariables();
+            });
+        }
+    }
+
     fetchUserVariables () {
+        if (this.state.usrVarsErrorMsg) {
+            this.setState({
+                usrVarsErrorMsg: null,
+            });
+        }
+
         // Only fetch user vars if address is given.
         if (this.state.algoAddress && !this.state.fetchingUsrVars) {
+            if (isStringBlank(this.state.algoAddress)) {
+                return;
+            }
+
             this.setState({
                 fetchingUsrVars: true,
             });
-            console.log("Retrieving user state vars...");
+            console.log("Retrieving NLL user state vars...");
 
             getUserStateValues(this.state.algoAddress, this.state.contractID, (data) => {
                 if (data) {
@@ -128,7 +144,7 @@ class NoLossLottery extends Component {
         else {
             console.error("Algo address is empty or currently updating values!");
             this.setState({
-                usrVarsErrorMsg: "Algorand address is empty or already updating values! Please try again",
+                usrVarsErrorMsg: "Algorand address is empty or already updating values! Please try entering a new Algorand address",
             });
         }
     }
@@ -162,40 +178,17 @@ class NoLossLottery extends Component {
 
     render() {
         return (
-            <div className="main-background" data-spy="scroll" data-target="#estimator-navbar">
+            <div className="py-5" data-spy="scroll" data-target="#estimator-navbar">
                 <h1 id="no-loss-lottery">No Loss Lottery</h1>
-                <h6>NLL Application (Contract): <a href="https://algoexplorer.io/application/233725844">233725844</a></h6>
-
-                <p>
-                    Insert your Algorand address that you have used with Yiedly to automatically gather the values required. 
-                    This app only uses your address to query the <a href="https://algoexplorer.io">algoexplorer.io</a> API to gather the required values.
-                    Click the button after the wallet address to estimate your rewards
-                </p>
-
-                <div className="d-flex">
-                    <h6>Algorand Address:</h6>
-                    <Form.Control 
-                        type="text" 
-                        placeholder="Your Algorand Address that has interacted with the Yieldly platform" 
-                        value={this.state.algoAddress ?? ""} 
-                        onChange={(e) => this.setState({ algoAddress: e.target.value })} />
-                    <Button 
-                        className="mx-2"
-                        onClick={this.fetchUserVariables}>
-                            <FontAwesomeIcon icon={faChevronRight} />
-                    </Button>
-                </div>
+                <h6>No Loss Lottery Application: <a href="https://algoexplorer.io/application/233725844">233725844</a></h6>
 
                 {/* Display error message if one is set*/}
                 {
                     this.state.usrVarsErrorMsg &&
-                        <div style={{ color: "rgb(255, 50, 50)" }}>
-                            { this.state.usrVarsErrorMsg }
-                        </div>
+                    <div style={{ color: "rgb(255, 50, 50)" }}>
+                        { this.state.usrVarsErrorMsg }
+                    </div>
                 }
-
-                {/* Separator */}
-                <div className="py-3" />
 
                 <Row>
                     {/* User Variables, from user address App's section in algoexplorer.io */}
@@ -266,7 +259,7 @@ class NoLossLottery extends Component {
                         </Row>
                         <Row>
                             <Col md={6}>
-                                <h6>Total ALGO (tickets) in Lottery</h6>
+                                <h6>Total ALGO (tickets) amount in Lottery</h6>
                             </Col>
                             <Col md={6} className="d-flex">
                                 <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} alt="Algorand icon" />
@@ -332,7 +325,7 @@ class NoLossLottery extends Component {
                     <h3>YDLY Claimable Rewards</h3>
                     <Row>
                         <Col md={6}>
-                            The amount of rewards available to current address after the given day period above, <b>with the current global unlock rewards pool at '{ formatNumber((this.state.nllGlobalUnlock / 1000).toFixed(0)) }'</b>
+                            The amount of rewards available to current address after '{this.state.timePeriodDays}' day(s), <b>with the current global unlock rewards pool at '{ formatNumber((this.state.nllGlobalUnlock / 1000).toFixed(0)) }' YDLY</b>
                         </Col>
                         <Col md={6} className="d-flex">
                             <img
@@ -342,7 +335,7 @@ class NoLossLottery extends Component {
                             <Form.Control 
                                 className="my-auto"
                                 type="text" 
-                                placeholder="TBD" 
+                                placeholder="TBD | YDLY rewards" 
                                 value={ this.state.totalClaimableRewards?.toFixed(2) }
                                 disabled />
                         </Col>

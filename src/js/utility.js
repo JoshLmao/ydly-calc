@@ -21,3 +21,15 @@ export function daysToUnix (days) {
 
     return difference;
 }
+
+// https://blog.abelotech.com/posts/number-currency-formatting-javascript/
+export function formatNumber(num) {
+    if (num)
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    else 
+        return null;
+}
+
+export function isStringBlank(str) {
+    return (!str || /^\s*$/.test(str));
+}

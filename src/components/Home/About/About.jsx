@@ -10,12 +10,14 @@ import {
 
 import CONFIG from "../../../config.json";
 
-import "./About.css";
+import "../Home.css";
+
+import ALGO_ICON from "../../../svg/algo-icon.svg";
 
 class About extends Component {
     render() {
         return (
-            <div className="stretched-background">
+            <div className="all-text-white secondary-background">
                 <Container className="py-5">
                     <div>
                         {/* App title */}
@@ -65,10 +67,8 @@ class About extends Component {
                             <img
                                 className="mx-2" 
                                 alt="Algorand Icon"
-                                src={process.env.PUBLIC_URL + "/images/algorand_circle_white.png"} style={{
-                                height: "25px",
-                                width: "25px"
-                            }} />
+                                src={ALGO_ICON} 
+                                height="25" width="25" />
                              { CONFIG.algo_donations_address }
                         </div>
                     </div>
