@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "/images/ydly-est-logo192.png",
+      "src": "ydly-est-logo192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/images/ydly-est-logo512.png",
+      "src": "ydly-est-logo512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

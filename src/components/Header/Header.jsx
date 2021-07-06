@@ -21,7 +21,6 @@ class Header extends Component {
         return (
             <Navbar 
                 id="estimator-navbar"
-                navbarScroll
                 className="calc-header">
                 <Container>
                     <Navbar.Brand 
@@ -32,8 +31,8 @@ class Header extends Component {
 
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">
-                            <a class="nav-link" href="#no-loss-lottery">No Loss Lottery</a>
-                            <a class="nav-link" href="#no-loss-lottery">YDLY Staking</a>
+                            <a className="nav-link" href="#no-loss-lottery">No Loss Lottery</a>
+                            <a className="nav-link" href="#no-loss-lottery">YDLY Staking</a>
                             {/* <Nav.Link to="#no-loss-lottery">No Loss Lottery</Nav.Link>
                             <Nav.Link to="#ydly-staking" as={Link}>YDLY Staking</Nav.Link> */}
                         </Nav>

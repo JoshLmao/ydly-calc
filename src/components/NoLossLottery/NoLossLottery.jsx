@@ -45,7 +45,7 @@ class NoLossLottery extends Component {
             fetchingGlobalVars: false,
 
             // User vars
-            algoAddress: "PQZ46R4RKOST3NJQS6OHHRSUGC63LEISCQHKWO5OFHRPIC65JR4DK33AIY", //null,
+            algoAddress: null,
             userTime: null,
             userAmount: null,
             // Contract global vars
@@ -177,7 +177,7 @@ class NoLossLottery extends Component {
                     <Form.Control 
                         type="text" 
                         placeholder="Your Algorand Address that has interacted with the Yieldly platform" 
-                        value={this.state.algoAddress} 
+                        value={this.state.algoAddress ?? ""} 
                         onChange={(e) => this.setState({ algoAddress: e.target.value })} />
                     <Button 
                         className="mx-2"
@@ -211,7 +211,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="User Time (UT)" 
-                                    value={ new Date(this.state.userTime * 1000 ).toString() }
+                                    value={ this.state.userTime ? new Date(this.state.userTime * 1000 ).toString() : "" }
                                     onChange={(e) => this.setState({ userTime: e.target.value })} 
                                     disabled/>
                             </Col>
@@ -227,7 +227,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="User Amount (UA)"
-                                    value={ this.state.userAmount ? formatNumber(fromMicroValue(this.state.userAmount).toFixed(3)) : null }
+                                    value={ this.state.userAmount ? formatNumber(fromMicroValue(this.state.userAmount).toFixed(3)) : "" }
                                     onChange={(e) => this.setState({ userAmount: e.target.value })} 
                                     disabled/>
                             </Col>
@@ -242,7 +242,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="User Staking Shares (USS)"
-                                    value={ this.state.userStakingShares != null ? formatNumber(fromMicroValue(this.state.userStakingShares).toFixed(0)) : null }
+                                    value={ this.state.userStakingShares != null ? formatNumber(fromMicroValue(this.state.userStakingShares).toFixed(0)) : "" }
                                     onChange={(e) => this.setState({ userAmount: e.target.value })} 
                                     disabled/>
                             </Col>
@@ -260,7 +260,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="Global Time (GT)" 
-                                    value={ new Date( this.state.globalTime * 1000 ).toString() } 
+                                    value={ this.state.globalTime ? new Date( this.state.globalTime * 1000 ).toString() : "" } 
                                     disabled />
                             </Col>
                         </Row>
@@ -273,7 +273,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="Global Amount (GA)" 
-                                    value={ formatNumber(fromMicroValue(this.state.globalAmount).toFixed(0)) } 
+                                    value={ this.state.globalAmount ? formatNumber(fromMicroValue(this.state.globalAmount).toFixed(0)) : "" } 
                                     disabled />
                             </Col>
                         </Row>
@@ -285,7 +285,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="Global Staking Shares (GSS)" 
-                                    value={ formatNumber(fromMicroValue(this.state.globalStakingShares).toFixed(0)) } 
+                                    value={ this.state.globalStakingShares ? formatNumber(fromMicroValue(this.state.globalStakingShares).toFixed(0)) : "" } 
                                     disabled />
                             </Col>
                         </Row>
