@@ -17,3 +17,7 @@ A small web application for estimating [Yieldly](https://yieldly.finance) reward
 Per [an article by Yieldly](https://yieldly.finance/yldy-rewards-review-and-thank-you/), this app implements the rewards formula used while also using the variables from each contract on the Algorand blockchain to estamate how much you could be earning through the platform.
 
 ALGO Donations: IM6CZ4KUPWT23PKA23MW5S4ZQVF4376GWELLAL5QA5NCMB635JTRUGIDPY
+
+### Deploy/Update GitHub Pages Site
+
+To deploy or update the GH pages website, use the command `npm run deploy` which uses the `gh-pages` package to automatically update the `gh-pages` branch to the latest changes.
