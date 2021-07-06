@@ -168,7 +168,9 @@ class YDLYStaking extends Component {
     render() {
         return (
             <div className="main-background py-5" data-spy="scroll" data-target="#estimator-navbar">
-                <h1 id="ydly-staking">YDLY Staking</h1>
+                <h1 
+                    className="yieldly-main-color"
+                    id="ydly-staking">YDLY Staking</h1>
                 <h6>
                     YDLY Staking Application: <a href={'https://algoexplorer.io/application/' + this.state.applicationID}>{this.state.applicationID}</a>
                 </h6>

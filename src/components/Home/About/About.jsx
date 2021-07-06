@@ -17,11 +17,11 @@ import ALGO_ICON from "../../../svg/algo-icon.svg";
 class About extends Component {
     render() {
         return (
-            <div className="all-text-white secondary-background">
+            <div className="all-text-white tertiary-background">
                 <Container className="py-5">
                     <div>
                         {/* App title */}
-                        <h1>
+                        <h1 className="yieldly-main-color">
                             Yieldly Rewards Estimator
                         </h1>
                         {/* Sub text & action */}

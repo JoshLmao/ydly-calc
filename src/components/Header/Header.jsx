@@ -15,7 +15,6 @@ import "./Header.css";
 
 let pkg = require('../../../package.json');
 
-
 class Header extends Component {
     render() {
         return (
@@ -23,11 +22,21 @@ class Header extends Component {
                 id="estimator-navbar"
                 className="calc-header">
                 <Container>
+                    {/* Main site title */}
                     <Navbar.Brand 
                         className="navbar-brand-name"
                         to="/" as={Link}>
                         YDLY Rewards Estimator
                     </Navbar.Brand>
+                    {/* Version */}
+                    <Nav.Link 
+                        as="h6"
+                        className="p-0 align-bottom mt-1 mr-2 mb-0"
+                        style={{ fontSize: "0.75rem" }}>
+                        {
+                            pkg ? "v" + pkg.version : "v0.0.0"
+                        }
+                    </Nav.Link>
 
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="mr-auto">

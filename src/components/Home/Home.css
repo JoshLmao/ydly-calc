@@ -14,3 +14,11 @@
 .secondary-background {
     background: #252525;
 }
+/* Accent background */
+.tertiary-background {
+    background: #240a0a;
+}
+
+.yieldly-main-color {
+    color: #FED738;
+}

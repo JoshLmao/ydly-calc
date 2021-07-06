@@ -179,7 +179,9 @@ class NoLossLottery extends Component {
     render() {
         return (
             <div className="py-5" data-spy="scroll" data-target="#estimator-navbar">
-                <h1 id="no-loss-lottery">No Loss Lottery</h1>
+                <h1 
+                    className="yieldly-main-color"
+                    id="no-loss-lottery">No Loss Lottery</h1>
                 <h6>No Loss Lottery Application: <a href="https://algoexplorer.io/application/233725844">233725844</a></h6>
 
                 {/* Display error message if one is set*/}

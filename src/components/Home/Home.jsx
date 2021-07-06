@@ -30,7 +30,9 @@ class Home extends Component {
                 <About />
 
                 <Container className="py-5">
-                    <h1>Algorand Address</h1>
+                    <h1
+                        className="yieldly-main-color"
+                        >Algorand Address</h1>
                     <p>
                         Insert your Algorand address that you have used with Yiedly to automatically gather the user variables required.
                         This app only uses your address to query the <a href="https://algoexplorer.io">algoexplorer.io</a> API to gather the required values.
