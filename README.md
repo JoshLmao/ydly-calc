@@ -16,9 +16,13 @@ A small web application for estimating [Yieldly](https://yieldly.finance) reward
 
 The app shows your share of the current rewards pool. The rewards pool increases every 30 minutes ([as per Yieldly's 1st July change](https://yieldly.finance/updated-rewards/)) and can go down when someone else claims from that pool. 
 
-Thank you to @Tommaso on Telegram for discovering the formula (below) for determining a user's portion of the rewards pool, which is implemented in the app.
+Any ALGO Donations are appreciated 😊 IM6CZ4KUPWT23PKA23MW5S4ZQVF4376GWELLAL5QA5NCMB635JTRUGIDPY
 
-The values for the formula are either found in the relevant application contract (if prefix started with G, global) or in the user's Algorand address (if prefix starts with U, user)
+## Claimable Rewards Formula
+
+Big thank you to @Tommaso on Telegram for discovering the formula for determining a user's portion of the rewards pool, which is implemented in the app and can be seen below with the related variables required. 
+
+Any global are stored in the application (contract) while any user ones are stored alongside the Algorand wallet (algoexplorer.io/addresses/{your_algo_address} -> Apps -> Connected -> Hover over 'Eye' icon) 
 
 ```
 GT: Global Time
@@ -31,7 +35,11 @@ UT: User Time
 Claimable YLDY Rewards = ((USS + ((GT - UT) / 86400) * UA) / GSS) * TYUL / 1000000
 ```
 
-ALGO Donations: IM6CZ4KUPWT23PKA23MW5S4ZQVF4376GWELLAL5QA5NCMB635JTRUGIDPY
+The js code can also be found in the [`YLDYCalculations.js`](/src/js/YLDYCalculation.js) file in the `calculateYLDYRewardsFromDayPeriod()` method
+
+## Development
+
+Created using React.
 
 ### Deploy/Update GitHub Pages Site
 
