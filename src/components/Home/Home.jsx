@@ -36,6 +36,8 @@ class Home extends Component {
                         This app only uses your address to query the <a href="https://algoexplorer.io">algoexplorer.io</a> API to gather the required values.
                         <br/>
                         The app will update the sections below automatically once given an address. If you are having issues, try removing the address and trying again.
+                        <br/><br/>
+                        Warning: entering an Algorand address will clear any custom tickets or staked YLDY values entered below.
                     </p>
 
                     <div className="d-flex">

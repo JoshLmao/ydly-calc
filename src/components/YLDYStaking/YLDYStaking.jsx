@@ -37,15 +37,23 @@ class YLDYStaking extends Component {
             fetchingGlobalVars: false,
 
             // User vars
-            userTime: null,
-            userAmount: null,
-            userStakingShares: null,
+            user: null,
+            // {
+            //     time: null,
+            //     amount: null,
+            //     stakingShares: null,
+            // },
 
             // Application Vars
-            globalTime: null,           // GT
-            globalStakingShares: null,  // GSS
-            totalYldyRewards: null,     // TYUL
-            totalAlgoRewards: null,     // TAP
+            global: null,
+            // {
+            //     time: null,             // GT
+            //     stakingShares: null,    // GSS
+            //     totalAlgoRewards: null, // TYUL
+            //     totalYldyRewards: null, // TAP
+            // },
+
+            yldyStaked: null,
 
             daysPeriod: 1,
 
@@ -58,6 +66,7 @@ class YLDYStaking extends Component {
         this.fetchUserVariables = this.fetchUserVariables.bind(this);
         this.onDaysPeriodChanged = this.onDaysPeriodChanged.bind(this);
         this.updateRewards = this.updateRewards.bind(this);
+        this.onYldyStakedChanged = this.onYldyStakedChanged.bind(this);
     }
 
     componentDidMount() {
@@ -73,12 +82,14 @@ class YLDYStaking extends Component {
         getContractValues(this.state.applicationID, allKeys, (appVars) => {
             if (appVars) {
                 this.setState({
-                    globalTime: appVars["GT"],
-                    globalStakingShares: appVars["GSS"],
-                    globalAmount: appVars["GA"],
+                    global: {
+                        time: appVars["GT"],
+                        amount: appVars["GA"],
+                        stakingShares: appVars["GSS"],
 
-                    totalYldyRewards: appVars["TYUL"],
-                    totalAlgoRewards: appVars["TAP"],
+                        totalYldyRewards: appVars["TYUL"],
+                        totalAlgoRewards: appVars["TAP"],
+                    },
 
                     fetchingGlobalVars: false,
                 });
@@ -133,11 +144,14 @@ class YLDYStaking extends Component {
                 if (data) {
                     console.log(`Successfully got user variables from application '${this.state.applicationID}' on address '${this.state.algoAddress}'`);
                     this.setState({
-                        fetchingUsrVars: false,
-                        userTime: data.userTime,
-                        userAmount: data.userAmount,
-                        userStakingShares: data.userStakingShares,
+                        user: {
+                            time: data.userTime,
+                            amount: data.userAmount / 1000000,
+                            stakingShares: data.userStakingShares,
+                        },
+
                         daysPeriod: getDayDifference(data.userTime, this.state.globalTime),
+                        fetchingUsrVars: false,
                     }, () => {
                         this.updateRewards();
                     });
@@ -159,14 +173,48 @@ class YLDYStaking extends Component {
         }
     }
 
+    onYldyStakedChanged(e) {
+        this.setState({ 
+            yldyStaked: e.target.value,
+        }, () => {
+            this.updateRewards();
+        });
+    }
+
     updateRewards() {
-        if (this.state.userAmount) {
-            let totalYldyRewards = calculateYLDYRewardsFromDayPeriod(this.state.userStakingShares, this.state.daysPeriod, this.state.userAmount, this.state.globalStakingShares, this.state.totalYldyRewards);
-            let totalAlgoRewards = calculateYLDYRewardsFromDayPeriod(this.state.userStakingShares, this.state.daysPeriod, this.state.userAmount, this.state.globalStakingShares, this.state.totalAlgoRewards);
-            this.setState({
-                claimableYldyRewards: totalYldyRewards,
-                claimableAlgoRewards: totalAlgoRewards,
-            });
+        if (this.state.yldyStaked && this.state.global) {
+            // Attempt to parse user value, check if valid number
+            let yldyStakedNum = parseFloat(this.state.yldyStaked);
+            if (yldyStakedNum > 0) {
+                // Multiply by 10^6
+                let yldyStaked = yldyStakedNum * 1000000;
+                // Determine USS
+                let uss = this.state.user?.stakingShares ?? 0;
+
+                // Calculate ALGO/YLDY rewards
+                let totalYldyRewards = calculateYLDYRewardsFromDayPeriod(uss, this.state.daysPeriod, yldyStaked, this.state.global.stakingShares, this.state.global.totalYldyRewards);
+                let totalAlgoRewards = calculateYLDYRewardsFromDayPeriod(uss, this.state.daysPeriod, yldyStaked, this.state.global.stakingShares, this.state.global.totalAlgoRewards);
+                this.setState({
+                    claimableYldyRewards: totalYldyRewards,
+                    claimableAlgoRewards: totalAlgoRewards,
+                });
+            } else {
+                // Entered value isnt valid number, reset reward values
+                if (this.state.claimableAlgoRewards || this.state.claimableYldyRewards) {
+                    this.setState({
+                        claimableAlgoRewards: null,
+                        claimableYldyRewards: null,
+                    });
+                }
+            }
+        } else {
+            // Not ready to calculate, reset reward values if have them
+            if (this.state.claimableAlgoRewards || this.state.claimableYldyRewards) {
+                this.setState({
+                    claimableAlgoRewards: null,
+                    claimableYldyRewards: null,
+                });
+            }
         }
     }
 
@@ -200,7 +248,7 @@ class YLDYStaking extends Component {
                                 <Form.Control 
                                     type="text"
                                     disabled
-                                    value={ this.state.userTime ? new Date(this.state.userTime * 1000 ).toString() : "" }
+                                    value={ this.state.user ? new Date(this.state.user.time * 1000 ).toString() : "" }
                                     placeholder="User Time (UT)"
                                     />
                             </Col>
@@ -219,8 +267,8 @@ class YLDYStaking extends Component {
                                     />
                                 <Form.Control 
                                     type="text"
-                                    disabled
-                                    value={ this.state.userAmount ? formatNumber(fromMicroValue(this.state.userAmount).toFixed(0)) : "" }
+                                    value={this.state.yldyStaked}
+                                    onChange={ this.onYldyStakedChanged }
                                     placeholder="User Amount (UA)"
                                     />
                             </Col>
@@ -233,7 +281,7 @@ class YLDYStaking extends Component {
                                 <Form.Control 
                                     type="text"
                                     disabled
-                                    value={ this.state.userStakingShares != null ? formatNumber(fromMicroValue(this.state.userStakingShares).toFixed(0)) : "" }
+                                    value={ this.state.user?.stakingShares ? formatNumber(fromMicroValue(this.state.user.stakingShares).toFixed(0)) : "" }
                                     placeholder="User Staking Shares (USS)"
                                     />
                             </Col>
@@ -249,7 +297,7 @@ class YLDYStaking extends Component {
                             <Col>
                                 <Form.Control 
                                     type="text"
-                                    value={ this.state.globalTime ? new Date(this.state.globalTime * 1000).toString() : "" }
+                                    value={ this.state.global?.time ? new Date(this.state.global.time * 1000).toString() : "" }
                                     placeholder="Global Time (GT)"
                                     disabled
                                     />
@@ -257,7 +305,7 @@ class YLDYStaking extends Component {
                         </Row>
                         <Row>
                             <Col>
-                                <h6>Total YLDY amount in YLDY Staking</h6>
+                                <h6>Total YLDY in YLDY Staking</h6>
                             </Col>
                             <Col className="d-flex">
                                 <img
@@ -269,7 +317,7 @@ class YLDYStaking extends Component {
                                     />
                                 <Form.Control 
                                     type="text"
-                                    value={ this.state.globalAmount ? formatNumber(fromMicroValue(this.state.globalAmount).toFixed(0)) : "" }
+                                    value={ this.state.global?.amount ? formatNumber(fromMicroValue(this.state.global.amount).toFixed(0)) : "" }
                                     placeholder="Global Amount (GA)"
                                     disabled
                                     />
@@ -282,7 +330,7 @@ class YLDYStaking extends Component {
                             <Col>
                                 <Form.Control 
                                     type="text"
-                                    value={ this.state.globalStakingShares ? formatNumber(fromMicroValue(this.state.globalStakingShares).toFixed(0)) : "" }
+                                    value={ this.state.global?.stakingShares ? formatNumber(fromMicroValue(this.state.global.stakingShares).toFixed(0)) : "" }
                                     placeholder="Global Staking Shares (GSS)"
                                     disabled
                                     />
@@ -329,7 +377,7 @@ class YLDYStaking extends Component {
                                 />
                             <Form.Control
                                 type="text"
-                                value={ this.state.totalAlgoRewards ? formatNumber(fromMicroValue(this.state.totalAlgoRewards).toFixed(0)) : "" }
+                                value={ this.state.global?.totalAlgoRewards ? formatNumber(fromMicroValue(this.state.global.totalAlgoRewards).toFixed(0)) : "" }
                                 placeholder="Total ALGO in pool"
                                 disabled
                                 />
@@ -349,7 +397,7 @@ class YLDYStaking extends Component {
                                 />
                             <Form.Control
                                 type="text"
-                                value={ this.state.totalYldyRewards ? formatNumber(fromMicroValue(this.state.totalYldyRewards).toFixed(0)) : "" }
+                                value={ this.state.global?.totalYldyRewards ? formatNumber(fromMicroValue(this.state.global?.totalYldyRewards).toFixed(0)) : "" }
                                 placeholder="Total YLDY in pool"
                                 disabled
                                 />
@@ -363,20 +411,22 @@ class YLDYStaking extends Component {
                         <Col>
                             The amount of claimable YLDY and ALGO tokens from the YLDY Staking global unlock rewards pool after '{this.state.daysPeriod}' day(s), {' '}
                             <b>
-                                with a pool of '{formatNumber(fromMicroValue(this.state.totalAlgoRewards).toFixed(0))}' ALGO and '{formatNumber(fromMicroValue(this.state.totalYldyRewards).toFixed(0))}' YLDY
+                                with a pool of '{formatNumber(fromMicroValue(this.state.global?.totalAlgoRewards).toFixed(0))}' ALGO and '{formatNumber(fromMicroValue(this.state.global?.totalYldyRewards).toFixed(0))}' YLDY
                             </b>
 
                             <br/>
                             <br/>
                             {
-                                this.state.totalYldyRewards && this.state.claimableYldyRewards &&
+                                this.state.global && this.state.global.totalYldyRewards && this.state.claimableYldyRewards &&
                                 <div>
-                                    { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.totalYldyRewards), this.state.claimableYldyRewards) }% share of ALGO/YLDY global unlock rewards pool
+                                    { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.global.totalYldyRewards), this.state.claimableYldyRewards) }% share of ALGO/YLDY global unlock rewards pool
                                 </div>
                             }
                             {
-                                this.state.userTime && this.state.globalTime &&
-                                <div>You currently have '{getDayDifference(this.state.userTime, this.state.globalTime)}' days of unclaimed rewards.</div>
+                                this.state.user?.time && this.state.global?.time &&
+                                <div>
+                                    You currently have '{getDayDifference(this.state.user?.time, this.state.global?.time)}' days of unclaimed rewards.
+                                </div>
                             }
                         </Col>
                         <Col>
@@ -391,6 +441,7 @@ class YLDYStaking extends Component {
                                 <Form.Control
                                     type="text"
                                     value={ this.state.claimableAlgoRewards ? formatNumber(this.state.claimableAlgoRewards.toFixed(3)) : "" }
+                                    title={ "Raw: " + this.state.claimableAlgoRewards }
                                     placeholder="TBD | ALGO rewards"
                                     disabled
                                     />
@@ -406,6 +457,7 @@ class YLDYStaking extends Component {
                                 <Form.Control
                                     type="text"
                                     value={ this.state.claimableYldyRewards ? formatNumber( this.state.claimableYldyRewards.toFixed(0)) : "" }
+                                    title={ "Raw: " + this.state.claimableYldyRewards }
                                     placeholder="TBD | YLDY rewards"
                                     disabled
                                     />

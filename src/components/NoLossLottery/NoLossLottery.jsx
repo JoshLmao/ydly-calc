@@ -31,7 +31,7 @@ class NoLossLottery extends Component {
         super(props);
 
         this.state = {
-            // User vars
+            // Wallet provided
             algoAddress: this.props.userAlgoAddress,
 
             // Contract ID to use
@@ -41,26 +41,40 @@ class NoLossLottery extends Component {
             fetchingGlobalVars: false,
 
             // User vars
-            userTime: null,
-            userAmount: null,
-            userStakingShares: null, 
+            user: null,
+            // {
+            //     time: null,
+            //     amount: null,
+            //     stakingShares: null,
+            // },
             // Contract global vars
-            globalTime: null,
-            globalAmount: null,
-            globalStakingShares: null,
-            nllGlobalUnlock: null,
+            global: null,
+            // {
+            //     time: null,
+            //     amount: null,
+            //     stakingShares: null,
+            //     // Total YLDY in rewards pool
+            //     totalYldyRewards: null,
+            // },
 
+            // Amount of algo tickets in NLL
+            algoTickets: null,
+
+            // Calculated amount of YLDY user can claim
             totalClaimableRewards: null,
-
-            timePeriodDays: 1,
+            // Amount of days as a time period to use in calculation
+            daysPeriod: 1,
+            // Time of latest block timestamp
             currentBlockTimestamp: null,
 
+            // Any error message to display
             usrVarsErrorMsg: null,
         };
 
         this.fetchUserVariables = this.fetchUserVariables.bind(this);
         this.updateResults = this.updateResults.bind(this);
         this.onTimePeriodChanged = this.onTimePeriodChanged.bind(this);
+        this.onTicketsChanged = this.onTicketsChanged.bind(this);
     }
 
     componentDidMount() {
@@ -77,11 +91,12 @@ class NoLossLottery extends Component {
         // Call API and get keys
         getContractValues(this.state.contractID, allKeys, (contractVars) => {
             this.setState({
-                globalTime: contractVars["GT"],
-                globalAmount: contractVars["GA"],
-                globalStakingShares: contractVars["GSS"],
-
-                nllGlobalUnlock: contractVars["TYUL"],
+                global: {
+                    time: contractVars["GT"],
+                    amount: contractVars["GA"],
+                    stakingShares: contractVars["GSS"],
+                    totalYldyRewards: contractVars["TYUL"],
+                },
 
                 fetchingGlobalVars: false,
             });
@@ -128,11 +143,14 @@ class NoLossLottery extends Component {
                 if (data) {
                     console.log(`Successfully got user variables from application '${this.state.contractID}' on address '${this.state.algoAddress}'`);
                     this.setState({
+                        user: {
+                            time: data.userTime,
+                            amount: data.userAmount,
+                            stakingShares: data.userStakingShares,
+                        },
+                        daysPeriod: getDayDifference(data.userTime, this.state.global.time),
+                        algoTickets: data.userAmount / 1000000,
                         fetchingUsrVars: false,
-                        userTime: data.userTime,
-                        userAmount: data.userAmount,
-                        userStakingShares: data.userStakingShares,
-                        timePeriodDays: getDayDifference(data.userTime, this.state.globalTime),
                     }, () => {
                         this.updateResults();
                     });
@@ -149,6 +167,8 @@ class NoLossLottery extends Component {
             console.error("Algo address is empty or currently updating values!");
             this.setState({
                 usrVarsErrorMsg: "Algorand address is empty or already updating values! Please try entering a new Algorand address",
+                // Reset if value existed
+                totalClaimableRewards: null,
             });
         }
     }
@@ -163,20 +183,43 @@ class NoLossLottery extends Component {
         }
 
         this.setState({ 
-            timePeriodDays: val,
+            daysPeriod: val,
         }, () => {
             this.updateResults();
         });
     }
     
+    onTicketsChanged(e) {
+        this.setState({ 
+            algoTickets: e.target.value,
+        }, () => {
+            this.updateResults();
+        });
+    }
+
     updateResults() {
         // Check required variables are valid
-        if (this.state.userTime != null && this.state.userAmount != null && this.state.globalAmount != null && this.state.globalTime != null) {
-            //let totalRewards = calculateYLDYRewards(this.state.userStakingShares, this.state.userTime, this.state.globalTime, this.state.userAmount, this.state.globalStakingShares, this.state.nllGlobalUnlock);
-            let totalRewards = calculateYLDYRewardsFromDayPeriod(this.state.userStakingShares, this.state.timePeriodDays, this.state.userAmount, this.state.globalStakingShares, this.state.nllGlobalUnlock);
-            this.setState({
-                totalClaimableRewards: totalRewards,
-            });
+        if (this.state.algoTickets && this.state.global) {
+            // Parse to float and check for valid number
+            let ticketsNumber = parseFloat(this.state.algoTickets);
+            if (ticketsNumber > 0) {
+                // Multiply by 10^6 as formula/other values are 10^6
+                let algoTickets = ticketsNumber * 1000000;
+                let uss = this.state.user?.stakingShares ?? 0;
+                
+                // Calculate YLDY rewards in current pool
+                let totalRewards = calculateYLDYRewardsFromDayPeriod(uss, this.state.daysPeriod, algoTickets, this.state.global.stakingShares, this.state.global.totalYldyRewards);
+                // Update value
+                this.setState({ totalClaimableRewards: totalRewards });
+            } else {
+                // Unable to parse tickets. Validate the value and try again...
+                // Reset last rewards value as new value is invalid
+                if (this.state.totalClaimableRewards) {
+                    this.setState({ totalClaimableRewards: null });
+                }
+            }
+        } else if (this.state.totalClaimableRewards) {
+            this.setState({ totalClaimableRewards: null });
         }
     }
 
@@ -210,7 +253,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="User Time (UT)" 
-                                    value={ this.state.userTime ? new Date(this.state.userTime * 1000 ).toString() : "" }
+                                    value={ this.state.user ? new Date(this.state.user?.time * 1000 ).toString() : "" }
                                     onChange={(e) => this.setState({ userTime: e.target.value })} 
                                     disabled/>
                             </Col>
@@ -226,9 +269,9 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="User Amount (UA)"
-                                    value={ this.state.userAmount ? formatNumber(fromMicroValue(this.state.userAmount).toFixed(3)) : "" }
-                                    onChange={(e) => this.setState({ userAmount: e.target.value })} 
-                                    disabled/>
+                                    value={ this.state.algoTickets }
+                                    onChange={ this.onTicketsChanged }
+                                    />
                             </Col>
                         </Row>
                         <Row>
@@ -241,7 +284,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="User Staking Shares (USS)"
-                                    value={ this.state.userStakingShares != null ? formatNumber(fromMicroValue(this.state.userStakingShares).toFixed(0)) : "" }
+                                    value={ this.state.user ? formatNumber(fromMicroValue(this.state.user.stakingShares).toFixed(0)) : "" }
                                     onChange={(e) => this.setState({ userAmount: e.target.value })} 
                                     disabled/>
                             </Col>
@@ -259,20 +302,20 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="Global Time (GT)" 
-                                    value={ this.state.globalTime ? new Date( this.state.globalTime * 1000 ).toString() : "" } 
+                                    value={ this.state.global ? new Date( this.state.global.time * 1000 ).toString() : "" } 
                                     disabled />
                             </Col>
                         </Row>
                         <Row>
                             <Col md={6}>
-                                <h6>Total ALGO (tickets) amount in Lottery</h6>
+                                <h6>Total ALGO (tickets) in Lottery</h6>
                             </Col>
                             <Col md={6} className="d-flex">
                                 <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} alt="Algorand icon" />
                                 <Form.Control 
                                     type="text" 
                                     placeholder="Global Amount (GA)" 
-                                    value={ this.state.globalAmount ? formatNumber(fromMicroValue(this.state.globalAmount).toFixed(0)) : "" } 
+                                    value={ this.state.global ? formatNumber(fromMicroValue(this.state.global.amount).toFixed(0)) : "" } 
                                     disabled />
                             </Col>
                         </Row>
@@ -284,7 +327,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="Global Staking Shares (GSS)" 
-                                    value={ this.state.globalStakingShares ? formatNumber(fromMicroValue(this.state.globalStakingShares).toFixed(0)) : "" } 
+                                    value={ this.state.global ? formatNumber(fromMicroValue(this.state.global.stakingShares).toFixed(0)) : "" } 
                                     disabled />
                             </Col>
                         </Row>
@@ -300,7 +343,7 @@ class NoLossLottery extends Component {
                         <Col md={6}>
                             <Form.Control 
                                 type="number" 
-                                value={this.state.timePeriodDays} 
+                                value={this.state.daysPeriod} 
                                 onChange={this.onTimePeriodChanged} />
                         </Col>
                     </Row>
@@ -320,7 +363,7 @@ class NoLossLottery extends Component {
                                 src={YLDY_ICON} width={25} height={25} alt="Yieldly icon" />
                             <Form.Control 
                                 type="text"
-                                value={ formatNumber(microAlgoToAlgo(this.state.nllGlobalUnlock).toFixed(0)) }
+                                value={ this.state.global ? formatNumber(microAlgoToAlgo(this.state.global.totalYldyRewards).toFixed(0)) : "" }
                                 disabled
                                 />
                         </Col>
@@ -331,18 +374,18 @@ class NoLossLottery extends Component {
                     <h3>YLDY Claimable Rewards</h3>
                     <Row>
                         <Col md={6}>
-                            The amount of rewards available to current address after '{this.state.timePeriodDays}' day(s), <b>with the current global unlock rewards pool at '{ formatNumber((this.state.nllGlobalUnlock / 1000).toFixed(0)) }' YLDY</b>
+                            The amount of rewards available to current address after '{this.state.daysPeriod}' day(s), <b>with the current global unlock rewards pool at '{ this.state.global ? formatNumber((this.state.global.totalYldyRewards / 1000).toFixed(0)) : "?" }' YLDY</b>
                             <br/>
                             <br/>
                             {
-                                this.state.nllGlobalUnlock && this.state.totalClaimableRewards &&
+                                this.state.totalYldyRewards && this.state.totalClaimableRewards &&
                                 <div>
-                                    { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.nllGlobalUnlock), this.state.totalClaimableRewards) }% share of rewards pool
+                                    { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.global.totalYldyRewards), this.state.totalClaimableRewards) }% share of rewards pool
                                 </div>
                             }
                             {
                                 this.state.userTime && this.state.globalTime &&
-                                <div>You currently have '{getDayDifference(this.state.userTime, this.state.globalTime)}' days of unclaimed rewards.</div>
+                                <div>You currently have '{getDayDifference(this.state.user.time, this.state.global.time)}' days of unclaimed rewards.</div>
                             }
                         </Col>
                         <Col md={6} className="d-flex">
@@ -355,7 +398,13 @@ class NoLossLottery extends Component {
                                 type="text" 
                                 title={"Raw: " + this.state.totalClaimableRewards}
                                 placeholder="TBD | YLDY rewards" 
-                                value={ this.state.totalClaimableRewards?.toFixed(2) }
+                                value={ 
+                                    this.state.totalClaimableRewards 
+                                    ?
+                                    this.state.totalClaimableRewards?.toFixed(2)
+                                    :
+                                    ""
+                                }
                                 disabled />
                         </Col>
                     </Row>
