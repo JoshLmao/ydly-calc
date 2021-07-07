@@ -1,6 +1,6 @@
 {
-  "short_name": "YDLY Estimator",
-  "name": "YDLY Estimator",
+  "short_name": "YLDY Estimator",
+  "name": "YLDY Estimator",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "ydly-est-logo192.png",
+      "src": "yldy-est-logo192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "ydly-est-logo512.png",
+      "src": "yldy-est-logo512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

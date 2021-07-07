@@ -29,7 +29,7 @@ class About extends Component {
                             <h6 className="py-2">
                                 App for calculating your yieldly rewards.
                                 <br/><br/>
-                                Input your current tickets in the current No Loss Lottery or <br/>your stake in the YDLY Staking and view your estimated rewards
+                                Input your current tickets in the current No Loss Lottery or <br/>your stake in the YLDY Staking and view your estimated rewards
                                 <br /><br />
                                 This website is not affiliated with Yieldly.
                             </h6>

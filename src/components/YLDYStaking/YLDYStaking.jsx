@@ -19,15 +19,17 @@ import {
 } from '../../js/utility';
 
 import ALGO_ICON from "../../svg/algo-icon.svg";
-import YDLY_ICON from "../../svg/ydly-icon.svg";
-import { calculateYDLYRewardsFromDayPeriod } from '../../js/YDLYCalculation';
+import YLDY_ICON from "../../svg/yldy-icon.svg";
+import { 
+    calculateYLDYRewardsFromDayPeriod 
+} from '../../js/YLDYCalculation';
 
-class YDLYStaking extends Component {
+class YLDYStaking extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            // YDLY Staking application/contract id
+            // YLDY Staking application/contract id
             applicationID: 233725850,
 
             fetchingGlobalVars: false,
@@ -40,14 +42,14 @@ class YDLYStaking extends Component {
             // Application Vars
             globalTime: null,           // GT
             globalStakingShares: null,  // GSS
-            totalYdlyRewards: null,     // TYUL
+            totalYldyRewards: null,     // TYUL
             totalAlgoRewards: null,     // TAP
 
             daysPeriod: 1,
 
             usrVarsErrorMsg: null,
 
-            claimableYdlyRewards: null,
+            claimableYldyRewards: null,
             claimableAlgoRewards: null,
         };
 
@@ -62,7 +64,7 @@ class YDLYStaking extends Component {
         });
 
         // Get these keys from application's state
-        // Global Time (GT), Global Staking Shares (GSS), Total YDLY rewards (TYUL), Total ALGO rewards (TAP)
+        // Global Time (GT), Global Staking Shares (GSS), Total YLDY rewards (TYUL), Total ALGO rewards (TAP)
         let allKeys = [
             "GT", "GSS", "GA", "TYUL", "TAP"
         ];
@@ -73,7 +75,7 @@ class YDLYStaking extends Component {
                     globalStakingShares: appVars["GSS"],
                     globalAmount: appVars["GA"],
 
-                    totalYdlyRewards: appVars["TYUL"],
+                    totalYldyRewards: appVars["TYUL"],
                     totalAlgoRewards: appVars["TAP"],
 
                     fetchingGlobalVars: false,
@@ -123,7 +125,7 @@ class YDLYStaking extends Component {
             this.setState({
                 fetchingUsrVars: true,
             });
-            console.log("Retrieving YDLY Staking user state vars...");
+            console.log("Retrieving YLDY Staking user state vars...");
 
             getUserStateValues(this.state.algoAddress, this.state.applicationID, (data) => {
                 if (data) {
@@ -156,10 +158,10 @@ class YDLYStaking extends Component {
 
     updateRewards() {
         if (this.state.userAmount) {
-            let totalYdlyRewards = calculateYDLYRewardsFromDayPeriod(this.state.userStakingShares, this.state.daysPeriod, this.state.userAmount, this.state.globalStakingShares, this.state.totalYdlyRewards);
-            let totalAlgoRewards = calculateYDLYRewardsFromDayPeriod(this.state.userStakingShares, this.state.daysPeriod, this.state.userAmount, this.state.globalStakingShares, this.state.totalAlgoRewards);
+            let totalYldyRewards = calculateYLDYRewardsFromDayPeriod(this.state.userStakingShares, this.state.daysPeriod, this.state.userAmount, this.state.globalStakingShares, this.state.totalYldyRewards);
+            let totalAlgoRewards = calculateYLDYRewardsFromDayPeriod(this.state.userStakingShares, this.state.daysPeriod, this.state.userAmount, this.state.globalStakingShares, this.state.totalAlgoRewards);
             this.setState({
-                claimableYdlyRewards: totalYdlyRewards,
+                claimableYldyRewards: totalYldyRewards,
                 claimableAlgoRewards: totalAlgoRewards,
             });
         }
@@ -170,9 +172,9 @@ class YDLYStaking extends Component {
             <div className="main-background py-5" data-spy="scroll" data-target="#estimator-navbar">
                 <h1 
                     className="yieldly-main-color"
-                    id="ydly-staking">YDLY Staking</h1>
+                    id="yldy-staking">YLDY Staking</h1>
                 <h6>
-                    YDLY Staking Application: <a href={'https://algoexplorer.io/application/' + this.state.applicationID}>{this.state.applicationID}</a>
+                    YLDY Staking Application: <a href={'https://algoexplorer.io/application/' + this.state.applicationID}>{this.state.applicationID}</a>
                 </h6>
 
                 {/* Display error message if one is set*/}
@@ -202,11 +204,11 @@ class YDLYStaking extends Component {
                         </Row>
                         <Row>
                             <Col>
-                                <h6>Staked YDLY</h6>
+                                <h6>Staked YLDY</h6>
                             </Col>
                             <Col className="d-flex">
                                 <img
-                                    src={YDLY_ICON}
+                                    src={YLDY_ICON}
                                     alt="Yieldly token icon"
                                     width="25"
                                     height="25"
@@ -252,11 +254,11 @@ class YDLYStaking extends Component {
                         </Row>
                         <Row>
                             <Col>
-                                <h6>Total YDLY amount in YDLY Staking</h6>
+                                <h6>Total YLDY amount in YLDY Staking</h6>
                             </Col>
                             <Col className="d-flex">
                                 <img
-                                    src={YDLY_ICON}
+                                    src={YLDY_ICON}
                                     alt="Yieldly token icon"
                                     width="25"
                                     height="25"
@@ -332,11 +334,11 @@ class YDLYStaking extends Component {
                     </Row>
                     <Row>
                         <Col>
-                            Total YDLY available in pool
+                            Total YLDY available in pool
                         </Col>
                         <Col className="d-flex">
                             <img
-                                src={YDLY_ICON}
+                                src={YLDY_ICON}
                                 alt="Algorand icon"
                                 width="25"
                                 height="25"
@@ -344,8 +346,8 @@ class YDLYStaking extends Component {
                                 />
                             <Form.Control
                                 type="text"
-                                value={ this.state.totalYdlyRewards ? formatNumber(fromMicroValue(this.state.totalYdlyRewards).toFixed(0)) : "" }
-                                placeholder="Total YDLY in pool"
+                                value={ this.state.totalYldyRewards ? formatNumber(fromMicroValue(this.state.totalYldyRewards).toFixed(0)) : "" }
+                                placeholder="Total YLDY in pool"
                                 disabled
                                 />
                         </Col>
@@ -353,7 +355,7 @@ class YDLYStaking extends Component {
                 </div>
 
                 <div>
-                    <h3>YDLY & ALGO Claimable Rewards</h3>
+                    <h3>YLDY & ALGO Claimable Rewards</h3>
                     <Row>
                         <Col>
                             Claimable Algo tokens.
@@ -380,7 +382,7 @@ class YDLYStaking extends Component {
                         </Col>
                         <Col className="d-flex">
                             <img
-                                src={YDLY_ICON}
+                                src={YLDY_ICON}
                                 alt="Yieldly icon"
                                 width="25"
                                 height="25"
@@ -388,8 +390,8 @@ class YDLYStaking extends Component {
                                 />
                             <Form.Control
                                 type="text"
-                                value={ this.state.claimableYdlyRewards ? formatNumber( this.state.claimableYdlyRewards.toFixed(0)) : "" }
-                                placeholder="TBD | YDLY rewards"
+                                value={ this.state.claimableYldyRewards ? formatNumber( this.state.claimableYldyRewards.toFixed(0)) : "" }
+                                placeholder="TBD | YLDY rewards"
                                 disabled
                                 />
                         </Col>
@@ -400,4 +402,4 @@ class YDLYStaking extends Component {
     }
 }
 
-export default YDLYStaking;
+export default YLDYStaking;

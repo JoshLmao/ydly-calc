@@ -5,11 +5,9 @@ import {
     Form,
     Button
 } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import NoLossLottery from '../NoLossLottery/NoLossLottery';
-import YDLYStaking from '../YDLYStaking/YDLYStaking';
+import YLDYStaking from '../YLDYStaking/YLDYStaking';
 import About from './About/About';
 
 import "./Home.css";
@@ -62,7 +60,7 @@ class Home extends Component {
 
                 <div className="">
                     <Container className="">
-                        <YDLYStaking 
+                        <YLDYStaking 
                             userAlgoAddress={this.state.userAlgoAddress} />
                     </Container>
                 </div>

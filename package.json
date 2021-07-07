@@ -1,7 +1,7 @@
 {
   "name": "ydly-calc",
   "version": "1.0.0",
-  "homepage": "https://ydly-estimator.joshlmao.com",
+  "homepage": "https://yldy-estimator.joshlmao.com",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",

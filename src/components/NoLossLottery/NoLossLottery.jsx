@@ -11,8 +11,8 @@ import {
     getUserStateValues 
 } from '../../js/AlgoExplorerAPI';
 import { 
-    calculateYDLYRewardsFromDayPeriod
-} from '../../js/YDLYCalculation';
+    calculateYLDYRewardsFromDayPeriod
+} from '../../js/YLDYCalculation';
 import {
     microAlgoToAlgo,
     fromMicroValue,
@@ -20,7 +20,7 @@ import {
     isStringBlank
 } from "../../js/utility";
 
-import YDLY_ICON from "../../svg/ydly-icon.svg";
+import YLDY_ICON from "../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../svg/algo-icon.svg";
 
 class NoLossLottery extends Component {
@@ -168,8 +168,8 @@ class NoLossLottery extends Component {
     updateResults() {
         // Check required variables are valid
         if (this.state.userTime != null && this.state.userAmount != null && this.state.globalAmount != null && this.state.globalTime != null) {
-            //let totalRewards = calculateYDLYRewards(this.state.userStakingShares, this.state.userTime, this.state.globalTime, this.state.userAmount, this.state.globalStakingShares, this.state.nllGlobalUnlock);
-            let totalRewards = calculateYDLYRewardsFromDayPeriod(this.state.userStakingShares, this.state.timePeriodDays, this.state.userAmount, this.state.globalStakingShares, this.state.nllGlobalUnlock);
+            //let totalRewards = calculateYLDYRewards(this.state.userStakingShares, this.state.userTime, this.state.globalTime, this.state.userAmount, this.state.globalStakingShares, this.state.nllGlobalUnlock);
+            let totalRewards = calculateYLDYRewardsFromDayPeriod(this.state.userStakingShares, this.state.timePeriodDays, this.state.userAmount, this.state.globalStakingShares, this.state.nllGlobalUnlock);
             this.setState({
                 totalClaimableRewards: totalRewards,
             });
@@ -308,12 +308,12 @@ class NoLossLottery extends Component {
                     </h3>
                     <Row>
                         <Col>
-                            <div>Total YDLY available in the pool for everyone to claim from</div>
+                            <div>Total YLDY available in the pool for everyone to claim from</div>
                         </Col>
                         <Col className="d-flex">
                             <img
                                 className="my-auto mr-2" 
-                                src={YDLY_ICON} width={25} height={25} alt="Yieldly icon" />
+                                src={YLDY_ICON} width={25} height={25} alt="Yieldly icon" />
                             <Form.Control 
                                 type="text"
                                 value={ formatNumber(microAlgoToAlgo(this.state.nllGlobalUnlock).toFixed(0)) }
@@ -324,20 +324,20 @@ class NoLossLottery extends Component {
                 </div>
 
                 <div className="py-2">
-                    <h3>YDLY Claimable Rewards</h3>
+                    <h3>YLDY Claimable Rewards</h3>
                     <Row>
                         <Col md={6}>
-                            The amount of rewards available to current address after '{this.state.timePeriodDays}' day(s), <b>with the current global unlock rewards pool at '{ formatNumber((this.state.nllGlobalUnlock / 1000).toFixed(0)) }' YDLY</b>
+                            The amount of rewards available to current address after '{this.state.timePeriodDays}' day(s), <b>with the current global unlock rewards pool at '{ formatNumber((this.state.nllGlobalUnlock / 1000).toFixed(0)) }' YLDY</b>
                         </Col>
                         <Col md={6} className="d-flex">
                             <img
                                 className="my-auto mr-2" 
-                                src={YDLY_ICON} width={25} height={25} 
+                                src={YLDY_ICON} width={25} height={25} 
                                 alt="Yieldly icon" />
                             <Form.Control 
                                 className="my-auto"
                                 type="text" 
-                                placeholder="TBD | YDLY rewards" 
+                                placeholder="TBD | YLDY rewards" 
                                 value={ this.state.totalClaimableRewards?.toFixed(2) }
                                 disabled />
                         </Col>

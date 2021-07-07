@@ -28,24 +28,25 @@ export function calculateClaimableUserRewards(usrStakingShares, globalStakingSha
 }
 
 /// Calculates the current rewards available to the user from the current variables from user and contract
-export function calculateYDLYRewards (usrStakingShares, usrTime, globalTime, usrAmount, globalStakingShares, totalYdlyUnlockRewards) {
+export function calculateYLDYRewards (usrStakingShares, usrTime, globalTime, usrAmount, globalStakingShares, totalYldyUnlockRewards) {
     // Determine day period inbetween global and user time
     let day = 86400;
     let daysDifference = (globalTime - usrTime) / day;
 
     // Get reward amount from remainder of formula
-    return calculateYDLYRewardsFromDayPeriod(usrStakingShares, daysDifference, usrAmount, globalStakingShares, totalYdlyUnlockRewards);
+    return calculateYLDYRewardsFromDayPeriod(usrStakingShares, daysDifference, usrAmount, globalStakingShares, totalYldyUnlockRewards);
 }
 
-// Calculates the ydly rewards from the given properties.
+// Calculates the yldy rewards from the given properties.
+// Formula: Claimable YLDY Rewards = ((USS + ((GT-UT) / 86400) * UA) / GSS) * TYUL / 1000000
 // usrStakingShares (USS)
 // daysPeriod - Amount of days that the user hasn't claimed
 // usrAmount (UA)
 // globalStakingShares (GSS)
-// totalYdlyUnlockRewards (TYDL)
-export function calculateYDLYRewardsFromDayPeriod(usrStakingShares, daysPeriod, usrAmount, globalStakingShares, totalYdlyUnlockRewards) {
+// totalYldyUnlockRewards (TYDL)
+export function calculateYLDYRewardsFromDayPeriod(usrStakingShares, daysPeriod, usrAmount, globalStakingShares, totalYldyUnlockRewards) {
     let microUsrAmount = usrStakingShares + (daysPeriod * usrAmount);
-    let amount = (microUsrAmount / globalStakingShares) * totalYdlyUnlockRewards;
+    let amount = (microUsrAmount / globalStakingShares) * totalYldyUnlockRewards;
 
     let finalAmount = fromMicroValue(amount);
     return finalAmount;
