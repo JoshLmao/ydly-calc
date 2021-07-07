@@ -100,3 +100,16 @@ export function getCurrentBlockTimestamp(callback) {
         }
     })
 }
+
+export function getYLDYPrice (callback) {
+    let priceUrl = `http://data.yieldly.finance/price`;
+    axios({
+        url: priceUrl,
+        method: 'GET'
+    }).then((result) => {
+        if (result && result.data) {
+            if (callback)
+                callback(result.data.YLDYPrice);
+        }
+    })
+}

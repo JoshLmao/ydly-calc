@@ -12,10 +12,27 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import CONFIG from "../../config.json";
 
 import "./Header.css";
+import { getYLDYPrice } from '../../js/AlgoExplorerAPI';
 
 let pkg = require('../../../package.json');
 
 class Header extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            YLDYPrice: null,
+        };
+    }
+
+    componentDidMount() {
+        getYLDYPrice((price) => {
+            this.setState({
+                YLDYPrice: price,
+            });
+        })
+    }
+
     render() {
         return (
             <Navbar 
@@ -45,13 +62,22 @@ class Header extends Component {
                             {/* <Nav.Link to="#no-loss-lottery">No Loss Lottery</Nav.Link>
                             <Nav.Link to="#yldy-staking" as={Link}>YLDY Staking</Nav.Link> */}
                         </Nav>
-                        <a 
-                            className="ml-auto"
-                            href={CONFIG.github_link}>
-                            <Button variant="outline-secondary">
-                                <FontAwesomeIcon icon={faGithub} />
-                            </Button>
-                        </a>
+                        {/* Right side */}
+                        <div className="ml-auto d-flex">
+                            {
+                                this.state.YLDYPrice &&
+                                    <div className="my-auto mx-2">
+                                        YLDY: ${this.state.YLDYPrice}
+                                    </div>
+                            }
+                            <a 
+                                className="ml-auto"
+                                href={CONFIG.github_link}>
+                                <Button variant="outline-secondary">
+                                    <FontAwesomeIcon icon={faGithub} />
+                                </Button>
+                            </a>
+                        </div>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
