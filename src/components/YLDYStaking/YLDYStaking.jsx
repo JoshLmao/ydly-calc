@@ -15,12 +15,14 @@ import {
 import {
     formatNumber,
     fromMicroValue,
+    getDayDifference,
     isStringBlank
 } from '../../js/utility';
 
 import ALGO_ICON from "../../svg/algo-icon.svg";
 import YLDY_ICON from "../../svg/yldy-icon.svg";
 import { 
+    calculateRewardsPoolPercentageShare,
     calculateYLDYRewardsFromDayPeriod 
 } from '../../js/YLDYCalculation';
 
@@ -358,42 +360,55 @@ class YLDYStaking extends Component {
                     <h3>YLDY & ALGO Claimable Rewards</h3>
                     <Row>
                         <Col>
-                            Claimable Algo tokens.
+                            The amount of claimable YLDY and ALGO tokens from the YLDY Staking global unlock rewards pool after '{this.state.daysPeriod}' day(s), {' '}
+                            <b>
+                                with a pool of '{formatNumber(fromMicroValue(this.state.totalAlgoRewards).toFixed(0))}' ALGO and '{formatNumber(fromMicroValue(this.state.totalYldyRewards).toFixed(0))}' YLDY
+                            </b>
+
+                            <br/>
+                            <br/>
+                            {
+                                this.state.totalYldyRewards && this.state.claimableYldyRewards &&
+                                <div>
+                                    { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.totalYldyRewards), this.state.claimableYldyRewards) }% share of ALGO/YLDY global unlock rewards pool
+                                </div>
+                            }
+                            {
+                                this.state.userTime && this.state.globalTime &&
+                                <div>You currently have '{getDayDifference(this.state.userTime, this.state.globalTime)}' days of unclaimed rewards.</div>
+                            }
                         </Col>
-                        <Col className="d-flex">
-                            <img
-                                src={ALGO_ICON}
-                                alt="Algorand icon"
-                                width="25"
-                                height="25"
-                                className="my-auto mr-1"
-                                />
-                            <Form.Control
-                                type="text"
-                                value={ this.state.claimableAlgoRewards ? formatNumber(this.state.claimableAlgoRewards.toFixed(3)) : "" }
-                                placeholder="TBD | ALGO rewards"
-                                disabled
-                                />
-                        </Col>
-                    </Row>
-                    <Row>
                         <Col>
-                            Claimable Yieldly tokens.
-                        </Col>
-                        <Col className="d-flex">
-                            <img
-                                src={YLDY_ICON}
-                                alt="Yieldly icon"
-                                width="25"
-                                height="25"
-                                className="my-auto mr-1"
-                                />
-                            <Form.Control
-                                type="text"
-                                value={ this.state.claimableYldyRewards ? formatNumber( this.state.claimableYldyRewards.toFixed(0)) : "" }
-                                placeholder="TBD | YLDY rewards"
-                                disabled
-                                />
+                            <div className="d-flex">
+                                <img
+                                    src={ALGO_ICON}
+                                    alt="Algorand icon"
+                                    width="25"
+                                    height="25"
+                                    className="my-auto mr-1"
+                                    />
+                                <Form.Control
+                                    type="text"
+                                    value={ this.state.claimableAlgoRewards ? formatNumber(this.state.claimableAlgoRewards.toFixed(3)) : "" }
+                                    placeholder="TBD | ALGO rewards"
+                                    disabled
+                                    />
+                            </div>
+                            <div className="d-flex">
+                                <img
+                                    src={YLDY_ICON}
+                                    alt="Yieldly icon"
+                                    width="25"
+                                    height="25"
+                                    className="my-auto mr-1"
+                                    />
+                                <Form.Control
+                                    type="text"
+                                    value={ this.state.claimableYldyRewards ? formatNumber( this.state.claimableYldyRewards.toFixed(0)) : "" }
+                                    placeholder="TBD | YLDY rewards"
+                                    disabled
+                                    />
+                            </div>
                         </Col>
                     </Row>
                 </div>

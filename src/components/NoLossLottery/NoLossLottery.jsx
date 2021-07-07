@@ -3,7 +3,8 @@ import {
     Row, 
     Col,
     Form,
-    Button
+    Button,
+    SplitButton
 } from 'react-bootstrap';
 import { 
     getContractValues, 
@@ -11,13 +12,15 @@ import {
     getUserStateValues 
 } from '../../js/AlgoExplorerAPI';
 import { 
-    calculateYLDYRewardsFromDayPeriod
+    calculateYLDYRewardsFromDayPeriod,
+    calculateRewardsPoolPercentageShare
 } from '../../js/YLDYCalculation';
 import {
     microAlgoToAlgo,
     fromMicroValue,
     formatNumber,
-    isStringBlank
+    isStringBlank,
+    getDayDifference
 } from "../../js/utility";
 
 import YLDY_ICON from "../../svg/yldy-icon.svg";
@@ -328,6 +331,18 @@ class NoLossLottery extends Component {
                     <Row>
                         <Col md={6}>
                             The amount of rewards available to current address after '{this.state.timePeriodDays}' day(s), <b>with the current global unlock rewards pool at '{ formatNumber((this.state.nllGlobalUnlock / 1000).toFixed(0)) }' YLDY</b>
+                            <br/>
+                            <br/>
+                            {
+                                this.state.nllGlobalUnlock && this.state.totalClaimableRewards &&
+                                <div>
+                                    { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.nllGlobalUnlock), this.state.totalClaimableRewards) }% share of rewards pool
+                                </div>
+                            }
+                            {
+                                this.state.userTime && this.state.globalTime &&
+                                <div>You currently have '{getDayDifference(this.state.userTime, this.state.globalTime)}' days of unclaimed rewards.</div>
+                            }
                         </Col>
                         <Col md={6} className="d-flex">
                             <img
@@ -337,6 +352,7 @@ class NoLossLottery extends Component {
                             <Form.Control 
                                 className="my-auto"
                                 type="text" 
+                                title={"Raw: " + this.state.totalClaimableRewards}
                                 placeholder="TBD | YLDY rewards" 
                                 value={ this.state.totalClaimableRewards?.toFixed(2) }
                                 disabled />

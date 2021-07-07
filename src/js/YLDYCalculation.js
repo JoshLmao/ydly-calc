@@ -51,3 +51,8 @@ export function calculateYLDYRewardsFromDayPeriod(usrStakingShares, daysPeriod, 
     let finalAmount = fromMicroValue(amount);
     return finalAmount;
 }
+
+// Calculates how much percentage share of the current rewards pool the user has
+export function calculateRewardsPoolPercentageShare(totalRewards, userShare) {
+    return (userShare / totalRewards) * 100;
+}
