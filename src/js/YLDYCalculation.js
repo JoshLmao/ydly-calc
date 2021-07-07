@@ -52,7 +52,8 @@ export function calculateYLDYRewardsFromDayPeriod(usrStakingShares, daysPeriod, 
     return finalAmount;
 }
 
-// Calculates how much percentage share of the current rewards pool the user has
+// Calculates how much share of the current rewards pool the user has
+// Returned value as a percentage
 export function calculateRewardsPoolPercentageShare(totalRewards, userShare) {
     return (userShare / totalRewards) * 100;
 }
