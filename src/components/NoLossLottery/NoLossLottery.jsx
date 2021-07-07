@@ -132,6 +132,7 @@ class NoLossLottery extends Component {
                         userTime: data.userTime,
                         userAmount: data.userAmount,
                         userStakingShares: data.userStakingShares,
+                        timePeriodDays: getDayDifference(data.userTime, this.state.globalTime),
                     }, () => {
                         this.updateResults();
                     });

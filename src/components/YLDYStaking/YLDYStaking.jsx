@@ -137,6 +137,7 @@ class YLDYStaking extends Component {
                         userTime: data.userTime,
                         userAmount: data.userAmount,
                         userStakingShares: data.userStakingShares,
+                        daysPeriod: getDayDifference(data.userTime, this.state.globalTime),
                     }, () => {
                         this.updateRewards();
                     });
