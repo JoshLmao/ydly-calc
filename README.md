@@ -14,7 +14,22 @@
 
 A small web application for estimating [Yieldly](https://yieldly.finance) rewards. Includes estimating for the No Loss Lottery (NLL) and YLDY Staking pages. 
 
-Per [an article by Yieldly](https://yieldly.finance/yldy-rewards-review-and-thank-you/), this app implements the rewards formula used while also using the variables from each contract on the Algorand blockchain to estamate how much you could be earning through the platform.
+The app shows your share of the current rewards pool. The rewards pool increases every 30 minutes ([as per Yieldly's 1st July change](https://yieldly.finance/updated-rewards/)) and can go down when someone else claims from that pool. 
+
+Thank you to @Tommaso on Telegram for discovering the formula (below) for determining a user's portion of the rewards pool, which is implemented in the app.
+
+The values for the formula are either found in the relevant application contract (if prefix started with G, global) or in the user's Algorand address (if prefix starts with U, user)
+
+```
+GT: Global Time
+GSS: Global Staking Shares
+
+USS: User Staking Shares
+UA: User Amount
+UT: User Time
+
+Claimable YLDY Rewards = ((USS + ((GT - UT) / 86400) * UA) / GSS) * TYUL / 1000000
+```
 
 ALGO Donations: IM6CZ4KUPWT23PKA23MW5S4ZQVF4376GWELLAL5QA5NCMB635JTRUGIDPY
 
