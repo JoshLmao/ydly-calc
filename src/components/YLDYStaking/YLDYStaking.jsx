@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
 import {
     Form,
-    Button,
     Row, 
     Col
 } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-
 import { 
     getContractValues,
     getUserStateValues
@@ -99,7 +95,7 @@ class YLDYStaking extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.userAlgoAddress != this.props.userAlgoAddress) {
+        if (prevProps.userAlgoAddress !== this.props.userAlgoAddress) {
             this.setState({
                 algoAddress: this.props.userAlgoAddress,
             }, () => {

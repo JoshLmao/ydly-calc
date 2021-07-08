@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 
 import {
     Container,
-    Form,
-    Button
+    Form
 } from 'react-bootstrap';
 
 import NoLossLottery from '../NoLossLottery/NoLossLottery';

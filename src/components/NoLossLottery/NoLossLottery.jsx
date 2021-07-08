@@ -3,8 +3,6 @@ import {
     Row, 
     Col,
     Form,
-    Button,
-    SplitButton
 } from 'react-bootstrap';
 import { 
     getContractValues, 
@@ -112,7 +110,7 @@ class NoLossLottery extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.userAlgoAddress != this.props.userAlgoAddress) {
+        if (prevProps.userAlgoAddress !== this.props.userAlgoAddress) {
             this.setState({
                 algoAddress: this.props.userAlgoAddress,
             }, () => {
