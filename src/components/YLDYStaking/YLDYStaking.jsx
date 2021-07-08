@@ -53,8 +53,9 @@ class YLDYStaking extends Component {
             //     totalYldyRewards: null, // TAP
             // },
 
+            // The amount of yldy staked. Shouldn't be a micro value
             yldyStaked: null,
-
+            // Amount of days to use in calculation
             daysPeriod: 1,
 
             usrVarsErrorMsg: null,
@@ -144,13 +145,18 @@ class YLDYStaking extends Component {
                 if (data) {
                     console.log(`Successfully got user variables from application '${this.state.applicationID}' on address '${this.state.algoAddress}'`);
                     this.setState({
+                        // Store user data for reuse
                         user: {
                             time: data.userTime,
-                            amount: data.userAmount / 1000000,
+                            amount: data.userAmount,
                             stakingShares: data.userStakingShares,
                         },
 
-                        daysPeriod: getDayDifference(data.userTime, this.state.globalTime),
+                        // Update yldy staked to loaded user amount
+                        // Divide by 10^6 as it's expected as user input
+                        yldyStaked: data.userAmount / 1000000,
+                        // Determine days difference
+                        daysPeriod: getDayDifference(data.userTime, this.state.global?.time),
                         fetchingUsrVars: false,
                     }, () => {
                         this.updateRewards();
@@ -192,11 +198,11 @@ class YLDYStaking extends Component {
                 let uss = this.state.user?.stakingShares ?? 0;
 
                 // Calculate ALGO/YLDY rewards
-                let totalYldyRewards = calculateYLDYRewardsFromDayPeriod(uss, this.state.daysPeriod, yldyStaked, this.state.global.stakingShares, this.state.global.totalYldyRewards);
-                let totalAlgoRewards = calculateYLDYRewardsFromDayPeriod(uss, this.state.daysPeriod, yldyStaked, this.state.global.stakingShares, this.state.global.totalAlgoRewards);
+                let claimableYldy = calculateYLDYRewardsFromDayPeriod(uss, this.state.daysPeriod, yldyStaked, this.state.global.stakingShares, this.state.global.totalYldyRewards);
+                let claimableAlgo = calculateYLDYRewardsFromDayPeriod(uss, this.state.daysPeriod, yldyStaked, this.state.global.stakingShares, this.state.global.totalAlgoRewards);
                 this.setState({
-                    claimableYldyRewards: totalYldyRewards,
-                    claimableAlgoRewards: totalAlgoRewards,
+                    claimableYldyRewards: claimableYldy,
+                    claimableAlgoRewards: claimableAlgo,
                 });
             } else {
                 // Entered value isnt valid number, reset reward values
@@ -281,7 +287,7 @@ class YLDYStaking extends Component {
                                 <Form.Control 
                                     type="text"
                                     disabled
-                                    value={ this.state.user?.stakingShares ? formatNumber(fromMicroValue(this.state.user.stakingShares).toFixed(0)) : "" }
+                                    value={ this.state.user?.stakingShares != null ? formatNumber(fromMicroValue(this.state.user.stakingShares).toFixed(0)) : "" }
                                     placeholder="User Staking Shares (USS)"
                                     />
                             </Col>
@@ -417,7 +423,7 @@ class YLDYStaking extends Component {
                             <br/>
                             <br/>
                             {
-                                this.state.global && this.state.global.totalYldyRewards && this.state.claimableYldyRewards &&
+                                this.state.global?.totalYldyRewards != null && this.state.claimableYldyRewards != null &&
                                 <div>
                                     { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.global.totalYldyRewards), this.state.claimableYldyRewards) }% share of ALGO/YLDY global unlock rewards pool
                                 </div>
@@ -440,7 +446,7 @@ class YLDYStaking extends Component {
                                     />
                                 <Form.Control
                                     type="text"
-                                    value={ this.state.claimableAlgoRewards ? formatNumber(this.state.claimableAlgoRewards.toFixed(3)) : "" }
+                                    value={ this.state.claimableAlgoRewards != null ? formatNumber(this.state.claimableAlgoRewards.toFixed(3)) : "" }
                                     title={ "Raw: " + this.state.claimableAlgoRewards }
                                     placeholder="TBD | ALGO rewards"
                                     disabled
@@ -456,7 +462,7 @@ class YLDYStaking extends Component {
                                     />
                                 <Form.Control
                                     type="text"
-                                    value={ this.state.claimableYldyRewards ? formatNumber( this.state.claimableYldyRewards.toFixed(0)) : "" }
+                                    value={ this.state.claimableYldyRewards != null ? formatNumber( this.state.claimableYldyRewards.toFixed(0)) : "" }
                                     title={ "Raw: " + this.state.claimableYldyRewards }
                                     placeholder="TBD | YLDY rewards"
                                     disabled

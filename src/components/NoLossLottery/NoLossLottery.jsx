@@ -284,7 +284,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="User Staking Shares (USS)"
-                                    value={ this.state.user ? formatNumber(fromMicroValue(this.state.user.stakingShares).toFixed(0)) : "" }
+                                    value={ this.state.user?.stakingShares != null ? formatNumber(fromMicroValue(this.state.user.stakingShares).toFixed(0)) : "" }
                                     onChange={(e) => this.setState({ userAmount: e.target.value })} 
                                     disabled/>
                             </Col>
@@ -378,13 +378,13 @@ class NoLossLottery extends Component {
                             <br/>
                             <br/>
                             {
-                                this.state.totalYldyRewards && this.state.totalClaimableRewards &&
+                                this.state.global?.totalYldyRewards != null && this.state.totalClaimableRewards != null &&
                                 <div>
                                     { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.global.totalYldyRewards), this.state.totalClaimableRewards) }% share of rewards pool
                                 </div>
                             }
                             {
-                                this.state.userTime && this.state.globalTime &&
+                                this.state.user?.time && this.state.global?.time &&
                                 <div>You currently have '{getDayDifference(this.state.user.time, this.state.global.time)}' days of unclaimed rewards.</div>
                             }
                         </Col>
@@ -399,7 +399,7 @@ class NoLossLottery extends Component {
                                 title={"Raw: " + this.state.totalClaimableRewards}
                                 placeholder="TBD | YLDY rewards" 
                                 value={ 
-                                    this.state.totalClaimableRewards 
+                                    this.state.totalClaimableRewards != null 
                                     ?
                                     this.state.totalClaimableRewards?.toFixed(2)
                                     :

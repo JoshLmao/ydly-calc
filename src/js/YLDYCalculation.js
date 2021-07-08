@@ -58,5 +58,5 @@ export function calculateRewardsPoolPercentageShare(totalRewards, userShare) {
     if (userShare && totalRewards) {
         return (userShare / totalRewards) * 100;
     }
-    return null;
+    return 0;
 }
