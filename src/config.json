@@ -3,5 +3,12 @@
     "proxy_url": "https://genify-proxy.herokuapp.com",
     "github_link": "https://github.com/joshlmao/ydly-calc",
     "twitter_link": "https://twitter.com/joshlmao",
-    "creator_link": "https://joshlmao.com"
+    "creator_link": "https://joshlmao.com",
+    "firebase_config": {
+        "apiKey": "",
+        "projectId": "",
+        "databaseURL": "",
+        "authDomain": "",
+        "storageBucket": ""
+    }
 }

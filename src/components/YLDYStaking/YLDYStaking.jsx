@@ -21,6 +21,7 @@ import {
     calculateRewardsPoolPercentageShare,
     calculateYLDYRewardsFromDayPeriod 
 } from '../../js/YLDYCalculation';
+import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
 class YLDYStaking extends Component {
     constructor(props) {
@@ -467,6 +468,34 @@ class YLDYStaking extends Component {
                         </Col>
                     </Row>
                 </div>
+
+                <Row className="my-3">
+                    <Col>
+                        <AppStateHistoryGraph
+                            applicationID={this.state.applicationID}
+                            dataKey="TAP"
+                            sectionTitle="ALGO Global Rewards History"
+                            sectionShortDesc="History of ALGO as a global reward in YLDY Staking"
+                            xAxisLabel="Date/Time of Record"
+                            yAxisLabel="Amount of YLDY"
+                            dataTitle="ALGO in Global Unlock Rewards"
+                            decimalPrecision={2}
+                            lineColor="#6cdef9"
+                            lineHandleColor="grey"
+                            />
+                    </Col>
+                    <Col>
+                        <AppStateHistoryGraph
+                            applicationID={this.state.applicationID}
+                            dataKey="TYUL"
+                            sectionTitle="YLDY Global Rewards History"
+                            sectionShortDesc="History of YLDY as a global reward in YLDY Staking"
+                            xAxisLabel="Date/Time of Record"
+                            yAxisLabel="Amount of YLDY"
+                            dataTitle="YLDY in Global Unlock Rewards"
+                            />
+                    </Col>
+                </Row>
             </div>
         );
     }
