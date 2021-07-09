@@ -6,9 +6,9 @@
     "creator_link": "https://joshlmao.com",
     "firebase_config": {
         "apiKey": "",
-        "projectId": "",
+        "projectId": "yldy-estimator",
         "databaseURL": "",
-        "authDomain": "",
-        "storageBucket": ""
+        "authDomain": "yldy-estimator.firebaseapp.com",
+        "storageBucket": "yldy-estimator.appspot.com"
     }
 }

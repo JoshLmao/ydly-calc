@@ -268,7 +268,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="User Amount (UA)"
-                                    value={ this.state.algoTickets }
+                                    value={ this.state.algoTickets ?? "" }
                                     onChange={ this.onTicketsChanged }
                                     />
                             </Col>

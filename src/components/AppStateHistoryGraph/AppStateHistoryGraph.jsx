@@ -53,12 +53,25 @@ class AppStateHistoryGraph extends Component {
     }
 
     componentDidMount() {
-        // Initialize Firebase if not already
-        if (firebase.apps.length === 0 && CONFIG.firebase_config && CONFIG.firebase_config?.apiKey) {
-            firebase.initializeApp(CONFIG.firebase_config);
-        } else {
-            console.error("Error initializing Firebase. Is the config set correctly?");
+        // Get API key and Database url from environment variables
+        let apiKey = process.env.REACT_APP_FIREBASE_API_KEY;
+        let databaseUrl = process.env.REACT_APP_FIREBASE_DATABASE_URL;
+        if (!CONFIG.firebase_config || !apiKey || !databaseUrl) {
+            console.error("Error initializing Firebase. Is the config set correctly? Have you set environment variables?");
+            return;            
         }
+
+        if (firebase.apps.length === 0) {
+            // Initialize Firebase if not already
+            let fullConfig = {
+                apiKey: apiKey,
+                databaseURL: databaseUrl,
+                projectId: CONFIG.firebase_config.projectId,
+                authDomain: CONFIG.firebase_config.authDomain,
+                storageBucket: CONFIG.firebase_config.storageBucket,
+            };
+            firebase.initializeApp(fullConfig);
+        } 
 
         // Get data and set state
         this.createState();

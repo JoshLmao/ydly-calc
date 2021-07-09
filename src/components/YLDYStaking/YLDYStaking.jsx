@@ -270,7 +270,7 @@ class YLDYStaking extends Component {
                                     />
                                 <Form.Control 
                                     type="text"
-                                    value={this.state.yldyStaked}
+                                    value={ this.state.yldyStaked ?? "" }
                                     onChange={ this.onYldyStakedChanged }
                                     placeholder="User Amount (UA)"
                                     />
