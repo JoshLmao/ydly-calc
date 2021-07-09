@@ -7,15 +7,9 @@ import firebase from "firebase/app";
 import "firebase/database";
 import { fromMicroValue } from '../../js/utility';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faTruckMonster } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-const config = {
-    apiKey: "AIzaSyCJiyn2Q_6TIjFwXWHsQnXiFbrZH8C47wM",
-    projectId: "yldy-estimator",
-    databaseURL: "https://yldy-estimator-default-rtdb.europe-west1.firebasedatabase.app",
-    authDomain: "yldy-estimator.firebaseapp.com",
-    storageBucket: "yldy-estimator.appspot.com",
-};
+import CONFIG from "../../config.json";
 
 class AppStateHistoryGraph extends Component {
     constructor(props) {
@@ -24,11 +18,35 @@ class AppStateHistoryGraph extends Component {
         this.state = {
             // Application ID to use for this graph
             applicationID: props.applicationID,
-
             // Limit on the amount of data to show
-            dataLimit: 100,
-
+            dataLimit: props.dataLimit ?? 100,
+            // State of line, used in graph
             lineState: null,
+
+            // Amount of decimal precision to use on the data values
+            decimalPrecision: props.decimalPrecision ?? 0,
+
+            // Target firebase key to use and show values for
+            // firebaseDB/{applicationID}/{dataKey}
+            dataKey: props.dataKey,
+
+            // Title of section
+            sectionTitle: props.sectionTitle,
+            // Descriotion before graph descrion
+            sectionShortDesc: props.sectionShortDesc,
+            // Label of the X axis
+            xAxisLabel: props.xAxisLabel,
+            // Label of the Y axis
+            yAxisLabel: props.yAxisLabel,
+            // Name of data displayed
+            dataTitle: props.dataTitle,
+            // Height of the overall graph
+            graphHeight: props.graphHeight ?? null,
+            
+            // Color of the handles of the data line
+            lineHandleColor: props.lineHandleColor ?? 'rgba(254, 215, 56, 1)',
+            // Color of the line of the data
+            lineColor: props.lineColor ?? 'rgba(254, 215, 56, 1)',
         };
 
         this.createState = this.createState.bind(this);
@@ -36,14 +54,22 @@ class AppStateHistoryGraph extends Component {
 
     componentDidMount() {
         // Initialize Firebase if not already
-        if (firebase.apps.length === 0) {
-            firebase.initializeApp(config);
+        if (firebase.apps.length === 0 && CONFIG.firebase_config && CONFIG.firebase_config?.apiKey) {
+            firebase.initializeApp(CONFIG.firebase_config);
+        } else {
+            console.error("Error initializing Firebase. Is the config set correctly?");
         }
 
+        // Get data and set state
         this.createState();
     }
 
     createState() {
+        // Dont load any data if no firebase auth
+        if (firebase.apps.length <= 0)
+            return;
+
+        // Set isLoading
         this.setState({
             loadingFirebaseData: true,
         });
@@ -51,7 +77,9 @@ class AppStateHistoryGraph extends Component {
         let graphLabels = [];
         let graphData = [];
 
+        // Call firebase and get data
         if (firebase) { 
+            // db/{application_id}, limit data to certain amount
             firebase.database().ref(`${this.state.applicationID}/`).limitToFirst(this.state.dataLimit).once('value').then((snapshot) => {
                 const data = snapshot.val();
                 
@@ -62,24 +90,26 @@ class AppStateHistoryGraph extends Component {
                     graphLabels.push(formatted);
 
                     // Append data value
-                    let rewardPoolValue = Math.floor(fromMicroValue(data[epochTimeKey].TYUL));
-                    graphData.push(rewardPoolValue);
+                    let dataValue = fromMicroValue(data[epochTimeKey][this.state.dataKey]).toFixed(this.state.decimalPrecision);
+                    graphData.push(dataValue);
                 }
 
+                // Finished loading
                 this.setState({
                     loadingFirebaseData: false,
                 });
             });
         }
 
+        // Set state with finished data and labels
         this.setState({
             lineState: {
                 labels: graphLabels,
                 datasets: [
                     {
-                        label: 'YLDY in Global Unlock Rewards',
-                        backgroundColor: 'rgba(254, 215, 56, 1)',
-                        borderColor: 'rgba(254, 215, 56, 1, 1)',
+                        label: this.state.dataTitle ?? "Line 1",
+                        backgroundColor: this.state.lineHandleColor,
+                        borderColor: this.state.lineColor,
                         borderWidth: 1,
                         data: graphData,
                     }
@@ -90,12 +120,12 @@ class AppStateHistoryGraph extends Component {
 
     render() {
         return (
-            <div>
+            <div className="py-3">
                 <h3 className="">
-                    History
+                    {this.state.sectionTitle}
                 </h3>
                 <p>
-                    Line chart of the history of the global unlock rewards for the No Loss Lottery. The graph will either show as many entries that exist or the last {this.state.dataLimit} entries. 
+                    {this.state.sectionShortDesc} The graph will either show as many entries that exist or the last {this.state.dataLimit} entries. 
                     The data is currently updated every 12 hours. 
                 </p>
                 {
@@ -112,7 +142,7 @@ class AppStateHistoryGraph extends Component {
                     this.state.lineState && !this.state.loadingFirebaseData &&
                     <Line 
                         data={ this.state.lineState }
-                        height={ 125 }
+                        height={ this.state.graphHeight }
                         options={{
                             legend: {
                                 display: true,
@@ -125,7 +155,7 @@ class AppStateHistoryGraph extends Component {
                                     display: true,
                                     title: {
                                         display: true,
-                                        text: 'Date/Time of Record',
+                                        text: this.state.xAxisLabel,
                                         color: "white"
                                     },
                                     ticks: {
@@ -137,7 +167,7 @@ class AppStateHistoryGraph extends Component {
                                     display: true,
                                     title: {
                                         display: true,
-                                        text: "Amount of YLDY",
+                                        text: this.state.yAxisLabel,
                                         color: "white"
                                     },
                                     ticks: {

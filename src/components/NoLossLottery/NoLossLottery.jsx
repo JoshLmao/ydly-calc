@@ -409,9 +409,16 @@ class NoLossLottery extends Component {
                     </Row>
                 </div>
 
-                <div className="py-3">
+                <div>
                     <AppStateHistoryGraph
                         applicationID={this.state.contractID}
+                        dataKey="TYUL"
+                        sectionTitle="Global Rewards History"
+                        sectionShortDesc="Line chart of the history of the global unlock rewards for the No Loss Lottery."
+                        xAxisLabel="Date/Time of Record"
+                        yAxisLabel="Amount of YLDY"
+                        dataTitle="YLDY in Global Unlock Rewards"
+                        graphHeight={125}
                         />
                 </div>
             </div>
