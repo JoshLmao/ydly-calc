@@ -21,6 +21,7 @@ import {
     calculateRewardsPoolPercentageShare,
     calculateYLDYRewardsFromDayPeriod 
 } from '../../js/YLDYCalculation';
+import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
 class YLDYStaking extends Component {
     constructor(props) {

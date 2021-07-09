@@ -23,6 +23,7 @@ import {
 
 import YLDY_ICON from "../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../svg/algo-icon.svg";
+import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
 class NoLossLottery extends Component {
     constructor(props) {
@@ -406,6 +407,12 @@ class NoLossLottery extends Component {
                                 disabled />
                         </Col>
                     </Row>
+                </div>
+
+                <div className="py-3">
+                    <AppStateHistoryGraph
+                        applicationID={this.state.contractID}
+                        />
                 </div>
             </div>
         );

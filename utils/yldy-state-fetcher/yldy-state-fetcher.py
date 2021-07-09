@@ -17,43 +17,8 @@ import base64
 import pyrebase
 import logging
 
-## CONFIG START
-# Amount of hours to sleep before updating
-SLEEP_HOURS = 6
 
-# NLL application id
-nllApplicationID = 233725844
-# YLDY Staking ID
-yldyStakingApplicationID = 233725850
-
-# Dictionary of all application id's and their global state keys
-# to retrieve every X hours
-APP_ID_STATE_KEYS_DICT = {
-    ## No Loss Lottery (NLL) Global State keys to track
-    # GSS: Global Staking Shares
-    # GA: Global Amount (Amount of ALGO staked in NLL)
-    # TYUL: Total YLDY Global Rewards (Amount of YLDY in reward pool now)
-    nllApplicationID: [ 
-        "TYUL", "GA", "GSS" 
-    ],
-    ## YLDY Staking global state keys to track
-    # TYUL: Total YLDY Global Rewards
-    # TAP: Total Algo global rewards
-    # GA: Global Amount
-    yldyStakingApplicationID: [
-        "TYUL", "TAP", "GA", "GSS"
-    ]
-}
-
-# Pyrebase config
-PYREBASE_CONFIG = {
-    "apiKey": "", 
-    "authDomain": "",
-    "databaseURL": "",
-    "storageBucket": "",
-}
-
-## END CONFIG
+import config as config
 
 # Global, last epoch time the backup has run
 LastBackupEpochTime = -1
@@ -65,7 +30,7 @@ def get_epoch_time():
 # Saves the given values into the Firebase database
 def save_to_firebase(appID, values):
     # Init firebase and get DB
-    firebase = pyrebase.initialize_app(PYREBASE_CONFIG)
+    firebase = pyrebase.initialize_app(config.PYREBASE_CONFIG)
     db = firebase.database()
 
     for key in values:
@@ -114,6 +79,11 @@ if __name__ == '__main__':
     # Setup logging config
     logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)03d %(levelname)s | %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
 
+    # Check if necessary values exist before running
+    if config.PYREBASE_CONFIG["apiKey"] is None or config.PYREBASE_CONFIG["apiKey"] is "":
+        logging.error("No API key provided. Check config and try again")
+        exit()  #Exit as dont have the required config info
+
     logging.info("Starting YLDY Firebase fetching program")
 
     # Start constant loop
@@ -122,9 +92,9 @@ if __name__ == '__main__':
         LastBackupEpochTime = get_epoch_time()
 
         # Loop over Dictionary with key value pairs
-        for idKey in APP_ID_STATE_KEYS_DICT:
+        for idKey in config.APP_ID_STATE_KEYS_DICT:
             logging.info("Beginning saving of '{id}' global values".format(id = idKey))
-            appStateKeys = APP_ID_STATE_KEYS_DICT[idKey]
+            appStateKeys = config.APP_ID_STATE_KEYS_DICT[idKey]
             # Get global state values for app
             appValues = get_application_vals(idKey, appStateKeys)
             # Check if valid or not
@@ -136,5 +106,5 @@ if __name__ == '__main__':
                 logging.error("Error saving application state '{id}' values at '{time}'".format(id = idKey, time = LastBackupEpochTime))
 
         # Completed all fetching of data, sleep for hour period
-        logging.info("Sleeping for '{period}' hours".format(period = SLEEP_HOURS))
-        time.sleep(SLEEP_HOURS * 60 * 60)
+        logging.info("Sleeping for '{period}' hours".format(period = config.SLEEP_HOURS))
+        time.sleep(config.SLEEP_HOURS * 60 * 60)
