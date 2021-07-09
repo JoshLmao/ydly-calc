@@ -26,9 +26,11 @@ APP_ID_STATE_KEYS_DICT = {
 }
 
 # Pyrebase config
+# Service account: Path to service account .json file
 PYREBASE_CONFIG = {
     "apiKey": "", 
     "authDomain": "",
     "databaseURL": "",
     "storageBucket": "",
+    "serviceAccount": ""
 }

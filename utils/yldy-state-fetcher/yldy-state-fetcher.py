@@ -17,8 +17,11 @@ import base64
 import pyrebase
 import logging
 
-
+# Config python file
 import config as config
+
+# Firebase API
+FIREBASE = None
 
 # Global, last epoch time the backup has run
 LastBackupEpochTime = -1
@@ -29,9 +32,8 @@ def get_epoch_time():
 
 # Saves the given values into the Firebase database
 def save_to_firebase(appID, values):
-    # Init firebase and get DB
-    firebase = pyrebase.initialize_app(config.PYREBASE_CONFIG)
-    db = firebase.database()
+    # Get database from Firebase
+    db = FIREBASE.database()
 
     for key in values:
         db.child(appID).child(LastBackupEpochTime).child(key).set(values[key])
@@ -74,7 +76,7 @@ def get_application_vals(applicationID, appStateKeys):
         return applicationValues
     else:
         logging.error("Error: No data at application id", applicationID)
-        
+
 if __name__ == '__main__':
     # Setup logging config
     logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)03d %(levelname)s | %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
@@ -85,6 +87,9 @@ if __name__ == '__main__':
         exit()  #Exit as dont have the required config info
 
     logging.info("Starting YLDY Firebase fetching program")
+
+    # Init firebase & assign user
+    FIREBASE = pyrebase.initialize_app(config.PYREBASE_CONFIG)
 
     # Start constant loop
     while True:
