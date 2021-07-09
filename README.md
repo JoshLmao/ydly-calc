@@ -39,8 +39,16 @@ The js code can also be found in the [`YLDYCalculations.js`](/src/js/YLDYCalcula
 
 ## Development
 
-Created using React.
+Created using React and Vercel for hosting. Two environment variables ([.env](./.env)) are required, as well adjusting the [`config.json`](./src/config.json) file. 
 
-### Deploy/Update GitHub Pages Site
+## Vercel
 
-To deploy or update the GH pages website, use the command `npm run deploy` which uses the `gh-pages` package to automatically update the `gh-pages` branch to the latest changes.
+The repository is setup to be hosted using Vercel, used to hosted using github-pages.
+
+## Database
+
+The site has a small backend database that contains the global state of the Yieldly contracts, NLL ([233725844](https://algoexplorer.io/application/233725844)) and YLDY Staking ([233725850](https://algoexplorer.io/application/233725850)). The script runs to gather the values using the AlgoExplorer.io API and sleeps for `X` amount of hours to repeat. The script can be found in  [`./utils/yldy-state-fetcher`](./utils/yldy-state-fetcher)
+
+The backend database is hosted using [Firebase](https://firebase.google.com) and also utilizes their API's to store and fetch the data from it.
+
+
