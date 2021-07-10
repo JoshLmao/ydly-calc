@@ -9,8 +9,6 @@ import { fromMicroValue } from '../../js/utility';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
-import CONFIG from "../../config.json";
-
 class AppStateHistoryGraph extends Component {
     constructor(props) {
         super(props);
@@ -20,8 +18,6 @@ class AppStateHistoryGraph extends Component {
             applicationID: props.applicationID,
             // Limit on the amount of data to show
             dataLimit: props.dataLimit ?? 100,
-            // State of line, used in graph
-            lineState: null,
 
             // Amount of decimal precision to use on the data values
             decimalPrecision: props.decimalPrecision ?? 0,
@@ -47,40 +43,25 @@ class AppStateHistoryGraph extends Component {
             lineHandleColor: props.lineHandleColor ?? 'rgba(254, 215, 56, 1)',
             // Color of the line of the data
             lineColor: props.lineColor ?? 'rgba(254, 215, 56, 1)',
+
+            // State of line, used in graph
+            lineState: null,
         };
 
         this.createState = this.createState.bind(this);
     }
 
     componentDidMount() {
-        // Get API key and Database url from environment variables
-        let apiKey = process.env.REACT_APP_FIREBASE_API_KEY;
-        let databaseUrl = process.env.REACT_APP_FIREBASE_DATABASE_URL;
-        if (!CONFIG.firebase_config || !apiKey || !databaseUrl) {
-            console.error("Error initializing Firebase. Is the config set correctly? Have you set environment variables?");
-            return;            
-        }
-
-        if (firebase.apps.length === 0) {
-            // Initialize Firebase if not already
-            let fullConfig = {
-                apiKey: apiKey,
-                databaseURL: databaseUrl,
-                projectId: CONFIG.firebase_config.projectId,
-                authDomain: CONFIG.firebase_config.authDomain,
-                storageBucket: CONFIG.firebase_config.storageBucket,
-            };
-            firebase.initializeApp(fullConfig);
-        } 
-
-        // Get data and set state
+        // Get data and set state if firebase set
         this.createState();
     }
 
     createState() {
         // Dont load any data if no firebase auth
-        if (firebase.apps.length <= 0)
+        if (firebase.apps.length <= 0) {
+            console.error("Firebase uninitialized!");
             return;
+        }
 
         // Set isLoading
         this.setState({
@@ -99,7 +80,10 @@ class AppStateHistoryGraph extends Component {
                 for(let epochTimeKey in data) {
                     // Parse Epoch MS to Date and format display string
                     let date = new Date(parseInt(epochTimeKey));
-                    let formatted = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                    // Shorted locale to just hours and minutes, no seconds
+                    let hrsMins = date.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
+                    // Format display string
+                    let formatted = `${date.toLocaleDateString()} ${hrsMins}`;
                     graphLabels.push(formatted);
 
                     // Append data value

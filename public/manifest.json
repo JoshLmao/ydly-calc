@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "yldy-est-logo192.png",
+      "src": "yldy-est-icon192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "yldy-est-logo512.png",
+      "src": "yldy-est-icon512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

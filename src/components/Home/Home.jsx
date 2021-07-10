@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-
 import {
     Container,
     Form
 } from 'react-bootstrap';
+import firebase from "firebase/app";
 
 import NoLossLottery from '../NoLossLottery/NoLossLottery';
 import YLDYStaking from '../YLDYStaking/YLDYStaking';
 import About from './About/About';
 
 import "./Home.css";
+
+import CONFIG from "../../config.json";
 
 class Home extends Component {
     constructor(props) {
@@ -18,6 +20,33 @@ class Home extends Component {
         this.state = {
             userAlgoAddress: null,
         };
+
+        this.initFirebase = this.initFirebase.bind(this);
+
+        // Prepare now for children to get on mount
+        this.initFirebase();
+    }
+
+    initFirebase() {
+        // Get API key and Database url from environment variables
+        let apiKey = process.env.REACT_APP_FIREBASE_API_KEY;
+        let databaseUrl = process.env.REACT_APP_FIREBASE_DATABASE_URL;
+        if (!CONFIG.firebase_config || !apiKey || !databaseUrl) {
+            console.error("Error initializing Firebase. Is the config set correctly? Have you set environment variables?");
+            return;            
+        }
+
+        if (firebase.apps.length === 0) {
+            // Initialize Firebase if not already
+            let fullConfig = {
+                apiKey: apiKey,
+                databaseURL: databaseUrl,
+                projectId: CONFIG.firebase_config.projectId,
+                authDomain: CONFIG.firebase_config.authDomain,
+                storageBucket: CONFIG.firebase_config.storageBucket,
+            };
+            firebase.initializeApp(fullConfig);
+        } 
     }
 
     render() {
@@ -52,7 +81,9 @@ class Home extends Component {
                 <div className="secondary-background">
                     <Container>
                         <NoLossLottery 
-                            userAlgoAddress={this.state.userAlgoAddress} />
+                            userAlgoAddress={this.state.userAlgoAddress} 
+                            firebase={this.state.firebase} 
+                            />
                     </Container>
                 </div>
 
@@ -62,7 +93,9 @@ class Home extends Component {
                 <div className="">
                     <Container className="">
                         <YLDYStaking 
-                            userAlgoAddress={this.state.userAlgoAddress} />
+                            userAlgoAddress={this.state.userAlgoAddress} 
+                            firebase={this.state.firebase} 
+                            />
                     </Container>
                 </div>
             </div>
