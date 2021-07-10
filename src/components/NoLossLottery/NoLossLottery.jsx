@@ -23,7 +23,6 @@ import {
 
 import YLDY_ICON from "../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../svg/algo-icon.svg";
-import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
 class NoLossLottery extends Component {
     constructor(props) {
@@ -224,7 +223,7 @@ class NoLossLottery extends Component {
 
     render() {
         return (
-            <div className="py-5" data-spy="scroll" data-target="#estimator-navbar">
+            <div className="py-3" data-spy="scroll" data-target="#estimator-navbar">
                 <h1 
                     className="yieldly-main-color"
                     id="no-loss-lottery">No Loss Lottery</h1>
@@ -275,7 +274,7 @@ class NoLossLottery extends Component {
                         </Row>
                         <Row>
                             <Col md={6}>
-                                <h6>
+                                <h6 className="mb-0">
                                     User Staking Shares (USS)
                                 </h6>
                             </Col>
@@ -407,19 +406,6 @@ class NoLossLottery extends Component {
                                 disabled />
                         </Col>
                     </Row>
-                </div>
-
-                <div>
-                    <AppStateHistoryGraph
-                        applicationID={this.state.contractID}
-                        dataKey="TYUL"
-                        sectionTitle="Global Rewards History"
-                        sectionShortDesc="Line chart of the history of the global unlock rewards for the No Loss Lottery."
-                        xAxisLabel="Date/Time of Record"
-                        yAxisLabel="Amount of YLDY"
-                        dataTitle="YLDY in Global Unlock Rewards"
-                        graphHeight={125}
-                        />
                 </div>
             </div>
         );
