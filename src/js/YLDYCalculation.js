@@ -60,3 +60,17 @@ export function calculateRewardsPoolPercentageShare(totalRewards, userShare) {
     }
     return 0;
 }
+
+// Calculates the average of all the given values and returns it
+export function calculateAverage(values) {
+    if (!values) {
+        return null;
+    }
+
+    let total = 0;
+    for(let i = 0; i < values.length; i++) {
+        total += parseInt(values[i]);
+    }
+
+    return total / values.length;
+}

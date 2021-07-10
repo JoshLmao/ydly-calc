@@ -5,9 +5,10 @@ import {
 
 import firebase from "firebase/app";
 import "firebase/database";
-import { fromMicroValue } from '../../js/utility';
+import { formatNumber, fromMicroValue } from '../../js/utility';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { calculateAverage } from '../../js/YLDYCalculation';
 
 class AppStateHistoryGraph extends Component {
     constructor(props) {
@@ -43,7 +44,11 @@ class AppStateHistoryGraph extends Component {
             lineHandleColor: props.lineHandleColor ?? 'rgba(254, 215, 56, 1)',
             // Color of the line of the data
             lineColor: props.lineColor ?? 'rgba(254, 215, 56, 1)',
+            // Prefix of the values in the data (YLDY/ALGO/etc)
+            valueType: props.valueType,
 
+            // Data gained from Firebase
+            firebaseData: null,
             // State of line, used in graph
             lineState: null,
         };
@@ -91,39 +96,44 @@ class AppStateHistoryGraph extends Component {
                     graphData.push(dataValue);
                 }
 
-                // Finished loading
+                // Update state once complete
                 this.setState({
                     loadingFirebaseData: false,
+                    firebaseData: data,
+                    // Work out average of graph data
+                    dataAverage: calculateAverage(graphData),
+                    // Build lineState
+                    lineState: {
+                        labels: graphLabels,
+                        datasets: [
+                            {
+                                label: this.state.dataTitle ?? "Line 1",
+                                backgroundColor: this.state.lineHandleColor,
+                                borderColor: this.state.lineColor,
+                                borderWidth: 1,
+                                data: graphData,
+                            }
+                        ]
+                    }
                 });
             });
         }
-
-        // Set state with finished data and labels
-        this.setState({
-            lineState: {
-                labels: graphLabels,
-                datasets: [
-                    {
-                        label: this.state.dataTitle ?? "Line 1",
-                        backgroundColor: this.state.lineHandleColor,
-                        borderColor: this.state.lineColor,
-                        borderWidth: 1,
-                        data: graphData,
-                    }
-                ]
-            }
-        });
     }
 
     render() {
         return (
             <div className="py-3">
-                <h3 className="">
-                    {this.state.sectionTitle}
+                <h3>
+                    { this.state.sectionTitle }
                 </h3>
                 <p>
-                    {this.state.sectionShortDesc} The graph will either show as many entries that exist or the last {this.state.dataLimit} entries. 
-                    The data is currently updated every 12 hours. 
+                    {this.state.sectionShortDesc}. Displaying the last '{this.state.dataLimit}' entries. 
+                    {
+                        this.state.dataAverage &&
+                        <div>
+                            Average of all data is <b>'{ formatNumber(this.state.dataAverage) }' {this.state.valueType}</b>
+                        </div>
+                    }
                 </p>
                 {
                     this.state.loadingFirebaseData &&

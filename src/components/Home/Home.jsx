@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import {
     Container,
-    Form
+    Form,
+    Row,
+    Col
 } from 'react-bootstrap';
 import firebase from "firebase/app";
 
@@ -12,6 +14,7 @@ import About from './About/About';
 import "./Home.css";
 
 import CONFIG from "../../config.json";
+import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
 class Home extends Component {
     constructor(props) {
@@ -19,6 +22,9 @@ class Home extends Component {
 
         this.state = {
             userAlgoAddress: null,
+
+            nllAppID: 233725844,
+            yldyStakingAppID: 233725850,
         };
 
         this.initFirebase = this.initFirebase.bind(this);
@@ -84,18 +90,60 @@ class Home extends Component {
                             userAlgoAddress={this.state.userAlgoAddress} 
                             firebase={this.state.firebase} 
                             />
+
+                    <AppStateHistoryGraph
+                        applicationID={this.state.nllAppID}
+                        dataKey="TYUL"
+                        valueType="YLDY"
+                        sectionTitle="Global Rewards History"
+                        sectionShortDesc="History of the global unlock rewards for the No Loss Lottery"
+                        xAxisLabel="Date/Time of Record"
+                        yAxisLabel="Amount of YLDY"
+                        dataTitle="YLDY in Global Unlock Rewards"
+                        graphHeight={125}
+                        />
                     </Container>
                 </div>
 
                 {/* Separator */}
                 <div className="my-3" />
 
-                <div className="">
-                    <Container className="">
+                <div>
+                    <Container>
                         <YLDYStaking 
                             userAlgoAddress={this.state.userAlgoAddress} 
                             firebase={this.state.firebase} 
                             />
+
+                        <Row className="py-3">
+                            <Col>
+                                <AppStateHistoryGraph
+                                    applicationID={this.state.yldyStakingAppID}
+                                    dataKey="TAP"
+                                    valueType="ALGO"
+                                    sectionTitle="ALGO Global Rewards History"
+                                    sectionShortDesc="History of ALGO as a global reward in YLDY Staking"
+                                    xAxisLabel="Date/Time of Record"
+                                    yAxisLabel="Amount of ALGO"
+                                    dataTitle="ALGO in Global Unlock Rewards"
+                                    decimalPrecision={2}
+                                    lineColor="#6cdef9"
+                                    lineHandleColor="grey"
+                                    />
+                            </Col>
+                            <Col>
+                                <AppStateHistoryGraph
+                                    applicationID={this.state.yldyStakingAppID}
+                                    dataKey="TYUL"
+                                    valueType="YLDY"
+                                    sectionTitle="YLDY Global Rewards History"
+                                    sectionShortDesc="History of YLDY as a global reward in YLDY Staking"
+                                    xAxisLabel="Date/Time of Record"
+                                    yAxisLabel="Amount of YLDY"
+                                    dataTitle="YLDY in Global Unlock Rewards"
+                                    />
+                            </Col>
+                        </Row>
                     </Container>
                 </div>
             </div>
