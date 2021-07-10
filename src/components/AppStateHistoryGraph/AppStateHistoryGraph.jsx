@@ -131,7 +131,7 @@ class AppStateHistoryGraph extends Component {
                     {
                         this.state.dataAverage &&
                         <div>
-                            Average of all data is <b>'{ formatNumber(this.state.dataAverage) }' {this.state.valueType}</b>
+                            Average of all data is <b>'{ formatNumber(this.state.dataAverage.toFixed(3)) }' {this.state.valueType}</b>
                         </div>
                     }
                 </p>
