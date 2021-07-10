@@ -11,6 +11,7 @@ Edit the configuration variables below the import statements before running.
 '''
 
 import time
+from datetime import datetime, timedelta
 import requests
 import json
 import base64
@@ -77,6 +78,19 @@ def get_application_vals(applicationID, appStateKeys):
     else:
         logging.error("Error: No data at application id", applicationID)
 
+# Calculates the awake time rounded to the hour after startTime plus sleepHours.
+# For example, startTime = 12:10:12 (in epoch ms unit), sleepHours = 4
+# returns datetime object with hh:mm:ss until 14:00, which would be 3:50:48
+def calc_awake_datetime(startEpochMsTime, sleepHours):
+    startDateTime = datetime.fromtimestamp(startEpochMsTime / 1000)
+    # Add sleepHours offset
+    endDT = startDateTime + timedelta(hours = sleepHours)
+    # Flatten minutes & seconds to rounded hour
+    flatDT = endDT.replace(minute=0, second=0)
+    # Determine duration until flattened datetime
+    durationDT = flatDT - startDateTime
+    return durationDT
+
 if __name__ == '__main__':
     # Setup logging config
     logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)03d %(levelname)s | %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
@@ -85,6 +99,11 @@ if __name__ == '__main__':
     if config.PYREBASE_CONFIG["apiKey"] is None or config.PYREBASE_CONFIG["apiKey"] is "":
         logging.error("No API key provided. Check config and try again")
         exit()  #Exit as dont have the required config info
+
+    # Check if sleep hours is more than 1
+    if config.SLEEP_HOURS < 1:
+        logging.error("Config SLEEP_HOURS can't be less than 1! Change and try again")
+        exit()
 
     logging.info("Starting YLDY Firebase fetching program")
 
@@ -111,5 +130,6 @@ if __name__ == '__main__':
                 logging.error("Error saving application state '{id}' values at '{time}'".format(id = idKey, time = LastBackupEpochTime))
 
         # Completed all fetching of data, sleep for hour period
-        logging.info("Sleeping for '{period}' hours".format(period = config.SLEEP_HOURS))
-        time.sleep(config.SLEEP_HOURS * 60 * 60)
+        awakeDateTime = calc_awake_datetime(LastBackupEpochTime, config.SLEEP_HOURS)
+        logging.info("Sleeping for '{period}' hours, awaking in '{awakeDateTime}' (HH:MM::SS)".format(period = config.SLEEP_HOURS, awakeDateTime = str(awakeDateTime)))
+        time.sleep(awakeDateTime.seconds)

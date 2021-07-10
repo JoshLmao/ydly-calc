@@ -477,7 +477,7 @@ class YLDYStaking extends Component {
                             sectionTitle="ALGO Global Rewards History"
                             sectionShortDesc="History of ALGO as a global reward in YLDY Staking"
                             xAxisLabel="Date/Time of Record"
-                            yAxisLabel="Amount of YLDY"
+                            yAxisLabel="Amount of ALGO"
                             dataTitle="ALGO in Global Unlock Rewards"
                             decimalPrecision={2}
                             lineColor="#6cdef9"
