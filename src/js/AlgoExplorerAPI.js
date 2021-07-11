@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import CONFIG from "../config.json";
+
 /// Gets the global contract values from  the 
 export function getContractValues(contractId, keys, callback) {
     // Query endpoint with id
@@ -103,7 +105,7 @@ export function getCurrentBlockTimestamp(callback) {
 
 // Gets the current YLDY price from the data provided by Yieldly
 export function getYLDYPrice (callback) {
-    let priceUrl = 'http://data.yieldly.finance/price';
+    let priceUrl = `${CONFIG.proxy_url}/http://data.yieldly.finance/price`;
     axios({
         url: priceUrl,
         method: 'GET',
