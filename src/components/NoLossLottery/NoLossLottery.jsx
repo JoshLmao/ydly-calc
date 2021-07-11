@@ -243,21 +243,6 @@ class NoLossLottery extends Component {
                         <h3>User Variables</h3>
                         <Row>
                             <Col md={6}>
-                                <h6>
-                                    User Time (UT)
-                                </h6>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Control 
-                                    type="text" 
-                                    placeholder="User Time (UT)" 
-                                    value={ this.state.user ? new Date(this.state.user?.time * 1000 ).toString() : "" }
-                                    onChange={(e) => this.setState({ userTime: e.target.value })} 
-                                    disabled/>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
                                 <h6 title="User Amount (UA)">
                                     Tickets
                                 </h6>
@@ -265,7 +250,8 @@ class NoLossLottery extends Component {
                             <Col md={6} className="d-flex">
                                 <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} alt="Algorand icon" />
                                 <Form.Control 
-                                    type="text" 
+                                    type="text"
+                                    className="dark-form-control-text"
                                     placeholder="User Amount (UA)"
                                     value={ this.state.algoTickets ?? "" }
                                     onChange={ this.onTicketsChanged }
@@ -281,9 +267,26 @@ class NoLossLottery extends Component {
                             <Col>
                                 <Form.Control 
                                     type="text" 
+                                    className="dark-form-control-text"
                                     placeholder="User Staking Shares (USS)"
                                     value={ this.state.user?.stakingShares != null ? formatNumber(fromMicroValue(this.state.user.stakingShares).toFixed(0)) : "" }
                                     onChange={(e) => this.setState({ userAmount: e.target.value })} 
+                                    disabled/>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={6}>
+                                <h6>
+                                    User Time (UT)
+                                </h6>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Control 
+                                    type="text" 
+                                    className="dark-form-control-text"
+                                    placeholder="User Time (UT)" 
+                                    value={ this.state.user ? new Date(this.state.user?.time * 1000 ).toString() : "" }
+                                    onChange={(e) => this.setState({ userTime: e.target.value })} 
                                     disabled/>
                             </Col>
                         </Row>
@@ -294,18 +297,6 @@ class NoLossLottery extends Component {
                         <h3>Application Variables</h3>
                         <Row>
                             <Col md={6}>
-                                <h6>Global Time (GT)</h6>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Control 
-                                    type="text" 
-                                    placeholder="Global Time (GT)" 
-                                    value={ this.state.global ? new Date( this.state.global.time * 1000 ).toString() : "" } 
-                                    disabled />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
                                 <h6>Total ALGO (tickets) in Lottery</h6>
                             </Col>
                             <Col md={6} className="d-flex">
@@ -313,6 +304,7 @@ class NoLossLottery extends Component {
                                 <Form.Control 
                                     type="text" 
                                     placeholder="Global Amount (GA)" 
+                                    className="dark-form-control-text"
                                     value={ this.state.global ? formatNumber(fromMicroValue(this.state.global.amount).toFixed(0)) : "" } 
                                     disabled />
                             </Col>
@@ -324,8 +316,22 @@ class NoLossLottery extends Component {
                             <Col md={6}>
                                 <Form.Control 
                                     type="text" 
+                                    className="dark-form-control-text"
                                     placeholder="Global Staking Shares (GSS)" 
                                     value={ this.state.global ? formatNumber(fromMicroValue(this.state.global.stakingShares).toFixed(0)) : "" } 
+                                    disabled />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col md={6}>
+                                <h6>Global Time (GT)</h6>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Control 
+                                    type="text" 
+                                    className="dark-form-control-text"
+                                    placeholder="Global Time (GT)" 
+                                    value={ this.state.global ? new Date( this.state.global.time * 1000 ).toString() : "" } 
                                     disabled />
                             </Col>
                         </Row>
@@ -341,6 +347,7 @@ class NoLossLottery extends Component {
                         <Col md={6}>
                             <Form.Control 
                                 type="number" 
+                                className="dark-form-control-text"
                                 value={this.state.daysPeriod} 
                                 onChange={this.onTimePeriodChanged} />
                         </Col>
@@ -361,6 +368,7 @@ class NoLossLottery extends Component {
                                 src={YLDY_ICON} width={25} height={25} alt="Yieldly icon" />
                             <Form.Control 
                                 type="text"
+                                className="dark-form-control-text"
                                 value={ this.state.global ? formatNumber(microAlgoToAlgo(this.state.global.totalYldyRewards).toFixed(0)) : "" }
                                 disabled
                                 />
@@ -378,7 +386,7 @@ class NoLossLottery extends Component {
                             {
                                 this.state.global?.totalYldyRewards != null && this.state.totalClaimableRewards != null &&
                                 <div>
-                                    { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.global.totalYldyRewards), this.state.totalClaimableRewards) }% share of rewards pool
+                                    { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.global.totalYldyRewards), this.state.totalClaimableRewards).toFixed(10) }% share of rewards pool
                                 </div>
                             }
                             {
@@ -392,7 +400,7 @@ class NoLossLottery extends Component {
                                 src={YLDY_ICON} width={25} height={25} 
                                 alt="Yieldly icon" />
                             <Form.Control 
-                                className="my-auto"
+                                className="my-auto dark-form-control-text"
                                 type="text" 
                                 title={"Raw: " + this.state.totalClaimableRewards}
                                 placeholder="TBD | YLDY rewards" 

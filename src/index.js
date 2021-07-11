@@ -6,6 +6,8 @@ import App from './components/App';
 
 // Import Bootstrap component styles
 import 'bootstrap/dist/css/bootstrap.min.css';
+// Custom shared css
+import "./YLDYEst-Shared.css";
 
 ReactDOM.render(
   <React.StrictMode>

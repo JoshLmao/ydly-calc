@@ -14,8 +14,6 @@ import YLDYStaking from '../YLDYStaking/YLDYStaking';
 import About from './About/About';
 import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
-import "./Home.css";
-
 class Home extends Component {
     constructor(props) {
         super(props);
@@ -54,6 +52,7 @@ class Home extends Component {
                         <h6>Algorand Address:</h6>
                         <Form.Control 
                             type="text" 
+                            className="dark-form-control-text"
                             placeholder="Your Algorand Address that has interacted with the Yieldly platform" 
                             value={this.state.userAlgoAddress ?? ""} 
                             onChange={(e) => this.setState({ userAlgoAddress: e.target.value })} />

@@ -125,6 +125,10 @@ class AppStateHistoryGraph extends Component {
     }
 
     render() {
+        // If no firebase, dont' render anything (invisible)
+        if (!isFirebaseInitialized())
+            return null;
+
         return (
             <div className="py-3">
                 <h3>
