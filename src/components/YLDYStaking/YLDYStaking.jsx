@@ -23,6 +23,7 @@ import {
 } from '../../js/YLDYCalculation';
 
 import "../../YLDYEst-Shared.css";
+import { constants } from '../../js/consts';
 
 class YLDYStaking extends Component {
     constructor(props) {
@@ -30,7 +31,7 @@ class YLDYStaking extends Component {
 
         this.state = {
             // YLDY Staking application/contract id
-            applicationID: 233725850,
+            applicationID: constants.YLDY_STAKING_APP_ID,
 
             fetchingGlobalVars: false,
 

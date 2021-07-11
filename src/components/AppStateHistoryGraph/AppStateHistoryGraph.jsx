@@ -125,24 +125,26 @@ class AppStateHistoryGraph extends Component {
     }
 
     render() {
-        // If no firebase, dont' render anything (invisible)
-        if (!isFirebaseInitialized())
-            return null;
-
+        // If no firebase, display simple error message
+        if (!isFirebaseInitialized()) {
+            return (
+                <div className="py-3">
+                    Sorry, Firebase couldn't be initialized. Blame Josh, he broke it.
+                </div>
+            )
+        }
         return (
             <div className="py-3">
                 <h3>
                     { this.state.sectionTitle }
                 </h3>
-                <p>
+                <div>
                     {this.state.sectionShortDesc}. Displaying the last '{this.state.dataLimit}' entries. 
                     {
-                        this.state.dataAverage &&
-                        <div>
-                            Average of all data is <b>'{ formatNumber(this.state.dataAverage.toFixed(3)) }' {this.state.valueType}</b>
-                        </div>
+                        this.state.dataAverage && 
+                            <div>Average of all data is <b>'{ formatNumber(this.state.dataAverage.toFixed(3)) }' {this.state.valueType}</b></div>
                     }
-                </p>
+                </div>
                 {
                     this.state.loadingFirebaseData &&
                         <div className="w-100">
