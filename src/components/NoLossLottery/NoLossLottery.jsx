@@ -23,6 +23,7 @@ import {
 
 import YLDY_ICON from "../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../svg/algo-icon.svg";
+import { constants } from '../../js/consts';
 
 class NoLossLottery extends Component {
     constructor(props) {
@@ -33,7 +34,7 @@ class NoLossLottery extends Component {
             algoAddress: this.props.userAlgoAddress,
 
             // Contract ID to use
-            contractID: 233725844,
+            contractID: constants.NO_LOSS_LOTTERY_APP_ID,
 
             fetchingUsrVars: false,
             fetchingGlobalVars: false,
@@ -226,8 +227,12 @@ class NoLossLottery extends Component {
             <div className="py-3" data-spy="scroll" data-target="#estimator-navbar">
                 <h1 
                     className="yieldly-main-color"
-                    id="no-loss-lottery">No Loss Lottery</h1>
-                <h6>No Loss Lottery Application: <a href="https://algoexplorer.io/application/233725844">233725844</a></h6>
+                    id="no-loss-lottery">
+                    No Loss Lottery
+                </h1>
+                <h6>
+                    No Loss Lottery Application: <a href={`https://algoexplorer.io/application/${this.state.contractID}`}>{this.state.contractID}</a>
+                </h6>
 
                 {/* Display error message if one is set*/}
                 {

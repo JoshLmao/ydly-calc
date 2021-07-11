@@ -5,9 +5,9 @@ import {
     Row,
     Col
 } from 'react-bootstrap';
-import { 
-    initFirebase 
-} from '../../js/FirebaseAPI';
+import {
+    constants
+} from "../../js/consts";
 
 import NoLossLottery from '../NoLossLottery/NoLossLottery';
 import YLDYStaking from '../YLDYStaking/YLDYStaking';
@@ -21,12 +21,9 @@ class Home extends Component {
         this.state = {
             userAlgoAddress: null,
 
-            nllAppID: 233725844,
-            yldyStakingAppID: 233725850,
+            nllAppID: constants.NO_LOSS_LOTTERY_APP_ID,
+            yldyStakingAppID: constants.YLDY_STAKING_APP_ID,
         };
-
-        // Prepare now for children to get on mount
-        initFirebase();
     }
 
     render() {

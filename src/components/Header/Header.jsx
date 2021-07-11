@@ -12,10 +12,12 @@ import {
     faTwitter
 } from '@fortawesome/free-brands-svg-icons';
 
+import { getYLDYPrice } from '../../js/AlgoExplorerAPI';
+
 import CONFIG from "../../config.json";
+import YLDY_ICON from "../../svg/yldy-icon.svg";
 
 import "./Header.css";
-import { getYLDYPrice } from '../../js/AlgoExplorerAPI';
 
 let pkg = require('../../../package.json');
 
@@ -64,16 +66,26 @@ class Header extends Component {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="w-100">
                             
-                            <a className="nav-link mx-1" href="#no-loss-lottery">No Loss Lottery</a>
-                            <a className="nav-link mx-1" href="#yldy-staking">YLDY Staking</a>
+                            <a className="nav-link mx-1" href="/#no-loss-lottery">No Loss Lottery</a>
+                            <a className="nav-link mx-1" href="/#yldy-staking">YLDY Staking</a>
+                            <a className="nav-link mx-1" href="/totals">Application Totals</a>
                             
                             {/* Invis Margin separator */}
                             <div className="ml-auto"></div>
 
                             {
                                 this.state.YLDYPrice &&
-                                    <div className="my-auto mx-1 py-1">
-                                        YLDY: ${this.state.YLDYPrice}
+                                    <div className="d-flex my-auto mx-1 py-1">
+                                        <img 
+                                            className="my-auto mx-2"
+                                            src={YLDY_ICON}
+                                            alt="Yieldly icon"
+                                            width="21"
+                                            height="21"
+                                            />
+                                        <div>
+                                            ${this.state.YLDYPrice}
+                                        </div>
                                     </div>
                             }
                             <div className="d-flex">
