@@ -8,8 +8,6 @@ import {
 
 import CONFIG from "../../../config.json";
 
-import "../Home.css";
-
 import ALGO_ICON from "../../../svg/algo-icon.svg";
 
 class About extends Component {

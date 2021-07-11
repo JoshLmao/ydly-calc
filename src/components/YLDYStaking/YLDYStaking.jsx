@@ -22,6 +22,8 @@ import {
     calculateYLDYRewardsFromDayPeriod 
 } from '../../js/YLDYCalculation';
 
+import "../../YLDYEst-Shared.css";
+
 class YLDYStaking extends Component {
     constructor(props) {
         super(props);
@@ -244,19 +246,6 @@ class YLDYStaking extends Component {
                         <h3>User Variables</h3>
                         <Row>
                             <Col>
-                                <h6>User Time (UT)</h6>
-                            </Col>
-                            <Col>
-                                <Form.Control 
-                                    type="text"
-                                    disabled
-                                    value={ this.state.user ? new Date(this.state.user.time * 1000 ).toString() : "" }
-                                    placeholder="User Time (UT)"
-                                    />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
                                 <h6>Staked YLDY</h6>
                             </Col>
                             <Col className="d-flex">
@@ -269,6 +258,7 @@ class YLDYStaking extends Component {
                                     />
                                 <Form.Control 
                                     type="text"
+                                    className="dark-form-control-text"
                                     value={ this.state.yldyStaked ?? "" }
                                     onChange={ this.onYldyStakedChanged }
                                     placeholder="User Amount (UA)"
@@ -282,29 +272,30 @@ class YLDYStaking extends Component {
                             <Col>
                                 <Form.Control 
                                     type="text"
+                                    className="dark-form-control-text"
                                     disabled
                                     value={ this.state.user?.stakingShares != null ? formatNumber(fromMicroValue(this.state.user.stakingShares).toFixed(0)) : "" }
                                     placeholder="User Staking Shares (USS)"
                                     />
                             </Col>
                         </Row>
-                    </Col>
-                    <Col md={6}>
-                        <h3>Application Variables</h3>
-
                         <Row>
                             <Col>
-                                <h6>Global Time (GT)</h6>
+                                <h6>User Time (UT)</h6>
                             </Col>
                             <Col>
                                 <Form.Control 
                                     type="text"
-                                    value={ this.state.global?.time ? new Date(this.state.global.time * 1000).toString() : "" }
-                                    placeholder="Global Time (GT)"
+                                    className="dark-form-control-text"
                                     disabled
+                                    value={ this.state.user ? new Date(this.state.user.time * 1000 ).toString() : "" }
+                                    placeholder="User Time (UT)"
                                     />
                             </Col>
                         </Row>
+                    </Col>
+                    <Col md={6}>
+                        <h3>Application Variables</h3>
                         <Row>
                             <Col>
                                 <h6>Total YLDY in YLDY Staking</h6>
@@ -319,6 +310,7 @@ class YLDYStaking extends Component {
                                     />
                                 <Form.Control 
                                     type="text"
+                                    className="dark-form-control-text"
                                     value={ this.state.global?.amount ? formatNumber(fromMicroValue(this.state.global.amount).toFixed(0)) : "" }
                                     placeholder="Global Amount (GA)"
                                     disabled
@@ -332,8 +324,23 @@ class YLDYStaking extends Component {
                             <Col>
                                 <Form.Control 
                                     type="text"
+                                    className="dark-form-control-text"
                                     value={ this.state.global?.stakingShares ? formatNumber(fromMicroValue(this.state.global.stakingShares).toFixed(0)) : "" }
                                     placeholder="Global Staking Shares (GSS)"
+                                    disabled
+                                    />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <h6>Global Time (GT)</h6>
+                            </Col>
+                            <Col>
+                                <Form.Control 
+                                    type="text"
+                                    className="dark-form-control-text"
+                                    value={ this.state.global?.time ? new Date(this.state.global.time * 1000).toString() : "" }
+                                    placeholder="Global Time (GT)"
                                     disabled
                                     />
                             </Col>
@@ -352,6 +359,7 @@ class YLDYStaking extends Component {
                         <Col>
                             <Form.Control 
                                 type="number"
+                                className="dark-form-control-text"
                                 onChange={ this.onDaysPeriodChanged }
                                 value={ this.state.daysPeriod }
                                 placeholder="Amount of days"
@@ -379,6 +387,7 @@ class YLDYStaking extends Component {
                                 />
                             <Form.Control
                                 type="text"
+                                className="dark-form-control-text"
                                 value={ this.state.global?.totalAlgoRewards ? formatNumber(fromMicroValue(this.state.global.totalAlgoRewards).toFixed(0)) : "" }
                                 placeholder="Total ALGO in pool"
                                 disabled
@@ -399,6 +408,7 @@ class YLDYStaking extends Component {
                                 />
                             <Form.Control
                                 type="text"
+                                className="dark-form-control-text"
                                 value={ this.state.global?.totalYldyRewards ? formatNumber(fromMicroValue(this.state.global?.totalYldyRewards).toFixed(0)) : "" }
                                 placeholder="Total YLDY in pool"
                                 disabled
@@ -442,6 +452,7 @@ class YLDYStaking extends Component {
                                     />
                                 <Form.Control
                                     type="text"
+                                    className="dark-form-control-text"
                                     value={ this.state.claimableAlgoRewards != null ? formatNumber(this.state.claimableAlgoRewards.toFixed(3)) : "" }
                                     title={ "Raw: " + this.state.claimableAlgoRewards }
                                     placeholder="TBD | ALGO rewards"
@@ -458,6 +469,7 @@ class YLDYStaking extends Component {
                                     />
                                 <Form.Control
                                     type="text"
+                                    className="dark-form-control-text"
                                     value={ this.state.claimableYldyRewards != null ? formatNumber( this.state.claimableYldyRewards.toFixed(0)) : "" }
                                     title={ "Raw: " + this.state.claimableYldyRewards }
                                     placeholder="TBD | YLDY rewards"

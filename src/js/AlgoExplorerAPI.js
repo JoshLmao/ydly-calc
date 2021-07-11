@@ -111,7 +111,7 @@ export function getYLDYPrice (callback) {
         method: 'GET',
         // headers: {
         //     origin: "https://yldy-estimator.joshlmao.com",
-        // },
+        // }
     }).then((result) => {
         if (result && result.data) {
             if (callback)

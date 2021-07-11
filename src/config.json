@@ -5,9 +5,7 @@
     "twitter_link": "https://twitter.com/joshlmao",
     "creator_link": "https://joshlmao.com",
     "firebase_config": {
-        "apiKey": "",
         "projectId": "yldy-estimator",
-        "databaseURL": "",
         "authDomain": "yldy-estimator.firebaseapp.com",
         "storageBucket": "yldy-estimator.appspot.com"
     }
