@@ -109,6 +109,9 @@ export function getYLDYPrice (callback) {
     axios({
         url: priceUrl,
         method: 'GET',
+        headers: {
+            origin: "https://yldy-estimator.joshlmao.com",
+        }
     }).then((result) => {
         if (result && result.data) {
             if (callback)
