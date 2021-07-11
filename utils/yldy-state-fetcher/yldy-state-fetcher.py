@@ -12,6 +12,7 @@ Edit the configuration variables below the import statements before running.
 
 import time
 from datetime import datetime, timedelta
+from dateutil import tz
 import requests
 import json
 import base64
@@ -86,11 +87,40 @@ def calc_awake_datetime(startEpochMsTime, sleepHours):
     # Add sleepHours offset
     endDT = startDateTime + timedelta(hours = sleepHours)
     # Flatten minutes & seconds to rounded hour
-    flatDT = endDT.replace(minute=0, second=0)
+    flatDT = endDT.replace(minute=0, second=0, microsecond=0)
     # Determine duration until flattened datetime
     durationDT = flatDT - startDateTime
     return durationDT
 
+# Calculates the segmented start time and returns the amount of time inbetween now and then
+# For example, if sleepHours is 4, then the scheduled run time should be 00:00, 04:00, 08:00, 12:00, etc.
+# Then calculates the amount of time between now and one of those scheduled times
+# Returns nothing if sleepHours can't segment nicely with 24.
+def calc_start_dt_difference(sleepHours):
+    # Get today and start of day times 
+    today = datetime.utcnow().date()
+    start = datetime(today.year, today.month, today.day)
+
+    # See if sleepHours goes into 24 nicely
+    canSegment = 24 % sleepHours
+    if canSegment is 0:
+        # Determine when the last schedule run hour was
+        now = datetime.now()
+        lastScheduleRunHour = now.hour - (now.hour % sleepHours)
+        start = start + timedelta(hours = lastScheduleRunHour)
+        # Figure out next schedule run time
+        end = start + timedelta(hours = sleepHours)
+        # Get hour difference between next schedule run time and now
+        hourDiff = end.hour - now.hour
+        # Get time difference and return
+        runTime = calc_awake_datetime(now.timestamp() * 1000, hourDiff)
+        return runTime
+    else:
+        # Doesn't fit nicely, log and return nothing
+        logging.error("SleepHours '{sleepHours}' doesn't modulus 24, won't schedule to start on hour marker")
+        return
+
+# Main
 if __name__ == '__main__':
     # Setup logging config
     logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)03d %(levelname)s | %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
@@ -110,11 +140,18 @@ if __name__ == '__main__':
     # Init firebase & assign user
     FIREBASE = pyrebase.initialize_app(config.PYREBASE_CONFIG)
 
+    # Determine scheduled start time
+    sleepDuration = calc_start_dt_difference(config.SLEEP_HOURS)
+    if sleepDuration is not None:
+        executeTime = datetime.now() + sleepDuration
+        logging.info("Sleeping for '{sleepDuration}' ('{totalSeconds}' seconds) to execute at '{executeTime}'".format(sleepDuration = str(sleepDuration), totalSeconds=sleepDuration.total_seconds(), executeTime = str(executeTime)))
+        time.sleep(sleepDuration.total_seconds())
+
     # Start constant loop
     while True:
         # Get new epoch time on new start
         LastBackupEpochTime = get_epoch_time()
-
+        
         # Loop over Dictionary with key value pairs
         for idKey in config.APP_ID_STATE_KEYS_DICT:
             logging.info("Beginning saving of '{id}' global values".format(id = idKey))

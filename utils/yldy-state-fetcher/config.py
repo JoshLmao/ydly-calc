@@ -1,5 +1,5 @@
 # Amount of hours to sleep before updating
-SLEEP_HOURS = 6
+SLEEP_HOURS = 4
 
 # NLL application id
 nllApplicationID = 233725844
