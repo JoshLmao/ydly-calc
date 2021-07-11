@@ -9,6 +9,7 @@ import { formatNumber, fromMicroValue } from '../../js/utility';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { calculateAverage } from '../../js/YLDYCalculation';
+import { getApplicationData, isFirebaseInitialized } from '../../js/FirebaseAPI';
 
 class AppStateHistoryGraph extends Component {
     constructor(props) {
@@ -63,7 +64,7 @@ class AppStateHistoryGraph extends Component {
 
     createState() {
         // Dont load any data if no firebase auth
-        if (firebase.apps.length <= 0) {
+        if (!isFirebaseInitialized()) {
             console.error("Firebase uninitialized!");
             return;
         }
@@ -79,9 +80,12 @@ class AppStateHistoryGraph extends Component {
         // Call firebase and get data
         if (firebase) { 
             // db/{application_id}, limit data to certain amount
-            firebase.database().ref(`${this.state.applicationID}/`).limitToFirst(this.state.dataLimit).once('value').then((snapshot) => {
-                const data = snapshot.val();
-                
+            getApplicationData(this.state.applicationID, this.state.dataLimit, (data) => {
+                if (!data) {
+                    console.error("Didn't reecieve any data");
+                    return;
+                }
+
                 for(let epochTimeKey in data) {
                     // Parse Epoch MS to Date and format display string
                     let date = new Date(parseInt(epochTimeKey));

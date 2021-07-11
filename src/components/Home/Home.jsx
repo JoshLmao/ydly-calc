@@ -5,16 +5,16 @@ import {
     Row,
     Col
 } from 'react-bootstrap';
-import firebase from "firebase/app";
+import { 
+    initFirebase 
+} from '../../js/FirebaseAPI';
 
 import NoLossLottery from '../NoLossLottery/NoLossLottery';
 import YLDYStaking from '../YLDYStaking/YLDYStaking';
 import About from './About/About';
+import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
 import "./Home.css";
-
-import CONFIG from "../../config.json";
-import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
 class Home extends Component {
     constructor(props) {
@@ -27,32 +27,8 @@ class Home extends Component {
             yldyStakingAppID: 233725850,
         };
 
-        this.initFirebase = this.initFirebase.bind(this);
-
         // Prepare now for children to get on mount
-        this.initFirebase();
-    }
-
-    initFirebase() {
-        // Get API key and Database url from environment variables
-        let apiKey = process.env.REACT_APP_FIREBASE_API_KEY;
-        let databaseUrl = process.env.REACT_APP_FIREBASE_DATABASE_URL;
-        if (!CONFIG.firebase_config || !apiKey || !databaseUrl) {
-            console.error("Error initializing Firebase. Is the config set correctly? Have you set environment variables?");
-            return;            
-        }
-
-        if (firebase.apps.length === 0) {
-            // Initialize Firebase if not already
-            let fullConfig = {
-                apiKey: apiKey,
-                databaseURL: databaseUrl,
-                projectId: CONFIG.firebase_config.projectId,
-                authDomain: CONFIG.firebase_config.authDomain,
-                storageBucket: CONFIG.firebase_config.storageBucket,
-            };
-            firebase.initializeApp(fullConfig);
-        } 
+        initFirebase();
     }
 
     render() {
