@@ -30,8 +30,8 @@ class App extends Component {
                     <Route exact path="/totals" component={AppTotals} />
                     <Route component={FourOhFour} />
                 </Switch>
+                
                 <Footer />
-
             </BrowserRouter>
         );
     }
