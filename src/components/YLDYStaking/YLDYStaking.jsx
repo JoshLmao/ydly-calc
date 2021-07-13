@@ -341,7 +341,7 @@ class YLDYStaking extends Component {
                                             calculateRewardsPoolPercentageShare(
                                                 fromMicroValue(this.state.global.totalYldyRewards),
                                                 this.state.claimableYldyRewards
-                                            )
+                                            ).toFixed(10)
                                         }
                                         % share of ALGO/YLDY global unlock rewards pool
                                     </div>
