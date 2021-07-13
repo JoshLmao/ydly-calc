@@ -14,11 +14,13 @@ class FourOhFour extends Component {
         let funnySentence = comedyGeniusSentences[Math.floor(Math.random() * comedyGeniusSentences.length)];
 
         return (
-            <div className="py-5 secondary-background all-text-white" style={{
+            <div className="py-5 mt-5 bg-dark all-text-white" style={{
                 minHeight: "100%"
             }}>
                 <Container className="py-5">
-                    <h1 className="yieldly-main-color">你迷路了吗</h1>
+                    <h1 className="yieldly-main-color">
+                        你迷路了吗
+                    </h1>
                     <p>{ funnySentence }</p>
                     <Link to="/">
                         <Button className="d-flex">

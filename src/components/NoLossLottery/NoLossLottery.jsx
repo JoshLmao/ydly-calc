@@ -1,24 +1,20 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
+import { Row, Col, Form, Card, InputGroup } from "react-bootstrap";
 import {
-    Row, 
-    Col,
-    Form,
-} from 'react-bootstrap';
-import { 
-    getContractValues, 
-    getCurrentBlockTimestamp, 
-    getUserStateValues 
-} from '../../js/AlgoExplorerAPI';
-import { 
-    calculateYLDYRewardsFromDayPeriod,
-    calculateRewardsPoolPercentageShare
-} from '../../js/YLDYCalculation';
+  getContractValues,
+  getCurrentBlockTimestamp,
+  getUserStateValues,
+} from "../../js/AlgoExplorerAPI";
 import {
-    microAlgoToAlgo,
-    fromMicroValue,
-    formatNumber,
-    isStringBlank,
-    getDayDifference
+  calculateYLDYRewardsFromDayPeriod,
+  calculateRewardsPoolPercentageShare,
+} from "../../js/YLDYCalculation";
+import {
+  microAlgoToAlgo,
+  fromMicroValue,
+  formatNumber,
+  isStringBlank,
+  getDayDifference,
 } from "../../js/utility";
 
 import YLDY_ICON from "../../svg/yldy-icon.svg";
@@ -57,7 +53,7 @@ class NoLossLottery extends Component {
             // },
 
             // Amount of algo tickets in NLL
-            algoTickets: null,
+            algoTickets: 0,
 
             // Calculated amount of YLDY user can claim
             totalClaimableRewards: null,
@@ -82,11 +78,9 @@ class NoLossLottery extends Component {
             fetchingGlobalVars: true,
         });
 
-        // Keys to retrieve from the contract's state. 
+        // Keys to retrieve from the contract's state.
         // Global Time (GT), Global Amount (GA), Global Staking Shares (GSS), Total Yieldly (TYUL)
-        let allKeys = [
-            "GT", "GA", "TYUL", "GSS"
-        ];
+        let allKeys = ["GT", "GA", "TYUL", "GSS"];
         // Call API and get keys
         getContractValues(this.state.contractID, allKeys, (contractVars) => {
             this.setState({
@@ -112,15 +106,18 @@ class NoLossLottery extends Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.userAlgoAddress !== this.props.userAlgoAddress) {
-            this.setState({
-                algoAddress: this.props.userAlgoAddress,
-            }, () => {
-                this.fetchUserVariables();
-            });
+            this.setState(
+                {
+                    algoAddress: this.props.userAlgoAddress,
+                },
+                () => {
+                    this.fetchUserVariables();
+                }
+            );
         }
     }
 
-    fetchUserVariables () {
+    fetchUserVariables() {
         if (this.state.usrVarsErrorMsg) {
             this.setState({
                 usrVarsErrorMsg: null,
@@ -141,18 +138,21 @@ class NoLossLottery extends Component {
             getUserStateValues(this.state.algoAddress, this.state.contractID, (data) => {
                 if (data) {
                     console.log(`Successfully got user variables from application '${this.state.contractID}' on address '${this.state.algoAddress}'`);
-                    this.setState({
+                    this.setState(
+                    {
                         user: {
                             time: data.userTime,
                             amount: data.userAmount,
                             stakingShares: data.userStakingShares,
                         },
-                        daysPeriod: getDayDifference(data.userTime, this.state.global.time),
+                        daysPeriod: getDayDifference( data.userTime, this.state.global.time ),
                         algoTickets: data.userAmount / 1000000,
                         fetchingUsrVars: false,
-                    }, () => {
+                    },
+                    () => {
                         this.updateResults();
-                    });
+                    }
+                    );
                 } else {
                     console.error("No user state values in address!");
                     this.setState({
@@ -161,8 +161,7 @@ class NoLossLottery extends Component {
                     });
                 }
             });
-        }
-        else {
+        } else {
             console.error("Algo address is empty or currently updating values!");
             this.setState({
                 usrVarsErrorMsg: "Algorand address is empty or already updating values! Please try entering a new Algorand address",
@@ -181,19 +180,25 @@ class NoLossLottery extends Component {
             val = parseInt(e.target.value);
         }
 
-        this.setState({ 
-            daysPeriod: val,
-        }, () => {
-            this.updateResults();
-        });
+        this.setState(
+            {
+                daysPeriod: val,
+            },
+            () => {
+                this.updateResults();
+            }
+        );
     }
-    
+
     onTicketsChanged(e) {
-        this.setState({ 
-            algoTickets: e.target.value,
-        }, () => {
-            this.updateResults();
-        });
+        this.setState(
+            {
+                algoTickets: e.target.value,
+            },
+            () => {
+                this.updateResults();
+            }
+        );
     }
 
     updateResults() {
@@ -205,9 +210,15 @@ class NoLossLottery extends Component {
                 // Multiply by 10^6 as formula/other values are 10^6
                 let algoTickets = ticketsNumber * 1000000;
                 let uss = this.state.user?.stakingShares ?? 0;
-                
+
                 // Calculate YLDY rewards in current pool
-                let totalRewards = calculateYLDYRewardsFromDayPeriod(uss, this.state.daysPeriod, algoTickets, this.state.global.stakingShares, this.state.global.totalYldyRewards);
+                let totalRewards = calculateYLDYRewardsFromDayPeriod(
+                    uss,
+                    this.state.daysPeriod,
+                    algoTickets,
+                    this.state.global.stakingShares,
+                    this.state.global.totalYldyRewards
+                );
                 // Update value
                 this.setState({ totalClaimableRewards: totalRewards });
             } else {
@@ -224,202 +235,271 @@ class NoLossLottery extends Component {
 
     render() {
         return (
-            <div className="py-3" data-spy="scroll" data-target="#estimator-navbar">
-                <h1 
-                    className="yieldly-main-color"
-                    id="no-loss-lottery">
+            <div className="py-5" data-spy="scroll" data-target="#estimator-navbar">
+                <h1
+                    className="font-weight-bold display-4 text-primary text-center my-4"
+                    style={{ textShadow: "2px 2px rgb(109, 222, 249)" }}>
                     No Loss Lottery
                 </h1>
-                <h6>
-                    No Loss Lottery Application: <a href={`https://algoexplorer.io/application/${this.state.contractID}`}>{this.state.contractID}</a>
-                </h6>
+
+                <p className="small text-center">
+                    contract address:
+                    {" "}
+                    <a
+                        href="https://algoexplorer.io/application/233725844"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary font-weight-bold">
+                        233725844
+                    </a>
+                </p>
 
                 {/* Display error message if one is set*/}
                 {
-                    this.state.usrVarsErrorMsg &&
-                    <div style={{ color: "rgb(255, 50, 50)" }}>
-                        { this.state.usrVarsErrorMsg }
-                    </div>
+                    this.state.usrVarsErrorMsg && (
+                        <p className="text-danger">{this.state.usrVarsErrorMsg}</p>
+                    )
                 }
 
-                <Row>
-                    {/* User Variables, from user address App's section in algoexplorer.io */}
-                    <Col md={6}>
-                        <h3>User Variables</h3>
-                        <Row>
-                            <Col md={6}>
-                                <h6 title="User Amount (UA)">
-                                    Tickets
-                                </h6>
-                            </Col>
-                            <Col md={6} className="d-flex">
-                                <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} alt="Algorand icon" />
-                                <Form.Control 
-                                    type="text"
-                                    className="dark-form-control-text"
-                                    placeholder="User Amount (UA)"
-                                    value={ this.state.algoTickets ?? "" }
-                                    onChange={ this.onTicketsChanged }
-                                    />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
-                                <h6 className="mb-0">
-                                    User Staking Shares (USS)
-                                </h6>
-                            </Col>
-                            <Col>
-                                <Form.Control 
-                                    type="text" 
-                                    className="dark-form-control-text"
-                                    placeholder="User Staking Shares (USS)"
-                                    value={ this.state.user?.stakingShares != null ? formatNumber(fromMicroValue(this.state.user.stakingShares).toFixed(0)) : "" }
-                                    onChange={(e) => this.setState({ userAmount: e.target.value })} 
-                                    disabled/>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
-                                <h6>
-                                    User Time (UT)
-                                </h6>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Control 
-                                    type="text" 
-                                    className="dark-form-control-text"
-                                    placeholder="User Time (UT)" 
-                                    value={ this.state.user ? new Date(this.state.user?.time * 1000 ).toString() : "" }
-                                    onChange={(e) => this.setState({ userTime: e.target.value })} 
-                                    disabled/>
-                            </Col>
-                        </Row>
+                <Row className="py-5">
+                    <Col md="6">
+                        <Card className="p-3 p-md-5 my-3 bg-dark border-primary glow-pink">
+                            <p className="lead font-weight-bold">
+                                <img
+                                    className="my-auto mr-2"
+                                    src={YLDY_ICON}
+                                    width={25}
+                                    height={25}
+                                    alt="Yieldly icon"
+                                />
+                                YLDY Claimable Rewards
+                            </p>
+                            <p className="display-4">
+                                {
+                                    this.state.totalClaimableRewards != null
+                                    ? 
+                                    this.state.totalClaimableRewards?.toFixed(2)
+                                    : 
+                                    "0"
+                                }
+                            </p>
+                            <p className="small">
+                                The amount of rewards available to current address after 
+                                '{this.state.daysPeriod}' day(s), with the current global
+                                unlock rewards pool at '
+                                {
+                                    this.state.global
+                                    ? 
+                                    formatNumber(
+                                        (this.state.global.totalYldyRewards / 1000).toFixed(0)
+                                    )
+                                    : 
+                                    "?"
+                                }
+                                ' YLDY
+                            </p>
+                            <p className="small">
+                                {
+                                    this.state.global?.totalYldyRewards != null && this.state.totalClaimableRewards != null && (
+                                        <div>
+                                            {
+                                                calculateRewardsPoolPercentageShare(
+                                                    fromMicroValue(this.state.global.totalYldyRewards),
+                                                    this.state.totalClaimableRewards
+                                                ).toFixed(10)
+                                            }
+                                            % share of rewards pool
+                                        </div>
+                                    )
+                                }
+                                {
+                                    this.state.user?.time && this.state.global?.time && (
+                                        <div>
+                                            You currently have '
+                                            {
+                                                getDayDifference(
+                                                    this.state.user.time,
+                                                    this.state.global.time
+                                                )
+                                            }
+                                            ' days of unclaimed rewards.
+                                        </div>
+                                    )
+                                }
+                            </p>
+                        </Card>
                     </Col>
-
-                    {/* Global Values */}
-                    <Col md={6}>
-                        <h3>Application Variables</h3>
-                        <Row>
-                            <Col md={6}>
-                                <h6>Total ALGO (tickets) in Lottery</h6>
-                            </Col>
-                            <Col md={6} className="d-flex">
-                                <img src={ALGO_ICON} className="my-auto mr-1" height={25} width={25} alt="Algorand icon" />
-                                <Form.Control 
-                                    type="text" 
-                                    placeholder="Global Amount (GA)" 
-                                    className="dark-form-control-text"
-                                    value={ this.state.global ? formatNumber(fromMicroValue(this.state.global.amount).toFixed(0)) : "" } 
-                                    disabled />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
-                                <h6>Global Staking Shares (GSS)</h6>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Control 
-                                    type="text" 
-                                    className="dark-form-control-text"
-                                    placeholder="Global Staking Shares (GSS)" 
-                                    value={ this.state.global ? formatNumber(fromMicroValue(this.state.global.stakingShares).toFixed(0)) : "" } 
-                                    disabled />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col md={6}>
-                                <h6>Global Time (GT)</h6>
-                            </Col>
-                            <Col md={6}>
-                                <Form.Control 
-                                    type="text" 
-                                    className="dark-form-control-text"
-                                    placeholder="Global Time (GT)" 
-                                    value={ this.state.global ? new Date( this.state.global.time * 1000 ).toString() : "" } 
-                                    disabled />
-                            </Col>
-                        </Row>
+                    <Col md="6">
+                        <Card className="p-3 p-md-5 my-3 bg-dark border-primary glow-pink">
+                            <Form>
+                                <Form.Group controlId="tickets">
+                                    <Form.Label className="lead font-weight-bold">
+                                        Amount of ALGO tickets you have in the no loss lottery
+                                    </Form.Label>
+                                    <InputGroup className="mb-2">
+                                        <InputGroup.Prepend>
+                                        <InputGroup.Text>
+                                            <img
+                                            src={ALGO_ICON}
+                                            className="my-auto mr-1"
+                                            height={25}
+                                            width={25}
+                                            alt="Algorand icon"
+                                            />
+                                        </InputGroup.Text>
+                                        </InputGroup.Prepend>
+                                        <Form.Control
+                                        size="lg"
+                                        type="number"
+                                        placeholder="Amount of ALGO tickets you have in the no loss lottery"
+                                        value={this.state.algoTickets}
+                                        onChange={this.onTicketsChanged}
+                                        />
+                                    </InputGroup>
+                                </Form.Group>
+                                <Form.Group controlId="timePeriod">
+                                    <Form.Label className="lead font-weight-bold">
+                                        Days without claiming your rewards
+                                    </Form.Label>
+                                    <Form.Control
+                                        size="lg"
+                                        type="number"
+                                        value={this.state.daysPeriod}
+                                        onChange={this.onTimePeriodChanged}
+                                    />
+                                    {" "}
+                                    <Form.Text className="text-muted">
+                                        Set a time period to see how many rewards you could earn
+                                        in that period.
+                                    </Form.Text>
+                                </Form.Group>
+                            </Form>
+                        </Card>
                     </Col>
                 </Row>
 
-                <div>
-                    <h3>Time Period (days)</h3>
-                    <Row>
-                        <Col md={6}>
-                            <p>Set a custom time period to see how many rewards you could earn in that period.</p>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Control 
-                                type="number" 
-                                className="dark-form-control-text"
-                                value={this.state.daysPeriod} 
-                                onChange={this.onTimePeriodChanged} />
-                        </Col>
-                    </Row>
-                </div>
-
-                <div>
-                    <h3>
-                        Global Unlock Rewards
-                    </h3>
-                    <Row>
-                        <Col>
-                            <div>Total YLDY available in the pool for everyone to claim from</div>
-                        </Col>
-                        <Col className="d-flex">
-                            <img
-                                className="my-auto mr-2" 
-                                src={YLDY_ICON} width={25} height={25} alt="Yieldly icon" />
-                            <Form.Control 
-                                type="text"
-                                className="dark-form-control-text"
-                                value={ this.state.global ? formatNumber(microAlgoToAlgo(this.state.global.totalYldyRewards).toFixed(0)) : "" }
-                                disabled
+                <Row className="py-5">
+                    {/* User Variables, from user address App's section in algoexplorer.io */}
+                    <Col lg="4">
+                        <div className="text-center">
+                            <p className="lead">
+                                Total ALGO (tickets) in Lottery
+                            </p>
+                            <h1>
+                                <img
+                                src={ALGO_ICON}
+                                className="my-auto mr-1"
+                                height={25}
+                                width={25}
+                                alt="Algorand icon"
                                 />
-                        </Col>
-                    </Row>
-                </div>
+                                {this.state.global
+                                ? formatNumber(
+                                    fromMicroValue(this.state.global.amount).toFixed(0)
+                                    )
+                                : "total Algo tickets not defined"}
+                            </h1>
+                        </div>
+                        <div className="text-center my-5">
+                            <p className="lead">
+                                Global Unlock Rewards
+                            </p>
+                            <h1>
+                                <img
+                                    className="my-auto mr-2"
+                                    src={YLDY_ICON}
+                                    width={25}
+                                    height={25}
+                                    alt="Yieldly icon"
+                                />
+                                {
+                                    this.state.global
+                                    ? 
+                                    formatNumber(
+                                        microAlgoToAlgo(
+                                            this.state.global.totalYldyRewards
+                                        ).toFixed(0)
+                                    )
+                                    : 
+                                    "Global unlock rewards not defined"}
+                            </h1>
+                            <p className="small text-muted">
+                                YLDY available in the pool to claim from
+                            </p>
+                        </div>
+                    </Col>
 
-                <div className="py-2">
-                    <h3>YLDY Claimable Rewards</h3>
-                    <Row>
-                        <Col md={6}>
-                            The amount of rewards available to current address after '{this.state.daysPeriod}' day(s), <b>with the current global unlock rewards pool at '{ this.state.global ? formatNumber((this.state.global.totalYldyRewards / 1000).toFixed(0)) : "?" }' YLDY</b>
-                            <br/>
-                            <br/>
-                            {
-                                this.state.global?.totalYldyRewards != null && this.state.totalClaimableRewards != null &&
-                                <div>
-                                    { calculateRewardsPoolPercentageShare(fromMicroValue(this.state.global.totalYldyRewards), this.state.totalClaimableRewards).toFixed(10) }% share of rewards pool
-                                </div>
-                            }
-                            {
-                                this.state.user?.time && this.state.global?.time &&
-                                <div>You currently have '{getDayDifference(this.state.user.time, this.state.global.time)}' days of unclaimed rewards.</div>
-                            }
-                        </Col>
-                        <Col md={6} className="d-flex">
-                            <img
-                                className="my-auto mr-2" 
-                                src={YLDY_ICON} width={25} height={25} 
-                                alt="Yieldly icon" />
-                            <Form.Control 
-                                className="my-auto dark-form-control-text"
-                                type="text" 
-                                title={"Raw: " + this.state.totalClaimableRewards}
-                                placeholder="TBD | YLDY rewards" 
-                                value={ 
-                                    this.state.totalClaimableRewards != null 
-                                    ?
-                                    this.state.totalClaimableRewards?.toFixed(2)
-                                    :
-                                    ""
+                    <Col lg="4">
+                        <div className="text-center">
+                            <p className="lead">
+                                Global Staking Shares (GSS)
+                            </p>
+                            <h1>
+                                {
+                                    this.state.global
+                                    ? 
+                                    formatNumber(
+                                        fromMicroValue(this.state.global.stakingShares).toFixed(0)
+                                    )
+                                    : 
+                                    "Global staking shares not defined"
                                 }
-                                disabled />
-                        </Col>
-                    </Row>
-                </div>
+                            </h1>
+                        </div>
+                        <div className="text-center my-5">
+                            <p className="lead">
+                                User Staking Shares (USS)
+                            </p>
+                            <h1>
+                                {
+                                    this.state.user?.stakingShares != null
+                                    ? 
+                                    formatNumber(
+                                        fromMicroValue(this.state.user.stakingShares).toFixed(0)
+                                    )
+                                    : 
+                                    "USS not defined"
+                                    }
+                            </h1>
+                            <p className="small text-muted">
+                                enter your algorand address to see your USS
+                            </p>
+                        </div>
+                    </Col>
+                    <Col lg={4}>
+                        <div className="text-center">
+                            <p className="lead">
+                                Global Time (GT)
+                            </p>
+                            <h1>
+                                {
+                                    this.state.global
+                                    ? 
+                                    new Date(this.state.global.time * 1000).toDateString()
+                                    : 
+                                    "global time not defined"
+                                }
+                            </h1>
+                        </div>
+                        <div className="text-center my-5">
+                            <p className="lead">
+                                User Time (UT)
+                            </p>
+                            <h1>
+                                {
+                                    this.state.user
+                                    ? 
+                                    new Date(this.state.user?.time * 1000).toDateString()
+                                    : 
+                                    "UT not defined"
+                                }
+                            </h1>
+                            <p className="small text-muted">
+                                enter your algorand address to see your UT
+                            </p>
+                        </div>
+                    </Col>
+                </Row>
             </div>
         );
     }

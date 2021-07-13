@@ -8,6 +8,8 @@ import App from './components/App';
 import 'bootstrap/dist/css/bootstrap.min.css';
 // Custom shared css
 import "./YLDYEst-Shared.css";
+import "../src/components/App/App.scss";
+
 
 ReactDOM.render(
   <React.StrictMode>

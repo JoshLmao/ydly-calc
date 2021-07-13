@@ -8,6 +8,7 @@ import { initFirebase } from '../../js/FirebaseAPI';
 
 import Home from "../Home";
 import Header from "../Header";
+import Footer from "../Footer";
 import FourOhFour from "../FourOhFour";
 import AppTotals from '../AppTotals/AppTotals';
 
@@ -29,6 +30,8 @@ class App extends Component {
                     <Route exact path="/totals" component={AppTotals} />
                     <Route component={FourOhFour} />
                 </Switch>
+                
+                <Footer />
             </BrowserRouter>
         );
     }

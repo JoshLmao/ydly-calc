@@ -21,8 +21,8 @@ class AppTotals extends Component {
 
     render() {
         return (
-            <div className="primary-background py-3 all-text-white">
-                <Container>
+            <div className="bg-dark mt-5 all-text-white">
+                <Container className="py-5">
                     <h1>Application Totals</h1>
                     <p>
                         While the global unlock rewards are displayed on the main page, this page contains the gathered data on the global totals (GT) added to each application.
@@ -47,7 +47,7 @@ class AppTotals extends Component {
                     </Row>
                 </Container>
 
-                <div className="secondary-background py-3">
+                <div className="bg-dark py-3">
                     <Container>
                         <Row>
                             <Col>

@@ -6,3 +6,7 @@ Firebase Realtime Database. Runs once and then sleeps for the given amount of ho
 Edit the configuration variables below the import statements before running.
 
 Install the requirements using `pip install -r requirements.txt`
+
+## Install on Linux using `systemctl`
+
+Use the `yldy.service` file and install to systemctl to automatically run on a linux. Preferably place in `/etc/systemd/system/`

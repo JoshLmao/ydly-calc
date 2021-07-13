@@ -41,11 +41,11 @@ The js code can also be found in the [`YLDYCalculations.js`](/src/js/YLDYCalcula
 
 Created using React and Vercel for hosting. Two environment variables ([.env](./.env)) are required, as well adjusting the [`config.json`](./src/config.json) file. 
 
-## Vercel
+### Vercel
 
-The repository is setup to be hosted using Vercel, used to hosted using github-pages.
+The repository is setup to be hosted using Vercel, used to hosted using github-pages. The `develop` and `main` branch are used as deployments. The `develop` branch test site can be found at [yldy-calc-develop.vercel.app/](https://yldy-calc-develop.vercel.app/)
 
-## Database
+### Database
 
 The site has a small backend database that contains the global state of the Yieldly contracts, NLL ([233725844](https://algoexplorer.io/application/233725844)) and YLDY Staking ([233725850](https://algoexplorer.io/application/233725850)). The script runs to gather the values using the AlgoExplorer.io API and sleeps for `X` amount of hours to repeat. The script can be found in  [`./utils/yldy-state-fetcher`](./utils/yldy-state-fetcher)
 
