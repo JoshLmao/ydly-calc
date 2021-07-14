@@ -8,6 +8,10 @@ export function fromMicroValue(val) {
     return val / 1000000;  // 10 ^6
 }
 
+export function toMicroValue(val) {
+    return val * 1000000; // 10 ^6
+}
+
 // Converts a time period into UNIX
 export function daysToUnix (days) {
     if (days <= 0)

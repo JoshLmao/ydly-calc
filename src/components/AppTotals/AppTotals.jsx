@@ -21,7 +21,7 @@ class AppTotals extends Component {
 
     render() {
         return (
-            <div className="bg-dark mt-5 all-text-white">
+            <div className="bg-dark all-text-white">
                 <Container className="py-5">
                     <h1>Application Totals</h1>
                     <p>

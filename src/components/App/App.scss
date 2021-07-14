@@ -16,5 +16,14 @@ html {
   box-shadow: 2px 2px 20px rgb(109, 222, 249);
 }
 
+// Invisible content behind header, force main content to start at header offset
+#root {
+    &:before {
+        height: 56px;
+        content: "";
+        display:block;
+    }
+}
+
 @import "../../../node_modules/bootstrap/scss/bootstrap.scss";
 // Import Bootstrap and its default variables

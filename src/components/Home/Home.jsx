@@ -25,7 +25,7 @@ class Home extends Component {
         return (
             <div className="all-text-white primary-background">
                 <Jumbotron className="text-white bg-dark mb-0">
-                    <Container className="my-5 py-5">
+                    <Container className="py-5">
                         <div>
                             <Row className="my-3">
                                 <Col md={8}>
