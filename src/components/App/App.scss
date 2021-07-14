@@ -1,8 +1,31 @@
-$theme-colors: (
-  "primary": rgb(249, 85, 144),
-  "info": rgb(109, 222, 249),
-  "dark": #09121c,
-);
+$primary: rgb(249, 85, 144);
+$info: rgb(109, 222, 249);
+$dark: #09121c;
+// Complimentary color to dark
+$dark-accent: #1c385a;  
+
+@mixin scrollbars($size, $foreground-color, $background-color: mix($foreground-color, white,  50%)) {
+    // For Google Chrome
+    &::-webkit-scrollbar {
+        width:  $size;
+        height: $size;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $foreground-color;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $background-color;
+    }
+
+    // For Internet Explorer
+    & {
+        scrollbar-face-color: $foreground-color;
+        scrollbar-track-color: $background-color;
+    }
+}
+
 
 $font-family-base: "Red Hat Display", avenir, -apple-system, sans-serif;
 html {
@@ -10,10 +33,10 @@ html {
 }
 
 .glow-pink {
-  box-shadow: 2px 2px 20px rgb(249, 85, 144);
+  box-shadow: 2px 2px 20px $primary;
 }
 .glow-blue {
-  box-shadow: 2px 2px 20px rgb(109, 222, 249);
+  box-shadow: 2px 2px 20px $info;
 }
 
 // Invisible content behind header, force main content to start at header offset
@@ -25,5 +48,19 @@ html {
     }
 }
 
-@import "../../../node_modules/bootstrap/scss/bootstrap.scss";
+// Bootstrap Table customization
+table {
+    color: white !important;
+}
+
 // Import Bootstrap and its default variables
+@import "../../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../../../node_modules/bootstrap/scss/variables";
+
+body {
+    @include scrollbars(10px,  $dark-accent, $dark);
+}
+
+.yldy-scrollbar {
+    @include scrollbars(.5em, $dark-accent, $dark);
+}

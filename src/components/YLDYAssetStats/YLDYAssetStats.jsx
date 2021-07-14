@@ -66,7 +66,7 @@ class YLDYAssetStats extends Component {
         return (
             <div className="bg-dark py-2 all-text-white">
                 <Container className="py-5">
-                    <h1>YLDY Statistics</h1>
+                    <h1>Yieldly Statistics</h1>
                     <div className="py-2">
                         {/* Top Holders */}
                         <h3>Top Holders</h3>
@@ -90,19 +90,19 @@ class YLDYAssetStats extends Component {
                                 </div>
                             )
                         }
-                        <div style={{
-                            maxHeight: "450px",
-                            overflowY: "auto",
-                        }}>
+                        <div 
+                            className="yldy-scrollbar"
+                            style={{
+                                maxHeight: "450px",
+                                overflowY: "auto",
+                            }}>
                         {
                             this.state.tableData && (
                                 <Table 
                                     bordered 
-                                    hover 
                                     size="sm"
-                                    variant="dark"
                                     responsive="md"
-                                    className="m-0"
+                                    className="m-0 all-text-white"
                                     >
                                     <thead>
                                         <tr>
