@@ -19,7 +19,7 @@ class AppStateHistoryGraph extends Component {
             // Application ID to use for this graph
             applicationID: props.applicationID,
             // Limit on the amount of data to show
-            dataLimit: props.dataLimit ?? 100,
+            dataLimit: props.dataLimit ?? 6 * 7,
 
             // Amount of decimal precision to use on the data values
             decimalPrecision: props.decimalPrecision ?? 0,
@@ -49,6 +49,8 @@ class AppStateHistoryGraph extends Component {
             valueType: props.valueType,
             // Should display text containing graph average text
             displayAverage: props.displayAverage,
+            // If t
+            displayDataKeyDesc: props.displayDataKeyDesc,
 
             // Data gained from Firebase
             firebaseData: null,
@@ -145,12 +147,21 @@ class AppStateHistoryGraph extends Component {
                         this.state.sectionShortDesc && (
                             <div>
                                 { this.state.sectionShortDesc }
+
+                                {
+                                    this.state.displayDataKeyDesc && (
+                                        ` This plots the '${this.state.dataKey}' value in the application's global state over time.`
+                                    )
+                                }
                             </div>
                         )
                     }
+                    
                     {
                         this.state.displayAverage && this.state.dataAverage && (
-                            <div>Average of '{ this.state.dataLimit }' data is <b>'{ formatNumber(this.state.dataAverage.toFixed(3)) }' {this.state.valueType}</b></div>
+                            <div>
+                                The average of all { this.state.dataLimit } entries is <b>'{ formatNumber(this.state.dataAverage.toFixed(3)) }' {this.state.valueType}</b>
+                            </div>
                         )
                     }
                 </div>

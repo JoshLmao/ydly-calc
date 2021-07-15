@@ -30,7 +30,7 @@ export function initFirebase() {
 }
 
 export function getApplicationData (appID, limit, dataCallback) {
-    firebase.database().ref(`${appID}/`).limitToFirst(limit).once('value').then((snapshot) => {
+    firebase.database().ref(`${appID}/`).limitToLast(limit).once('value').then((snapshot) => {
         if (dataCallback) {
             dataCallback(snapshot.val());
         }
