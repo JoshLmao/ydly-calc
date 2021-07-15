@@ -83,11 +83,13 @@ class Home extends Component {
                         dataKey="TYUL"
                         valueType="YLDY"
                         sectionTitle="Global Rewards History"
-                        sectionShortDesc="History of the global unlock rewards for the No Loss Lottery"
+                        sectionShortDesc="History of the global unlock rewards for the No Loss Lottery."
                         xAxisLabel="Date/Time of Record"
                         yAxisLabel="Amount of YLDY"
-                        dataTitle="YLDY in Global Unlock Rewards"
-                        graphHeight={125}
+                        dataTitle="YLDY in Global Unlock Rewards (TYUL)"
+                        graphHeight={150}
+                        displayAverage
+                        displayDataKeyDesc
                         />
                     </Container>
                 </div>
@@ -105,13 +107,16 @@ class Home extends Component {
                                 dataKey="TAP"
                                 valueType="ALGO"
                                 sectionTitle="ALGO Global Rewards History"
-                                sectionShortDesc="History of ALGO as a global reward in YLDY Staking"
+                                sectionShortDesc="History of ALGO as a global reward in YLDY Staking."
                                 xAxisLabel="Date/Time of Record"
                                 yAxisLabel="Amount of ALGO"
-                                dataTitle="ALGO in Global Unlock Rewards"
+                                dataTitle="ALGO in Global Unlock Rewards (TAP)"
                                 decimalPrecision={2}
                                 lineColor="#6cdef9"
                                 lineHandleColor="grey"
+                                displayAverage
+                                displayDataKeyDesc
+                                graphHeight={175}
                             />
                         </Col>
                         <Col>
@@ -120,10 +125,13 @@ class Home extends Component {
                                 dataKey="TYUL"
                                 valueType="YLDY"
                                 sectionTitle="YLDY Global Rewards History"
-                                sectionShortDesc="History of YLDY as a global reward in YLDY Staking"
+                                sectionShortDesc="History of YLDY as a global reward in YLDY Staking."
                                 xAxisLabel="Date/Time of Record"
                                 yAxisLabel="Amount of YLDY"
-                                dataTitle="YLDY in Global Unlock Rewards"
+                                dataTitle="YLDY in Global Unlock Rewards (TYUL)"
+                                displayAverage
+                                displayDataKeyDesc
+                                graphHeight={175}
                             />
                         </Col>
                     </Row>
