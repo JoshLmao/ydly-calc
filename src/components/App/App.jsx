@@ -10,7 +10,6 @@ import Home from "../Home";
 import Header from "../Header";
 import Footer from "../Footer";
 import FourOhFour from "../FourOhFour";
-import AppTotals from '../AppTotals/AppTotals';
 import YLDYAssetStats from '../YLDYAssetStats/YLDYAssetStats';
 
 class App extends Component {
@@ -28,7 +27,6 @@ class App extends Component {
 
                 <Switch>
                     <Route exact path="/" component={Home} />
-                    <Route exact path="/totals" component={AppTotals} />
                     <Route exact path="/yldy-stats" component={YLDYAssetStats} />
                     <Route component={FourOhFour} />
                 </Switch>

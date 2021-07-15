@@ -1,0 +1,67 @@
+$primary: rgb(249, 85, 144);
+$info: rgb(109, 222, 249);
+$dark: #09121c;
+// Primary color of Yieldly
+$yldy-primary: rgb(254, 215, 56);
+// Complimentary color to dark
+$dark-accent: #1c385a;
+
+$font-family-base: "Red Hat Display", avenir, -apple-system, sans-serif;
+html {
+    scroll-behavior: smooth;
+}
+
+.glow-pink {
+  box-shadow: 2px 2px 20px $primary;
+}
+.glow-blue {
+  box-shadow: 2px 2px 20px $info;
+}
+
+// Invisible content behind header, force main content to start at header offset
+#root {
+    &:before {
+        height: 56px;
+        content: "";
+        display:block;
+    }
+}
+
+// Bootstrap Table customization
+table {
+    color: white !important;
+}
+
+// Import Bootstrap and its default variables
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../../node_modules/bootstrap/scss/variables";
+
+@import "./scrollbars.scss";
+
+body {
+    @include scrollbars(10px,  $primary, $dark);
+}
+
+.yldy-scrollbar {
+    @include scrollbars(.65em, $primary, $dark);
+}
+
+.all-text-white {
+    color: white;
+}
+
+.all-text-white .h1 {
+    color:white;
+}
+
+.primary-title-shadowed {
+    color: $primary;
+    text-shadow: 2px 2px $info;
+}
+.info-title-shadowed {
+    color: $info;
+    text-shadow: 2px 2px $primary;
+}
+.yldy-title {
+    color: $yldy-primary;
+}

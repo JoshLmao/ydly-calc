@@ -49,9 +49,6 @@ class Header extends Component {
                             <a className="nav-link ml-lg-2" href="/#yldy-staking">
                                 <Button variant="info" className="text-white font-weight-bold">YLDY Staking</Button>
                             </a>
-                            <a className="nav-link ml-lg-2" href="/totals">
-                                <Button variant="outline-light" className="font-weight-bold">Application Totals</Button>
-                            </a>
                             <a className="nav-link ml-lg-2" href="/yldy-stats">
                                 <Button variant="outline-light" className="font-weight-bold">Yieldly Statistics</Button>
                             </a>

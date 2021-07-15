@@ -237,8 +237,7 @@ class NoLossLottery extends Component {
         return (
             <div className="py-5" data-spy="scroll" data-target="#estimator-navbar">
                 <h1
-                    className="font-weight-bold display-4 text-primary text-center my-4"
-                    style={{ textShadow: "2px 2px rgb(109, 222, 249)" }}>
+                    className="font-weight-bold display-4 text-center my-4 primary-title-shadowed">
                     No Loss Lottery
                 </h1>
 
@@ -338,22 +337,22 @@ class NoLossLottery extends Component {
                                     </Form.Label>
                                     <InputGroup className="mb-2">
                                         <InputGroup.Prepend>
-                                        <InputGroup.Text>
-                                            <img
-                                            src={ALGO_ICON}
-                                            className="my-auto mr-1"
-                                            height={25}
-                                            width={25}
-                                            alt="Algorand icon"
-                                            />
-                                        </InputGroup.Text>
+                                            <InputGroup.Text>
+                                                <img
+                                                src={ALGO_ICON}
+                                                className="my-auto mr-1"
+                                                height={25}
+                                                width={25}
+                                                alt="Algorand icon"
+                                                />
+                                            </InputGroup.Text>
                                         </InputGroup.Prepend>
                                         <Form.Control
-                                        size="lg"
-                                        type="number"
-                                        placeholder="Amount of ALGO tickets you have in the no loss lottery"
-                                        value={this.state.algoTickets}
-                                        onChange={this.onTicketsChanged}
+                                            size="lg"
+                                            type="number"
+                                            placeholder="Amount of ALGO tickets you have in the no loss lottery"
+                                            value={this.state.algoTickets}
+                                            onChange={this.onTicketsChanged}
                                         />
                                     </InputGroup>
                                 </Form.Group>
@@ -387,17 +386,21 @@ class NoLossLottery extends Component {
                             </p>
                             <h1>
                                 <img
-                                src={ALGO_ICON}
-                                className="my-auto mr-1"
-                                height={25}
-                                width={25}
-                                alt="Algorand icon"
+                                    src={ALGO_ICON}
+                                    className="my-auto mr-1"
+                                    height={25}
+                                    width={25}
+                                    alt="Algorand icon"
                                 />
-                                {this.state.global
-                                ? formatNumber(
-                                    fromMicroValue(this.state.global.amount).toFixed(0)
+                                {
+                                    this.state.global
+                                    ? 
+                                    formatNumber(
+                                        fromMicroValue(this.state.global.amount).toFixed(0)
                                     )
-                                : "total Algo tickets not defined"}
+                                    : 
+                                    "total Algo tickets not defined"
+                                }
                             </h1>
                         </div>
                         <div className="text-center my-5">

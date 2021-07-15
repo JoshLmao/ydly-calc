@@ -34,6 +34,20 @@ export function formatNumber(num) {
         return null;
 }
 
+// Runs the value through fromMicroValue, toFixed() with the value and formats the value
+export function fromMicroFormatNumber(value, toFixed = -1) {
+    if (value) {
+        let micro =  fromMicroValue(value);
+        if (toFixed >= 0)
+            micro = micro.toFixed(toFixed);
+        
+        return formatNumber(micro);
+    }
+    else {
+        return value;
+    }
+}
+
 export function isStringBlank(str) {
     return (!str || /^\s*$/.test(str));
 }

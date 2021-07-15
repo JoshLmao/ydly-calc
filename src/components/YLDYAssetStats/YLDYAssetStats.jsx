@@ -1,9 +1,61 @@
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
-import { Container, Table } from 'react-bootstrap';
+import { 
+    Container, 
+    Table,
+    Row,
+    Col
+} from 'react-bootstrap';
 import { getYLDYTokenTopHoldersAsync } from '../../js/AlgoExplorerAPI';
-import { formatNumber, fromMicroValue, toMicroValue } from '../../js/utility';
+import { formatNumber, fromMicroFormatNumber, fromMicroValue, toMicroValue } from '../../js/utility';
+import { constants } from "../../js/consts";
+
+import YLDY_ICON from "../../svg/yldy-icon.svg";
+import ALGO_ICON from "../../svg/algo-icon.svg";
+import { getApplicationData } from '../../js/FirebaseAPI';
+import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
+
+function calcDifference (initial, final) {
+    return final - initial;
+}
+
+function calcPercentDiff(initial, final) {
+    return 100 * ((final - initial) / Math.abs(initial));
+}
+
+function IndividualStatistic (props) {
+    return (
+        <div className={`text-center ${props.className ? props.className : ""}`}>
+            <p className="lead">
+                { props.title }
+            </p>
+            <h1>
+                {
+                    props.icon && (
+                        <img
+                            src={ props.icon }
+                            height="25"
+                            width="25"
+                            alt="YLDY"
+                            className="mx-2"
+                            />
+                    )
+                }
+                {
+                    formatNumber( props.value )
+                }
+            </h1>
+            {
+                props.footerText && (
+                    <p className="small text-muted">
+                        { props.footerText }
+                    </p>
+                )
+            }
+        </div>
+    );
+}
 
 class YLDYAssetStats extends Component {
     constructor(props) {
@@ -15,18 +67,32 @@ class YLDYAssetStats extends Component {
 
             // All holders, original data from API
             topHolders: null,
+            // Limit amount when retrieving firebase data
+            // 6 entries in a day, 7 days in a week
+            dbWeekLimit: 6 * 7,
+            // NLL db data for the week
+            nllWeekData: null,
+            // YLDY Staking db data for week
+            yldyWeekData: null,
             // Current table data to display
-            tableData: null,
+            topHoldersTableData: null,
+
+            nllDifference: null,
+            yldyDifference: null,
 
             tableLimit: null,
         };
 
         this.refreshTopHolders = this.refreshTopHolders.bind(this);
+        this.refreshNLLData = this.refreshNLLData.bind(this);
+        this.refreshYLDYStakingData = this.refreshYLDYStakingData.bind(this);
         this.insertTableData = this.insertTableData.bind(this);
     }
 
     componentDidMount() {
         this.refreshTopHolders();
+        this.refreshNLLData();
+        this.refreshYLDYStakingData();
     }
 
     refreshTopHolders() {
@@ -45,6 +111,50 @@ class YLDYAssetStats extends Component {
         });
     }
 
+    refreshNLLData() {
+        getApplicationData(constants.NO_LOSS_LOTTERY_APP_ID, this.state.dbWeekLimit, (data) => {
+            this.setState({
+                nllWeekData: data,
+            }, () => {
+                let allKeys = Object.keys(this.state.nllWeekData);
+                let first = this.state.nllWeekData[allKeys[0]];
+                let last = this.state.nllWeekData[allKeys[allKeys.length - 1]];
+                let ticketDifference = calcDifference(first.GA, last.GA);
+                let percentIncrease = calcPercentDiff(first.GA, last.GA);
+                this.setState({
+                    nllDifference: {
+                        first: first.GA,
+                        last: last.GA,
+                        amount: ticketDifference,
+                        percent: percentIncrease,
+                    }
+                });
+            });
+        });
+    }
+
+    refreshYLDYStakingData() {
+        getApplicationData(constants.YLDY_STAKING_APP_ID, this.state.dbWeekLimit, (data) => {
+            this.setState({
+                yldyWeekData: data,
+            }, () => {
+                let allKeys = Object.keys(this.state.yldyWeekData);
+                let first = this.state.yldyWeekData[allKeys[0]];
+                let last = this.state.yldyWeekData[allKeys[allKeys.length - 1]];
+                let ticketDifference = calcDifference(first.GA, last.GA);
+                let percentIncrease = calcPercentDiff(first.GA, last.GA);
+                this.setState({
+                    yldyDifference: {
+                        amount: ticketDifference,
+                        first: first.GA,
+                        last: last.GA,
+                        percent: percentIncrease,
+                    },
+                });
+            });
+        });
+    }
+
     insertTableData () {
         if (this.state.topHolders) {
             // Sort by highest amount
@@ -57,7 +167,7 @@ class YLDYAssetStats extends Component {
             });
             // Set tableData
             this.setState({
-                tableData: sort,
+                topHoldersTableData: sort,
             });
         }
     }
@@ -66,12 +176,119 @@ class YLDYAssetStats extends Component {
         return (
             <div className="bg-dark py-2 all-text-white">
                 <Container className="py-5">
-                    <h1>Yieldly Statistics</h1>
-                    <div className="py-2">
-                        {/* Top Holders */}
-                        <h3>Top Holders</h3>
+                    {/* Moving averages */}
+                    <div className="py-3">
+                        <Row className="py-3">
+                            <Col lg="4">
+                                <h2 className="yldy-title">No Loss Lottery</h2>
+                                <IndividualStatistic
+                                    className="my-4"
+                                    title="ALGO (tickets) deposited in last 7 days"
+                                    value={ 
+                                        this.state.nllDifference
+                                        ?
+                                        fromMicroFormatNumber(this.state.nllDifference?.amount, 0) 
+                                        :
+                                        "0"
+                                    }
+                                    icon={ ALGO_ICON }
+                                    />
+                                <IndividualStatistic
+                                    className="my-4"
+                                    title="Growth (%) in last 7 days"
+                                    value={    
+                                        this.state.nllDifference 
+                                        ?
+                                        this.state.nllDifference?.percent.toFixed(3) + "%" 
+                                        :
+                                        "0"
+                                    }
+                                    footerText={ 
+                                        this.state.nllDifference
+                                        ?
+                                        `${ fromMicroFormatNumber( this.state.nllDifference?.first, 0 ) } ALGO -> ${ fromMicroFormatNumber( this.state.nllDifference?.last, 0 ) } ALGO` 
+                                        :
+                                        ""
+                                    }
+                                    />
+                                
+                            </Col>
+                            <Col lg="8">
+                                <AppStateHistoryGraph
+                                    applicationID={ constants.NO_LOSS_LOTTERY_APP_ID }
+                                    dataKey="GA"
+                                    valueType="ALGO"
+                                    xAxisLabel="Date/Time of Record"
+                                    yAxisLabel="Amount of ALGO"
+                                    dataTitle="Total ALGO entered into NLL by everybody"
+                                    lineColor="#6cdef9"
+                                    lineHandleColor="grey"
+                                    />
+                            </Col>
+                        </Row>
+
+                        
+
+                        <Row className="py-3">
+                            <Col lg="4">
+                                <h2 className="yldy-title">YLDY Staking</h2>
+                                <IndividualStatistic 
+                                    className="my-4"
+                                    title="YLDY staked in last 7 days"
+                                    value={ 
+                                        this.state.yldyDifference
+                                        ?
+                                        fromMicroFormatNumber(this.state.yldyDifference?.amount, 0) 
+                                        :
+                                        "0"
+                                    }
+                                    icon={ YLDY_ICON }
+                                    />
+                                <IndividualStatistic
+                                    className="my-4" 
+                                    title="Growth (%) in last 7 days"
+                                    value={ 
+                                        this.state.yldyDifference
+                                        ?
+                                        this.state.yldyDifference?.percent.toFixed(3) + "%"
+                                        :
+                                        "0"
+                                    }
+                                    footerText={ 
+                                        this.state.yldyDifference
+                                        ?
+                                        `${ fromMicroFormatNumber(this.state.yldyDifference?.first, 0) }  YLDY -> ${ fromMicroFormatNumber(this.state.yldyDifference?.last, 0) } YLDY` 
+                                        :
+                                        ""
+                                    }
+                                    />
+                            </Col>
+                            <Col lg="8">
+                                <AppStateHistoryGraph
+                                    applicationID={ constants.YLDY_STAKING_APP_ID }
+                                    dataKey="GA"
+                                    valueType="YLDY"
+                                    xAxisLabel="Date/Time of Record"
+                                    yAxisLabel="Amount of YLDY"
+                                    dataTitle="Total YLDY being staked by everybody"
+                                    />
+                            </Col>
+                        </Row>
+                    </div>
+
+                    <div 
+                        className="border-top border-primary my-3 pb-3"
+                        />
+
+                    {/* Top Holders parent */}
+                    <div className="py-3">
+                        {/* Top YLDY Holders */}
+                        <h3 className="yldy-title">
+                            Top YLDY Holders
+                        </h3>
                         <p>
-                            Top YLDY asset holders. Displaying the top '{this.state.tableData?.length ?? "-1"}' holders that have more than '{formatNumber(fromMicroValue(this.state.minimumYldy))}' YLDY
+                            Displaying the top '{this.state.topHoldersTableData?.length ?? "-1"}' holders of YLDY on the Algorand blockchain, 
+                            that have more than '{formatNumber(fromMicroValue(this.state.minimumYldy))}' YLDY.
                         </p>
                         {/* Loading spinner for table data */}
                         {
@@ -95,9 +312,11 @@ class YLDYAssetStats extends Component {
                             style={{
                                 maxHeight: "450px",
                                 overflowY: "auto",
-                            }}>
+                                overflowX: "auto",
+                            }}
+                        >
                         {
-                            this.state.tableData && (
+                            this.state.topHoldersTableData && (
                                 <Table 
                                     bordered 
                                     size="sm"
@@ -108,12 +327,21 @@ class YLDYAssetStats extends Component {
                                         <tr>
                                             <th>#</th>
                                             <th>Algorand Address</th>
-                                            <th className="text-right">Total YLDY</th>
+                                            <th className="text-right">
+                                                Total YLDY
+                                                <img 
+                                                    className="mx-2 my-auto"
+                                                    src={YLDY_ICON} 
+                                                    height="19" 
+                                                    width="19" 
+                                                    alt="Yieldly icon" 
+                                                    />
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {
-                                            this.state.tableData.map((holder, index) => {
+                                            this.state.topHoldersTableData.map((holder, index) => {
                                                 return (
                                                     <tr 
                                                         key={`${index}-${holder}`}

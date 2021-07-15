@@ -47,6 +47,8 @@ class AppStateHistoryGraph extends Component {
             lineColor: props.lineColor ?? 'rgba(254, 215, 56, 1)',
             // Prefix of the values in the data (YLDY/ALGO/etc)
             valueType: props.valueType,
+            // Should display text containing graph average text
+            displayAverage: props.displayAverage,
 
             // Data gained from Firebase
             firebaseData: null,
@@ -128,21 +130,28 @@ class AppStateHistoryGraph extends Component {
         // If no firebase, display simple error message
         if (!isFirebaseInitialized()) {
             return (
-                <div className="py-3">
+                <div>
                     Sorry, Firebase couldn't be initialized. Blame Josh, he broke it.
                 </div>
             )
         }
         return (
-            <div className="py-3">
+            <div>
                 <h3>
                     { this.state.sectionTitle }
                 </h3>
                 <div>
-                    {this.state.sectionShortDesc}. Displaying the last '{this.state.dataLimit}' entries. 
                     {
-                        this.state.dataAverage && 
-                            <div>Average of all data is <b>'{ formatNumber(this.state.dataAverage.toFixed(3)) }' {this.state.valueType}</b></div>
+                        this.state.sectionShortDesc && (
+                            <div>
+                                { this.state.sectionShortDesc }
+                            </div>
+                        )
+                    }
+                    {
+                        this.state.displayAverage && this.state.dataAverage && (
+                            <div>Average of '{ this.state.dataLimit }' data is <b>'{ formatNumber(this.state.dataAverage.toFixed(3)) }' {this.state.valueType}</b></div>
+                        )
                     }
                 </div>
                 {
