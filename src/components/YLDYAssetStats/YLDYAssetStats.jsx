@@ -220,7 +220,7 @@ class YLDYAssetStats extends Component {
                                     valueType="ALGO"
                                     xAxisLabel="Date/Time of Record"
                                     yAxisLabel="Amount of ALGO"
-                                    dataTitle="Total ALGO entered into NLL by everybody"
+                                    dataTitle="Total ALGO entered into NLL by everybody (GA)"
                                     lineColor="#6cdef9"
                                     lineHandleColor="grey"
                                     />
@@ -270,7 +270,7 @@ class YLDYAssetStats extends Component {
                                     valueType="YLDY"
                                     xAxisLabel="Date/Time of Record"
                                     yAxisLabel="Amount of YLDY"
-                                    dataTitle="Total YLDY being staked by everybody"
+                                    dataTitle="Total YLDY being staked by everybody (GA)"
                                     />
                             </Col>
                         </Row>
