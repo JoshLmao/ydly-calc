@@ -6,9 +6,8 @@ import App from './components/App';
 
 // Import Bootstrap component styles
 import 'bootstrap/dist/css/bootstrap.min.css';
-// Custom shared css
-import "./YLDYEst-Shared.css";
-import "../src/components/App/App.scss";
+// Main app .scss
+import "./scss/App.scss";
 
 
 ReactDOM.render(

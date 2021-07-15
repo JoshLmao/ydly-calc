@@ -6,20 +6,19 @@ import {
 } from "../../js/AlgoExplorerAPI";
 import {
   formatNumber,
+  fromMicroFormatNumber,
   fromMicroValue,
   getDayDifference,
   isStringBlank,
 } from "../../js/utility";
+import { constants } from '../../js/consts';
+import {
+    calculateRewardsPoolPercentageShare,
+    calculateYLDYRewardsFromDayPeriod,
+  } from "../../js/YLDYCalculation";
 
 import ALGO_ICON from "../../svg/algo-icon.svg";
 import YLDY_ICON from "../../svg/yldy-icon.svg";
-import {
-  calculateRewardsPoolPercentageShare,
-  calculateYLDYRewardsFromDayPeriod,
-} from "../../js/YLDYCalculation";
-
-import "../../YLDYEst-Shared.css";
-import { constants } from '../../js/consts';
 
 class YLDYStaking extends Component {
     constructor(props) {
@@ -255,9 +254,7 @@ class YLDYStaking extends Component {
                 data-target="#estimator-navbar"
             >
                 <h1
-                    className="display-4 font-weight-bold text-info text-center my-4"
-                    style={{ textShadow: "2px 2px rgb(249, 85, 144)" }}
-                >
+                    className="display-4 font-weight-bold text-center my-4 info-title-shadowed">
                     YLDY Staking
                 </h1>
                 <p className="small text-center">
@@ -269,16 +266,15 @@ class YLDYStaking extends Component {
                         }
                         target="_blank"
                         rel="noreferrer"
-                        className="text-info font-weight-bold"
-                    >
-                        {this.state.applicationID}
+                        className="text-info font-weight-bold">
+                        { this.state.applicationID }
                     </a>
                 </p>
 
                 {/* Display error message if one is set*/}
                 {
                     this.state.usrVarsErrorMsg && (
-                    <p className="text-danger">{this.state.usrVarsErrorMsg}</p>
+                        <p className="text-danger">{this.state.usrVarsErrorMsg}</p>
                     )
                 }
 
@@ -287,49 +283,49 @@ class YLDYStaking extends Component {
                         <Card className="p-3 p-md-5 my-3 border-info bg-dark glow-blue">
                             <p className="lead font-weight-bold">
                                 <img
-                                className="my-auto mr-2"
-                                src={ALGO_ICON}
-                                width={25}
-                                height={25}
-                                alt="ALGO icon"
-                                />
+                                    className="my-auto mr-2"
+                                    src={ALGO_ICON}
+                                    width={25}
+                                    height={25}
+                                    alt="ALGO icon"
+                                    />
                                 ALGO Claimable Rewards
                             </p>
                             <p className="display-4">
-                                {this.state.claimableAlgoRewards != null
-                                ? formatNumber(this.state.claimableAlgoRewards.toFixed(3))
-                                : "0"}
+                                {
+                                    this.state.claimableAlgoRewards != null
+                                    ? 
+                                    formatNumber(this.state.claimableAlgoRewards.toFixed(3))
+                                    : 
+                                    "0"
+                                }
                             </p>
                             <p className="lead font-weight-bold">
                                 <img
-                                className="my-auto mr-2"
-                                src={YLDY_ICON}
-                                width={25}
-                                height={25}
-                                alt="Yieldly icon"
-                                />
+                                    className="my-auto mr-2"
+                                    src={YLDY_ICON}
+                                    width={25}
+                                    height={25}
+                                    alt="Yieldly icon"
+                                    />
                                 YLDY Claimable Rewards
                             </p>
                             <p className="display-4">
-                                {this.state.claimableYldyRewards != null
-                                ? formatNumber(this.state.claimableYldyRewards.toFixed(0))
-                                : "0"}
+                                {
+                                    this.state.claimableYldyRewards != null
+                                    ? 
+                                    formatNumber(this.state.claimableYldyRewards.toFixed(0))
+                                    : 
+                                    "0"
+                                }
                             </p>
                             <p className="small">
                                 The amount of claimable YLDY and ALGO tokens from the YLDY
                                 Staking global unlock rewards pool after '
-                                {this.state.daysPeriod}' day(s), with a pool of '
-                                {formatNumber(
-                                fromMicroValue(this.state.global?.totalAlgoRewards).toFixed(
-                                    0
-                                )
-                                )}
+                                { this.state.daysPeriod }' day(s), with a pool of '
+                                { fromMicroFormatNumber(this.state.global?.totalAlgoRewards, 0) }
                                 ' ALGO and '
-                                {formatNumber(
-                                fromMicroValue(this.state.global?.totalYldyRewards).toFixed(
-                                    0
-                                )
-                                )}
+                                { fromMicroFormatNumber(this.state.global?.totalYldyRewards, 0) }
                                 ' YLDY
                             </p>
                             <p className="small">
@@ -431,9 +427,7 @@ class YLDYStaking extends Component {
                                 {
                                     this.state.global?.amount
                                     ? 
-                                    formatNumber(
-                                        fromMicroValue(this.state.global.amount).toFixed(0)
-                                    )
+                                    fromMicroFormatNumber(this.state.global?.amount, 0)
                                     : 
                                     "Global Amount (GA)"
                                 }
@@ -458,11 +452,7 @@ class YLDYStaking extends Component {
                                 {
                                     this.state.global?.totalAlgoRewards
                                     ? 
-                                    formatNumber(
-                                        fromMicroValue(
-                                            this.state.global.totalAlgoRewards
-                                        ).toFixed(0)
-                                    )
+                                    fromMicroFormatNumber(this.state.global.totalAlgoRewards, 0)
                                     : 
                                     ""
                                 }
@@ -483,13 +473,9 @@ class YLDYStaking extends Component {
                                 {
                                     this.state.global?.totalYldyRewards
                                     ? 
-                                    formatNumber(
-                                        fromMicroValue(
-                                            this.state.global?.totalYldyRewards
-                                        ).toFixed(0)
-                                    )
+                                    fromMicroFormatNumber(this.state.global?.totalYldyRewards, 0)
                                     : 
-                                    ""
+                                    "0"
                                 }
                             </h1>
                         </div>
@@ -503,11 +489,8 @@ class YLDYStaking extends Component {
                             <h1>
                                 {
                                     this.state.global?.stakingShares
-                                    ? formatNumber(
-                                        fromMicroValue(this.state.global.stakingShares).toFixed(
-                                            0
-                                        )
-                                    )
+                                    ?
+                                    fromMicroFormatNumber(this.state.global?.stakingShares, 0)
                                     : 
                                     "global staking shares not defined"
                                 }
@@ -521,9 +504,7 @@ class YLDYStaking extends Component {
                                 {
                                     this.state.user?.stakingShares != null
                                     ? 
-                                    formatNumber(
-                                        fromMicroValue(this.state.user.stakingShares).toFixed(0)
-                                    )
+                                    fromMicroFormatNumber(this.state.user?.stakingShares, 0)
                                     : 
                                     "USS not defined"
                                 }

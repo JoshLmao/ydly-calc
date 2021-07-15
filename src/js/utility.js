@@ -8,6 +8,10 @@ export function fromMicroValue(val) {
     return val / 1000000;  // 10 ^6
 }
 
+export function toMicroValue(val) {
+    return val * 1000000; // 10 ^6
+}
+
 // Converts a time period into UNIX
 export function daysToUnix (days) {
     if (days <= 0)
@@ -28,6 +32,20 @@ export function formatNumber(num) {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     else 
         return null;
+}
+
+// Runs the value through fromMicroValue, toFixed() with the value and formats the value
+export function fromMicroFormatNumber(value, toFixed = -1) {
+    if (value) {
+        let micro =  fromMicroValue(value);
+        if (toFixed >= 0)
+            micro = micro.toFixed(toFixed);
+        
+        return formatNumber(micro);
+    }
+    else {
+        return value;
+    }
 }
 
 export function isStringBlank(str) {

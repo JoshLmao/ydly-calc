@@ -8,5 +8,6 @@
         "projectId": "yldy-estimator",
         "authDomain": "yldy-estimator.firebaseapp.com",
         "storageBucket": "yldy-estimator.appspot.com"
-    }
+    },
+    "yldy_asset_id": 226701642
 }

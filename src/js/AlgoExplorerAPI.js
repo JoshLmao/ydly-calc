@@ -103,6 +103,41 @@ export function getCurrentBlockTimestamp(callback) {
     })
 }
 
+// Gets all holders of the YLDY token within the supplied parameters.
+// Limit: the amount of results should be limited to
+// minAmount: Minimum amount of YLDY in wallet
+// Next: Can be null, next-token given from API for next data
+export async function getYLDYTokenTopHoldersAsync (limit, minAmount, next) {
+    // Build endpoint url with params
+    let endpoint = `v2/assets/${CONFIG.yldy_asset_id}/balances?`;
+    if (limit && limit > 0) {
+        endpoint += `&limit=${limit}`;
+    }
+    if (minAmount && minAmount > 0) {
+        endpoint += `&currency-greater-than=${minAmount}`;
+    }
+    if (next && next != null) {
+        endpoint += `&next=${next}`;
+    }
+
+    // Build full api url, await axios call
+    let all = `https://algoexplorerapi.io/idx2/${endpoint}`;
+    let response = await axios.get(all);
+    let data = response.data;
+
+    let allHolders = data.balances;
+    // If next-token is supplied, get the next set of data
+    if (data["next-token"]) {
+        // Append data to allHolders
+        return allHolders.concat( 
+            await getYLDYTokenTopHoldersAsync(limit, minAmount, data["next-token"])
+        );
+    } else {
+        // No more next, return all holders
+        return allHolders;
+    }
+}
+
 // Gets the current YLDY price from the data provided by Yieldly
 export function getYLDYPrice (callback) {
     let priceUrl = `${CONFIG.proxy_url}/http://data.yieldly.finance/price`;
