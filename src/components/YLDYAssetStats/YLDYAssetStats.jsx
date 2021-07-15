@@ -275,11 +275,14 @@ class YLDYAssetStats extends Component {
                             </Col>
                         </Row>
                     </div>
+                </ Container>
 
-                    <div 
-                        className="border-top border-primary my-3 pb-3"
-                        />
+                {/* Divider */}
+                <div 
+                    className="border-top border-primary my-3 pb-3"
+                    />
 
+                <Container>
                     {/* Top Holders parent */}
                     <div className="py-3">
                         {/* Top YLDY Holders */}
