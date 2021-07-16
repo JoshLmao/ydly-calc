@@ -290,8 +290,10 @@ class YLDYAssetStats extends Component {
                             Top YLDY Holders
                         </h3>
                         <p>
-                            Displaying the top '{this.state.topHoldersTableData?.length ?? "-1"}' holders of YLDY on the Algorand blockchain, 
+                            Displaying the top '{this.state.topHoldersTableData?.length ?? "-1"}' <b>holders</b> of YLDY on the Algorand blockchain, 
                             that have more than '{formatNumber(fromMicroValue(this.state.minimumYldy))}' YLDY.
+                            {' '}
+                            <b>Does not include wallets that have staked YLDY.</b>
                         </p>
                         {/* Loading spinner for table data */}
                         {
