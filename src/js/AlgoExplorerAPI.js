@@ -154,3 +154,31 @@ export function getYLDYPrice (callback) {
         }
     })
 }
+
+export async function getClaimHistoryAsync(receiverAddress, appAddress, nextToken) {
+    let endpoint = `v2/transactions?address=${receiverAddress}&address-role=receiver&exclude-close-to=true`;
+
+    if (nextToken) {
+        endpoint += `&next=${nextToken}`;
+    }
+
+    let fullUrl = `https://algoexplorerapi.io/idx2/${endpoint}`;
+    let result = await axios.get(fullUrl);
+    let data = result.data;
+
+    let allUserTransactions = [];
+
+    for (let transaction of data.transactions) {
+        if (transaction.sender === appAddress) {
+            allUserTransactions.push(transaction);
+        }
+    }
+
+    if (data["next-token"]) {
+        return allUserTransactions.concat(
+            await getClaimHistoryAsync(appAddress, receiverAddress, data["next-token"])
+        ).reverse();
+    } else {
+        return allUserTransactions;
+    }
+}
