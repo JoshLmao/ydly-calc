@@ -16,6 +16,22 @@ import ALGO_ICON from "../../svg/algo-icon.svg";
 import { getApplicationData } from '../../js/FirebaseAPI';
 import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
+// Shortens a full address into a "AAAA...BBBB" string.
+// Amt is the amount of characters at the start and end of the shortened address
+function shortenAddress(address, amt) {
+    let start = "";
+    let end = "";
+
+    for(let i = 0; i < amt; i++) {
+        start += address[i];
+
+        let lastIndex = address.length - 1;
+        end = address[lastIndex - i] + end;
+    }
+
+    return `${start}...${end}`;
+}
+
 function calcDifference (initial, final) {
     return final - initial;
 }
@@ -358,7 +374,7 @@ class YLDYAssetStats extends Component {
                                                         <td>{ index + 1}</td>
                                                         <td>
                                                             <a href={ "https://algoexplorer.io/address/" + holder.address }> 
-                                                                { holder.address }
+                                                                { shortenAddress(holder.address, 4) }
                                                             </a>
                                                         </td>
                                                         <td className="text-right">

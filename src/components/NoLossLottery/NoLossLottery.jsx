@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { Row, Col, Form, Card, InputGroup } from "react-bootstrap";
 import {
-  getContractValues,
-  getCurrentBlockTimestamp,
-  getUserStateValues,
+    getContractValues,
+    getCurrentBlockTimestamp,
+    getUserStateValues,
 } from "../../js/AlgoExplorerAPI";
 import {
   calculateYLDYRewardsFromDayPeriod,
@@ -64,6 +64,8 @@ class NoLossLottery extends Component {
 
             // Any error message to display
             usrVarsErrorMsg: null,
+
+            allUserClaims: null,
         };
 
         this.fetchUserVariables = this.fetchUserVariables.bind(this);
@@ -135,6 +137,7 @@ class NoLossLottery extends Component {
             });
             console.log("Retrieving NLL user state vars...");
 
+            // Get user state values on algo address
             getUserStateValues(this.state.algoAddress, this.state.contractID, (data) => {
                 if (data) {
                     console.log(`Successfully got user variables from application '${this.state.contractID}' on address '${this.state.algoAddress}'`);
