@@ -84,6 +84,18 @@ class Footer extends Component {
                             {" "}
                             JoshLmao
                         </a>
+                        {" "}
+                        |
+                        Designed by
+                        <a 
+                            className="text-white font-weight-bold"
+                            rel="noreferrer"
+                            target="_blank"
+                            href="https://github.com/janvandenenden"
+                            >
+                            {" "}
+                            janvandenenden
+                        </a>
                     </p>
 
                     <p className="small mt-3">
