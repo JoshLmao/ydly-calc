@@ -139,14 +139,14 @@ class Home extends Component {
                 </Container>
             </div>
 
-            {/* <div className="bg-dark border-top border-primary py-5">
+            <div className="bg-dark border-top border-primary py-5">
                 <Container>
                     <ClaimHistory
                         userAddress={this.state.userAlgoAddress}
                         appAddress="FMBXOFAQCSAD4UWU4Q7IX5AV4FRV6AKURJQYGXLW3CTPTQ7XBX6MALMSPY"
                         />
                 </Container>
-            </div> */}
+            </div>
         </div>
         );
     }
