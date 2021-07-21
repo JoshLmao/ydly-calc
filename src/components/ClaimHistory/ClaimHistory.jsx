@@ -5,7 +5,7 @@ import { formatNumber, fromMicroValue } from "../../js/utility";
 import { constants } from "../../js/consts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { Button, Card, CardGroup } from "react-bootstrap";
+import { Button, Card, Row, Col } from "react-bootstrap";
 
 import ALGO_ICON from "../../svg/algo-icon.svg";
 import YLDY_ICON from "../../svg/yldy-icon.svg";
@@ -152,7 +152,7 @@ class ClaimHistory extends Component {
                     labels: labels,
                     datasets: [
                         {
-                            label: "NLL | YLDY rewards",
+                            label: "No Loss Lottery | YLDY rewards",
                             data: nllClaimData,
                             backgroundColor: "orange",
                             borderColor: "orange",
@@ -250,7 +250,11 @@ class ClaimHistory extends Component {
                         />
                     )
                 }
-                <CardGroup className="py-3">
+                <Row 
+                    className="py-3"
+                    xs={1}
+                    sm={1}
+                    md={3}>
                     {
                         this.state.lineData && this.state.lineData.datasets.map((dataset, index) => {
                             let isALGO = dataset.label.includes("ALGO");
@@ -259,40 +263,42 @@ class ClaimHistory extends Component {
                                 return accumulation + b.y;
                             }, 0);
                             return (
-                                <Card 
-                                    key={index}
-                                    border={ isNLL ? "primary" : "info" }
-                                    className="rounded bg-dark mx-2"
-                                    >
-                                    <Card.Body>
-                                        <Card.Title 
-                                            className="yldy-title">
-                                            { dataset.label }
-                                        </Card.Title>
-                                        <div>
-                                            <b>Total Claimed:</b>
-                                            <img 
-                                                className="ml-2 mr-1"
-                                                alt={ isALGO ? "ALGO icon" : "YLDY icon" }
-                                                src={ isALGO ? ALGO_ICON :YLDY_ICON }
-                                                height="21"
-                                                width="21"
-                                                />
-                                            <span
-                                                title={totalAmt}>
-                                                { 
-                                                    formatNumber(totalAmt.toFixed(2))
-                                                }
-                                            </span>
-                                            <br />
-                                            <b>Amount of claims:</b> {dataset.data.length} times.
-                                        </div>
-                                    </Card.Body>
-                                </Card>
+                                <Col>
+                                    <Card 
+                                        key={index}
+                                        border={ isNLL ? "primary" : "info" }
+                                        className="rounded bg-dark my-2"
+                                        >
+                                        <Card.Body>
+                                            <Card.Title 
+                                                className="yldy-title">
+                                                { dataset.label }
+                                            </Card.Title>
+                                            <div>
+                                                <b>Total Claimed:</b>
+                                                <img 
+                                                    className="ml-2 mr-1"
+                                                    alt={ isALGO ? "ALGO icon" : "YLDY icon" }
+                                                    src={ isALGO ? ALGO_ICON :YLDY_ICON }
+                                                    height="21"
+                                                    width="21"
+                                                    />
+                                                <span
+                                                    title={totalAmt}>
+                                                    { 
+                                                        formatNumber(totalAmt.toFixed(2))
+                                                    }
+                                                </span>
+                                                <br />
+                                                <b>Amount of claims:</b> {dataset.data.length} times.
+                                            </div>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
                             )
                         })
                     }
-                </CardGroup>
+                </Row>
             </div>
         );
     }
