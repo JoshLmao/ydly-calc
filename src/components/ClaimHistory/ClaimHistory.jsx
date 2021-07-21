@@ -1,11 +1,14 @@
 import React, { Component } from "react";
 import { Line } from "react-chartjs-2";
 import { getClaimHistoryAsync } from "../../js/AlgoExplorerAPI";
-import { fromMicroValue } from "../../js/utility";
+import { formatNumber, fromMicroValue } from "../../js/utility";
 import { constants } from "../../js/consts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "react-bootstrap";
+import { Button, Card, CardGroup } from "react-bootstrap";
+
+import ALGO_ICON from "../../svg/algo-icon.svg";
+import YLDY_ICON from "../../svg/yldy-icon.svg";
 
 // Adapter for ChartJS to use dates
 import 'chartjs-adapter-luxon';
@@ -22,6 +25,7 @@ class ClaimHistory extends Component {
             allUserClaims: null,
 
             loadingGraphData: false,
+            errorMsg: null,
         };
 
         this.getClaimHistory = this.getClaimHistory.bind(this);
@@ -66,6 +70,15 @@ class ClaimHistory extends Component {
 
     buildGraphData () {
         if (this.state.allUserClaims && this.state.allTransactions) {
+            // Check if user has any claims before building data
+            if (this.state.allUserClaims.length <= 0) {
+                this.setState({
+                    errorMsg: "Address hasn't made any claims. Try claiming in the Yieldly app and try again.",
+                    loadingGraphData: false,
+                });
+                return;
+            }
+
             let labels = [];
             let yldyStakeClaimData = [];
             let algoClaimData = [];
@@ -175,8 +188,9 @@ class ClaimHistory extends Component {
                     Claim History
                 </h1>
                 <p>
-                    View your history of claimed rewards between No Loss Lottery and YLDY Staking. Click the button below to view your history. Make sure
-                    your algorand address is entered at the top of the page.
+                    View your history of claimed rewards between No Loss Lottery and YLDY Staking. Click the button below to view your history. 
+                    Make sure your algorand address is entered at the top of the page.
+                    This may take some time, depending on the amount of transactions.
                 </p>
                 {
                     !this.state.lineData && !this.state.loadingGraphData && (
@@ -224,7 +238,7 @@ class ClaimHistory extends Component {
                                     y: {
                                         title: {
                                             display: true,
-                                            text: "YLDY/ALGO",
+                                            text: "Claimed Amount",
                                             color: textColor,
                                         },
                                         ticks: {
@@ -236,6 +250,49 @@ class ClaimHistory extends Component {
                         />
                     )
                 }
+                <CardGroup className="py-3">
+                    {
+                        this.state.lineData && this.state.lineData.datasets.map((dataset, index) => {
+                            let isALGO = dataset.label.includes("ALGO");
+                            let isNLL = dataset.label.includes("NLL");
+                            let totalAmt = dataset.data.reduce(function(accumulation, b) { 
+                                return accumulation + b.y;
+                            }, 0);
+                            return (
+                                <Card 
+                                    key={index}
+                                    border={ isNLL ? "primary" : "info" }
+                                    className="rounded bg-dark mx-2"
+                                    >
+                                    <Card.Body>
+                                        <Card.Title 
+                                            className="yldy-title">
+                                            { dataset.label }
+                                        </Card.Title>
+                                        <div>
+                                            <b>Total Claimed:</b>
+                                            <img 
+                                                className="ml-2 mr-1"
+                                                alt={ isALGO ? "ALGO icon" : "YLDY icon" }
+                                                src={ isALGO ? ALGO_ICON :YLDY_ICON }
+                                                height="21"
+                                                width="21"
+                                                />
+                                            <span
+                                                title={totalAmt}>
+                                                { 
+                                                    formatNumber(totalAmt.toFixed(2))
+                                                }
+                                            </span>
+                                            <br />
+                                            <b>Amount of claims:</b> {dataset.data.length} times.
+                                        </div>
+                                    </Card.Body>
+                                </Card>
+                            )
+                        })
+                    }
+                </CardGroup>
             </div>
         );
     }
