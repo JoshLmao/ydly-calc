@@ -25,6 +25,7 @@ class ClaimHistory extends Component {
             allUserClaims: null,
 
             loadingGraphData: false,
+            errorMsg: null,
         };
 
         this.getClaimHistory = this.getClaimHistory.bind(this);
@@ -69,6 +70,15 @@ class ClaimHistory extends Component {
 
     buildGraphData () {
         if (this.state.allUserClaims && this.state.allTransactions) {
+            // Check if user has any claims before building data
+            if (this.state.allUserClaims.length <= 0) {
+                this.setState({
+                    errorMsg: "Address hasn't made any claims. Try claiming in the Yieldly app and try again.",
+                    loadingGraphData: false,
+                });
+                return;
+            }
+
             let labels = [];
             let yldyStakeClaimData = [];
             let algoClaimData = [];
