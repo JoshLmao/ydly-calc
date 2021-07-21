@@ -168,25 +168,27 @@ export async function getClaimHistoryAsync(usrAddress, appAddress, nextToken) {
     let result = await axios.get(fullUrl);
     let data = result.data;
 
-    let allUserTransactions = [];
+    let allTransactions = {
+        all: result.data.transactions,
+        claim: []
+    };
 
     // Add transactions where appAddress is the sender as a 'claim' transaction
     for (let transaction of data.transactions) {
         if (transaction.sender === appAddress) {
-            allUserTransactions.push(transaction);
+            allTransactions.claim.push(transaction);
         }
     }
 
     // if next token given
     if (data["next-token"]) {
-        let claimTransactions = allUserTransactions.concat(
-            await getClaimHistoryAsync(appAddress, usrAddress, data["next-token"])
-        ).reverse();
-        return {
-            all: data.transactions,
-            claim: claimTransactions,
-        };
+        let nextObj = await getClaimHistoryAsync(appAddress, usrAddress, data["next-token"]);
+        
+        allTransactions.all.concat(nextObj.all).reverse();
+        allTransactions.claim.concat(nextObj.claim).reverse();
+
+        return allTransactions;
     } else {
-        return allUserTransactions;
+        return allTransactions;
     }
 }
