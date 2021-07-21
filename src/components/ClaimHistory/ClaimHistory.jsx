@@ -258,7 +258,7 @@ class ClaimHistory extends Component {
                     {
                         this.state.lineData && this.state.lineData.datasets.map((dataset, index) => {
                             let isALGO = dataset.label.includes("ALGO");
-                            let isNLL = dataset.label.includes("NLL");
+                            let isNLL = dataset.label.includes("No Loss Lottery");
                             let totalAmt = dataset.data.reduce(function(accumulation, b) { 
                                 return accumulation + b.y;
                             }, 0);
