@@ -89,28 +89,40 @@ class ClaimHistory extends Component {
                 let asaT = transaction["asset-transfer-transaction"];
                 let algoTransaction = transaction["payment-transaction"];
 
-                // Label as locale date time of transaction
-                let dateTime = new Date(transaction["round-time"] * 1000);
+                let dateTime = null;
+                if (transaction["round-time"]) {
+                    // Label as locale date time of transaction
+                     dateTime = new Date(transaction["round-time"] * 1000);
 
-                // Flatten date: Make DT object a day, no hrs/mins/secs/ms
-                let flatDT = new Date(dateTime.getTime());
-                flatDT.setMilliseconds(0);
-                flatDT.setSeconds(0);
-                flatDT.setMinutes(0);
-                flatDT.setHours(0);
+                    // Flatten date: Make DT object a day, no hrs/mins/secs/ms
+                    let flatDT = new Date(dateTime.getTime());
+                    flatDT.setMilliseconds(0);
+                    flatDT.setSeconds(0);
+                    flatDT.setMinutes(0);
+                    flatDT.setHours(0);
 
-                // Add as a label
-                labels.push(flatDT);
+                    // Add as a label
+                    labels.push(flatDT);
+                }
 
                 // If is a ASA transaction
-                if (asaT) {
-
+                if (asaT && dateTime) {
                     // Iterate through all transactions finding the related group transaction and get it's app id.
                     // Check app id is either NLL or YLDY staking.
                     let transactionAppIDTarget = -1;
                     if (transaction.group) {
                         for(let t of this.state.allTransactions) {
                             if (t.group === transaction.group && t["application-transaction"]) {
+                                
+                                // Check if this transaction is to modify user amount local state
+                                // Mofify UA local state means user withdrew YLDY from contract
+                                let localStateModify = t["local-state-delta"];
+                                if (localStateModify) {
+                                    if (localStateModify[0]?.delta[0]?.key === btoa("UA")) {
+                                        break;
+                                    }
+                                }
+                                
                                 let appID = t["application-transaction"]["application-id"];
                                 if (appID === constants.NO_LOSS_LOTTERY_APP_ID || appID === constants.YLDY_STAKING_APP_ID) {
                                     transactionAppIDTarget = appID;
@@ -216,6 +228,15 @@ class ClaimHistory extends Component {
                     )
                 }
                 {
+                    this.state.lineData && !this.state.loadingGraphData &&
+                        <Button 
+                            variant="primary" 
+                            onClick={() => this.getClaimHistory() }
+                            >
+                            Refresh Claim History
+                        </Button>
+                }
+                {
                     this.state.lineData && (
                         <Line
                             data={ this.state.lineData }
@@ -224,7 +245,8 @@ class ClaimHistory extends Component {
                                     x: {
                                         type: 'time',
                                         time: {
-                                            tooltipFormat: 'DD T'
+                                            displayFormats: 'day',
+                                            unit: 'day',
                                         },
                                         title: {
                                             display: true,
