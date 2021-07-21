@@ -9,6 +9,7 @@ import NoLossLottery from "../NoLossLottery/NoLossLottery";
 import YLDYStaking from "../YLDYStaking/YLDYStaking";
 import AppStateHistoryGraph from "../AppStateHistoryGraph/AppStateHistoryGraph";
 import ClaimHistory from "../ClaimHistory";
+import ScrollToTopButton from '../ScrollToTopButton';
 
 class Home extends Component {
     constructor(props) {
@@ -25,6 +26,8 @@ class Home extends Component {
     render() {
         return (
             <div className="all-text-white primary-background">
+                <ScrollToTopButton />
+
                 <Jumbotron className="text-white bg-dark mb-0">
                     <Container className="py-5">
                         <div>
