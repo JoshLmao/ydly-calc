@@ -13,6 +13,9 @@ import YLDY_ICON from "../../svg/yldy-icon.svg";
 // Adapter for ChartJS to use dates
 import 'chartjs-adapter-luxon';
 
+// Checks if the given transaction modifies a local state and contains the 
+// given target key on the target address.
+// Returns true/false if local state is modified with targetKey & targetAddress
 function stateContainsKey(transaction, targetKey, targetAddress) {
     let localStateModify = transaction["local-state-delta"];
     if (localStateModify) {
@@ -30,6 +33,9 @@ function stateContainsKey(transaction, targetKey, targetAddress) {
     return false;
 }
 
+// Finds if given transaction has a group of transactions, and if the group modifies
+// a local state and sets the local state key "UA". 
+// Returns the related application id of the local state modified. Can be < 0 for invalid
 function doesTransactionGroupModifyState(transaction, userAddress, allTransactions) {
     let transactionAppIDTarget = -1;
     for(let trans of allTransactions) {
@@ -144,17 +150,17 @@ class ClaimHistory extends Component {
                     labels.push(flatDT);
                 }
 
+                // Proceed if dateTime is valid
                 if (dateTime) {
                     // If is a ASA transaction
                     if (asaT) {
-                        // Iterate through all transactions finding the related group transaction and get it's app id.
-                        // Check app id is either NLL or YLDY staking.
+                        // Check app id is either NLL or YLDY staking
                         let transactionAppIDTarget = -1;
                         if (transaction.group) {
                             transactionAppIDTarget = doesTransactionGroupModifyState(transaction, this.state.userAddress, this.state.allTransactions);
                         }
 
-                        // Still check var is either NLL or YLDY staking, add to relevant data array
+                        // Check appID is either NLL or YLDY staking, add to relevant data array
                         if (transactionAppIDTarget === constants.YLDY_STAKING_APP_ID) {
                             // YLDY staking claim
                             yldyStakeClaimData.push({
