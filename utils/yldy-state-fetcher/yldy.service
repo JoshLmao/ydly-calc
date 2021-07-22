@@ -1,11 +1,14 @@
 [Unit]
 Description=YLDY State Fetcher | Automatically gather the latest application variables and saves them to Firebase realtime database | github.com/joshlmao/ydly-calc
+StartLimitInterval=400
+StartLimitBurst=3
 
 [Service]
 User=pi
 Type=simple
 ExecStart=/usr/bin/python3 /repos/ydly-calc/utils/yldy-state-fetcher/yldy-state-fetcher.py
 Restart=always
+RestartSec=90
 
 [Install]
 WantedBy=default.target

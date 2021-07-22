@@ -111,7 +111,10 @@ def calc_start_dt_difference(sleepHours):
         # Figure out next schedule run time
         end = start + timedelta(hours = sleepHours)
         # Get hour difference between next schedule run time and now
-        hourDiff = end.hour - now.hour
+        if end.day == start.day + 1:
+            hourDiff = 24 - now.hour
+        else:
+            hourDiff = end.hour - now.hour
         # Get time difference and return
         runTime = calc_awake_datetime(now.timestamp() * 1000, hourDiff)
         return runTime

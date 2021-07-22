@@ -13,6 +13,37 @@ import YLDY_ICON from "../../svg/yldy-icon.svg";
 // Adapter for ChartJS to use dates
 import 'chartjs-adapter-luxon';
 
+function doesTransactionGroupModifyState(transaction, userAddress, allTransactions) {
+    let transactionAppIDTarget = -1;
+    for(let t of allTransactions) {
+        if (t.group === transaction.group && t["application-transaction"]) {
+            // Check if this transaction is to modify user amount local state
+            // Mofify UA local state means user withdrew YLDY from contract
+            let localStateModify = t["local-state-delta"];
+            if (localStateModify) {
+                for (let modifyState of localStateModify) {
+                    if (modifyState.address === userAddress) {
+                        // Iterate through modified keys, looking for UA
+                        for (let kvp of modifyState.delta) {
+                            if (kvp.key === btoa("UA")) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+            }
+            
+            let appID = t["application-transaction"]["application-id"];
+            if (appID === constants.NO_LOSS_LOTTERY_APP_ID || appID === constants.YLDY_STAKING_APP_ID) {
+                transactionAppIDTarget = appID;
+                break;
+            }
+        }
+    }
+    return transactionAppIDTarget;
+}
+
 class ClaimHistory extends Component {
     constructor(props) {
         super(props);
@@ -111,25 +142,7 @@ class ClaimHistory extends Component {
                     // Check app id is either NLL or YLDY staking.
                     let transactionAppIDTarget = -1;
                     if (transaction.group) {
-                        for(let t of this.state.allTransactions) {
-                            if (t.group === transaction.group && t["application-transaction"]) {
-                                
-                                // Check if this transaction is to modify user amount local state
-                                // Mofify UA local state means user withdrew YLDY from contract
-                                let localStateModify = t["local-state-delta"];
-                                if (localStateModify) {
-                                    if (localStateModify[0]?.delta[0]?.key === btoa("UA")) {
-                                        break;
-                                    }
-                                }
-                                
-                                let appID = t["application-transaction"]["application-id"];
-                                if (appID === constants.NO_LOSS_LOTTERY_APP_ID || appID === constants.YLDY_STAKING_APP_ID) {
-                                    transactionAppIDTarget = appID;
-                                    break;
-                                }
-                            }
-                        }
+                        transactionAppIDTarget = doesTransactionGroupModifyState(transaction, this.state.userAddress, this.state.allTransactions);
                     }
 
                     // Still check var is either NLL or YLDY staking, add to relevant data array
@@ -150,14 +163,24 @@ class ClaimHistory extends Component {
                 } 
                 // If is an algo transaction, add to algo data
                 else if (algoTransaction) {
-                    let algoAmt = algoTransaction.amount;
-                    algoClaimData.push({
-                        x: dateTime.toISOString(),
-                        y: fromMicroValue(algoAmt),
-                    });
+                    // Check if transaction is withdrawal
+                    let transactionAppIDTarget = -1;
+                    if (transaction.group) {
+                        transactionAppIDTarget = doesTransactionGroupModifyState(transaction, this.state.userAddress, this.state.allTransactions);
+                    }
+                    
+                    // ALGO by YLDY Staking
+                    if (transactionAppIDTarget === constants.YLDY_STAKING_APP_ID) {
+                        let algoAmt = algoTransaction.amount;
+                        algoClaimData.push({
+                            x: dateTime.toISOString(),
+                            y: fromMicroValue(algoAmt),
+                        });
+                    }
                 }
             }
 
+            // Build final graph data
             this.setState({
                 loadingGraphData: false,
                 lineData: {
