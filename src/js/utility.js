@@ -82,3 +82,23 @@ export function expToFixed(x) {
     }
     return x;
 }
+
+// Shortens a full address into a "AAAA...BBBB" string.
+// Amt is the amount of characters at the start and end of the shortened address
+export function shortenAddress(address, amt) {
+    if (!address || amt <= 0) {
+        return null;
+    }
+
+    let start = "";
+    let end = "";
+
+    for(let i = 0; i < amt; i++) {
+        start += address[i];
+
+        let lastIndex = address.length - 1;
+        end = address[lastIndex - i] + end;
+    }
+
+    return `${start}...${end}`;
+}

@@ -8,29 +8,20 @@ import {
     Col
 } from 'react-bootstrap';
 import { getYLDYTokenTopHoldersAsync } from '../../js/AlgoExplorerAPI';
-import { formatNumber, fromMicroFormatNumber, fromMicroValue, toMicroValue } from '../../js/utility';
+import { 
+    formatNumber, 
+    fromMicroFormatNumber, 
+    fromMicroValue, 
+    shortenAddress, 
+    toMicroValue 
+} from '../../js/utility';
 import { constants } from "../../js/consts";
+import { getApplicationData } from '../../js/FirebaseAPI';
 
 import YLDY_ICON from "../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../svg/algo-icon.svg";
-import { getApplicationData } from '../../js/FirebaseAPI';
+
 import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
-
-// Shortens a full address into a "AAAA...BBBB" string.
-// Amt is the amount of characters at the start and end of the shortened address
-function shortenAddress(address, amt) {
-    let start = "";
-    let end = "";
-
-    for(let i = 0; i < amt; i++) {
-        start += address[i];
-
-        let lastIndex = address.length - 1;
-        end = address[lastIndex - i] + end;
-    }
-
-    return `${start}...${end}`;
-}
 
 function calcDifference (initial, final) {
     return final - initial;
@@ -332,8 +323,6 @@ class YLDYAssetStats extends Component {
                             className="yldy-scrollbar"
                             style={{
                                 maxHeight: "450px",
-                                overflowY: "auto",
-                                overflowX: "auto",
                             }}
                         >
                         {

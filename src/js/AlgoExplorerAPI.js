@@ -155,38 +155,27 @@ export function getYLDYPrice (callback) {
     })
 }
 
-// Gets the claim history of the user's address, as well as returning all transactions of the user
-// Pass the nextToken to get the next set of data
-export async function getClaimHistoryAsync(usrAddress, appAddress, nextToken) {
-    let endpoint = `v2/transactions?address=${usrAddress}`;
+// Gets all transactions from an address.
+export async function getAddressTransactionsAsync(address, nextToken) {
+    let endpoint = `v2/transactions?address=${address}`;
 
     if (nextToken) {
         endpoint += `&next=${nextToken}`;
     }
 
+    // Build URL and await request
     let fullUrl = `https://algoexplorerapi.io/idx2/${endpoint}`;
     let result = await axios.get(fullUrl);
     let data = result.data;
 
-    let allTransactions = {
-        all: result.data.transactions,
-        claim: []
-    };
-
-    // Add transactions where appAddress is the sender as a 'claim' transaction
-    for (let transaction of data.transactions) {
-        if (transaction.sender === appAddress) {
-            allTransactions.claim.push(transaction);
-        }
-    }
+    let allTransactions = data.transactions;
 
     // if next token given
     if (data["next-token"]) {
-        let nextObj = await getClaimHistoryAsync(appAddress, usrAddress, data["next-token"]);
-        
-        allTransactions.all.concat(nextObj.all).reverse();
-        allTransactions.claim.concat(nextObj.claim).reverse();
-
+        // Get next pages of transactions
+        let nextTransactions = await getAddressTransactionsAsync(address, data["next-token"]);
+        // Merge gathered transactions
+        allTransactions.concat(nextTransactions);
         return allTransactions;
     } else {
         return allTransactions;

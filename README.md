@@ -18,6 +18,9 @@ The app shows your share of the current rewards pool. The rewards pool increases
 
 Any ALGO Donations are appreciated 😊 IM6CZ4KUPWT23PKA23MW5S4ZQVF4376GWELLAL5QA5NCMB635JTRUGIDPY
 
+
+[![](./public/images/yldy-estimator-preview-img.png)](https://yldy-estimator.joshlmao.com)
+
 ## Claimable Rewards Formula
 
 Big thank you to @Tommaso on Telegram for discovering the formula for determining a user's portion of the rewards pool, which is implemented in the app and can be seen below with the related variables required. 
