@@ -1,62 +1,20 @@
 import React, { Component } from "react";
 import { Line } from "react-chartjs-2";
-import { getClaimHistoryAsync } from "../../js/AlgoExplorerAPI";
-import { formatNumber, fromMicroValue } from "../../js/utility";
-import { constants } from "../../js/consts";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Button, Card, Row, Col } from "react-bootstrap";
+
+import { constants } from "../../js/consts";
+import { getAddressTransactionsAsync } from "../../js/AlgoExplorerAPI";
+import { filterClaimTransactions, isALGOTransaction, isASATransaction, YIELDLY_APP_ID_KEY } from "../../js/AlgoExplorerHelper";
+import { formatNumber, fromMicroValue } from "../../js/utility";
 
 import ALGO_ICON from "../../svg/algo-icon.svg";
 import YLDY_ICON from "../../svg/yldy-icon.svg";
 
 // Adapter for ChartJS to use dates
 import 'chartjs-adapter-luxon';
-
-// Checks if the given transaction modifies a local state and contains the 
-// given target key on the target address.
-// Returns true/false if local state is modified with targetKey & targetAddress
-function stateContainsKey(transaction, targetKey, targetAddress) {
-    let localStateModify = transaction["local-state-delta"];
-    if (localStateModify) {
-        for (let modifyState of localStateModify) {
-            if (modifyState.address === targetAddress) {
-                // Iterate through modified keys, looking for UA
-                for (let kvp of modifyState.delta) {
-                    if (kvp.key === targetKey) {
-                        return true;
-                    }
-                }
-            }
-        }
-    }
-    return false;
-}
-
-// Finds if given transaction has a group of transactions, and if the group modifies
-// a local state and sets the local state key "UA". 
-// Returns the related application id of the local state modified. Can be < 0 for invalid
-function doesTransactionGroupModifyState(transaction, userAddress, allTransactions) {
-    let transactionAppIDTarget = -1;
-    for(let trans of allTransactions) {
-        if (trans.group === transaction.group && trans["application-transaction"]) {
-            // Check if this transaction is to modify user amount local state
-            // Modify UA local state means user withdrew YLDY from contract so exclude transaction
-            let contains = stateContainsKey(trans, btoa("UA"), userAddress);
-            if (contains) {
-                break;
-            }
-
-            // Retrieve app id from transaction, return it if related on contracts
-            let appID = trans["application-transaction"]["application-id"];
-            if (appID === constants.NO_LOSS_LOTTERY_APP_ID || appID === constants.YLDY_STAKING_APP_ID) {
-                transactionAppIDTarget = appID;
-                break;
-            }
-        }
-    }
-    return transactionAppIDTarget;
-}
 
 class ClaimHistory extends Component {
     constructor(props) {
@@ -95,13 +53,11 @@ class ClaimHistory extends Component {
                 errorMsg: null,
             });
 
-            getClaimHistoryAsync(
-                this.state.userAddress, 
-                this.state.appAddress
-            ).then((data) => {
+            getAddressTransactionsAsync(this.state.userAddress).then((allTransactions) => {
+                let filteredTransactions = filterClaimTransactions(allTransactions, this.state.userAddress, this.state.appAddress);
                 this.setState({
-                    allUserClaims: data.claim,
-                    allTransactions: data.all,
+                    allTransactions: allTransactions,
+                    allUserClaims: filteredTransactions,
                 }, () => {
                     this.buildGraphData();
                 });
@@ -131,9 +87,6 @@ class ClaimHistory extends Component {
 
             // Iterate through all claim transactions
             for (let transaction of this.state.allUserClaims) {
-                let asaT = transaction["asset-transfer-transaction"];
-                let algoTransaction = transaction["payment-transaction"];
-
                 let dateTime = null;
                 if (transaction["round-time"]) {
                     // Label as locale date time of transaction
@@ -152,46 +105,32 @@ class ClaimHistory extends Component {
 
                 // Proceed if dateTime is valid
                 if (dateTime) {
-                    // If is a ASA transaction
-                    if (asaT) {
-                        // Check app id is either NLL or YLDY staking
-                        let transactionAppIDTarget = -1;
-                        if (transaction.group) {
-                            transactionAppIDTarget = doesTransactionGroupModifyState(transaction, this.state.userAddress, this.state.allTransactions);
-                        }
+                    if (isASATransaction(transaction)) {
+                        let asaTransaction = transaction["asset-transfer-transaction"];
+                        // Retrieve custom key of related Yieldly application id
+                        let appID = transaction[YIELDLY_APP_ID_KEY];
 
-                        // Check appID is either NLL or YLDY staking, add to relevant data array
-                        if (transactionAppIDTarget === constants.YLDY_STAKING_APP_ID) {
-                            // YLDY staking claim
-                            yldyStakeClaimData.push({
-                                x: dateTime.toISOString(),
-                                y: fromMicroValue(asaT.amount),
-                            });
-                        }
-                        else if (transactionAppIDTarget === constants.NO_LOSS_LOTTERY_APP_ID) {
+                        if (appID === constants.NO_LOSS_LOTTERY_APP_ID) {
                             // No Loss Lottery claim
                             nllClaimData.push({
                                 x: dateTime.toISOString(),
-                                y: fromMicroValue(asaT.amount),
+                                y: fromMicroValue(asaTransaction.amount),
+                            });
+                        }
+                        else if (appID === constants.YLDY_STAKING_APP_ID) {
+                            // YLDY staking claim
+                            yldyStakeClaimData.push({
+                                x: dateTime.toISOString(),
+                                y: fromMicroValue(asaTransaction.amount),
                             });
                         }
                     }
-                    // If is an algo transaction, add to algo data
-                    else if (algoTransaction) {
-                        // Check if transaction is withdrawal
-                        let transactionAppIDTarget = -1;
-                        if (transaction.group) {
-                            transactionAppIDTarget = doesTransactionGroupModifyState(transaction, this.state.userAddress, this.state.allTransactions);
-                        }
-                        
-                        // ALGO by YLDY Staking
-                        if (transactionAppIDTarget === constants.YLDY_STAKING_APP_ID) {
-                            let algoAmt = algoTransaction.amount;
-                            algoClaimData.push({
-                                x: dateTime.toISOString(),
-                                y: fromMicroValue(algoAmt),
-                            });
-                        }
+                    else if (isALGOTransaction(transaction)) {
+                        let algoTransaction = transaction["payment-transaction"];
+                        algoClaimData.push({
+                            x: dateTime.toISOString(),
+                            y: fromMicroValue(algoTransaction.amount),
+                        });
                     }
                 }
             }
@@ -284,8 +223,11 @@ class ClaimHistory extends Component {
                                     x: {
                                         type: 'time',
                                         time: {
-                                            displayFormats: 'day',
+                                            displayFormats: {
+                                                'day': 'DD',
+                                            },
                                             unit: 'day',
+                                            
                                         },
                                         title: {
                                             display: true,
