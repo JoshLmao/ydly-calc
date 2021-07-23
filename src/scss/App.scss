@@ -44,6 +44,8 @@ body {
 
 .yldy-scrollbar {
     @include scrollbars(.65em, $primary, $dark);
+    overflow-x: auto !important;
+    overflow-y: auto !important;
 }
 
 .all-text-white {

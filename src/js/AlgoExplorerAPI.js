@@ -176,8 +176,7 @@ export async function getAddressTransactionsAsync(address, nextToken) {
         let nextTransactions = await getAddressTransactionsAsync(address, data["next-token"]);
         // Merge gathered transactions
         allTransactions.concat(nextTransactions);
-        // Reverse and return
-        return allTransactions.reverse();
+        return allTransactions;
     } else {
         return allTransactions;
     }

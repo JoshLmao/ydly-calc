@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Line } from "react-chartjs-2";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Button, Card, Row, Col } from "react-bootstrap";
@@ -15,6 +14,7 @@ import YLDY_ICON from "../../svg/yldy-icon.svg";
 
 // Adapter for ChartJS to use dates
 import 'chartjs-adapter-luxon';
+import ClaimTable from "./ClaimTable/ClaimTable";
 
 class ClaimHistory extends Component {
     constructor(props) {
@@ -26,9 +26,12 @@ class ClaimHistory extends Component {
 
             allTransactions: null,
             allUserClaims: null,
+            sortedUserClaims: null,
 
             loadingGraphData: false,
             errorMsg: null,
+
+            sortEarliest: true,
         };
 
         this.getClaimHistory = this.getClaimHistory.bind(this);
@@ -58,6 +61,9 @@ class ClaimHistory extends Component {
                 this.setState({
                     allTransactions: allTransactions,
                     allUserClaims: filteredTransactions,
+                    // Set sorted, order is earlier initially
+                    sortEarliest: true,
+                    sortedUserClaims: filteredTransactions,
                 }, () => {
                     this.buildGraphData();
                 });
@@ -301,6 +307,12 @@ class ClaimHistory extends Component {
                             )
                         })
                     }
+                </Row>
+                <Row 
+                    className="py-3" >
+                    <ClaimTable
+                        claimTransactions={this.state.allUserClaims}
+                        />
                 </Row>
             </div>
         );
