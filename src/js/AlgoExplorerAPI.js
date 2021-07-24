@@ -33,7 +33,7 @@ export function getUserStateValues (algoAddress, contractID, callback) {
             if (appStates) {
                 for (let appState of appStates) {
                     // Check current app is the app id we want
-                    if (appState.id === contractID) {
+                    if (appState.id === contractID && appState["key-value"]) {
                         let userValues = {};
                         // Iterate through all states of this app
                         for (let kvp of appState["key-value"]) {

@@ -1,13 +1,14 @@
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
 import { 
     Container, 
     Table,
     Row,
-    Col
+    Col,
+    Button
 } from 'react-bootstrap';
-import { getYLDYTokenTopHoldersAsync } from '../../js/AlgoExplorerAPI';
+import { getUserStateValues, getYLDYTokenTopHoldersAsync } from '../../js/AlgoExplorerAPI';
 import { 
     formatNumber, 
     fromMicroFormatNumber, 
@@ -22,6 +23,19 @@ import YLDY_ICON from "../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../svg/algo-icon.svg";
 
 import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
+
+function getYLDYStaked(btn, walletAddr) {
+    if (walletAddr) {
+        getUserStateValues(walletAddr, constants.YLDY_STAKING_APP_ID, (data) => {
+            let btnParent = btn.parentNode;
+            if (data) {
+                btnParent.innerHTML = fromMicroFormatNumber(data.userAmount, 2);
+            } else {
+                btnParent.innerHTML = "No value found.";
+            }
+        });
+    }
+}
 
 function calcDifference (initial, final) {
     return final - initial;
@@ -300,7 +314,8 @@ class YLDYAssetStats extends Component {
                             Displaying the top '{this.state.topHoldersTableData?.length ?? "-1"}' <b>holders</b> of YLDY on the Algorand blockchain, 
                             that have more than '{formatNumber(fromMicroValue(this.state.minimumYldy))}' YLDY.
                             {' '}
-                            <b>Does not include wallets that have staked YLDY.</b>
+                            <br />
+                            Press the <FontAwesomeIcon icon={faArrowRight} className="mx-2" /> button to see how much YLDY the address has staked.
                         </p>
                         {/* Loading spinner for table data */}
                         {
@@ -347,6 +362,16 @@ class YLDYAssetStats extends Component {
                                                     alt="Yieldly icon" 
                                                     />
                                             </th>
+                                            <th className="text-right">
+                                                YLDY Staked
+                                                <img 
+                                                    className="mx-2 my-auto"
+                                                    src={YLDY_ICON} 
+                                                    height="19" 
+                                                    width="19" 
+                                                    alt="Yieldly icon" 
+                                                    />
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -374,6 +399,21 @@ class YLDYAssetStats extends Component {
                                                                     ).toFixed(3)
                                                                 ) 
                                                             }
+                                                        </td>
+                                                        <td className="text-right">
+                                                            <Button 
+                                                                className="px-2 py-0"
+                                                                data-wallet-address={holder.address}
+                                                                onClick={(e) => {
+                                                                    while (e.target.localName !== "button") {
+                                                                        e.target = e.target.parentNode;
+                                                                    }
+                                                                    getYLDYStaked(e.target, e.target.dataset.walletAddress) 
+                                                                }}>
+                                                                    <FontAwesomeIcon 
+                                                                        icon={faArrowRight}
+                                                                        />
+                                                            </Button>
                                                         </td>
                                                     </tr>
                                                 )
