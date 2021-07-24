@@ -28,6 +28,45 @@ class Home extends Component {
         return (
             <div className="all-text-white primary-background">
                 <ScrollToTopButton />
+
+                <div 
+                    className="position-absolute align-right mt-3 mr-2" 
+                    style={{ 
+                        width: "275px",
+                        right: 0,
+                    }}>
+                    <Toast 
+                        className="d-inline-block m-1 bg-secondary" 
+                        onClose={() => this.setState({ showAdvert: false })}
+                        show={this.state.showAdvert} 
+                        animation={true}>
+                        <Toast.Header
+                            closeButton={false}
+                            >
+                        <img
+                            src={ process.env.PUBLIC_URL + "/images/stitchbob-yieldlings-013.jpg" }
+                            className="rounded me-2 mr-2"
+                            width="35"
+                            alt=""
+                            />
+                            <strong className="me-auto">
+                                Interested in NFTs?
+                            </strong>
+                            <div className="mr-auto"/>
+                        </Toast.Header>
+                        <Toast.Body 
+                            className="bg-secondary rounded">
+                            Check out the original series of Yieldly NFTs, Yieldlings, created by Stitchbob.
+                            <br />
+                            <a 
+                                href="https://ab2.gallery/address/5DYIZMX7N4SAB44HLVRUGLYBPSN4UMPDZVTX7V73AIRMJQA3LKTENTLFZ4"
+                                target="noreferrer">
+                                Stitchbob's AB2 Gallery
+                            </a>
+                        </Toast.Body>
+                    </Toast>
+                </div>
+
                 <Jumbotron className="text-white bg-dark mb-0">
                     <Container className="py-5">
                         <div>
@@ -152,40 +191,6 @@ class Home extends Component {
                         </Col>
                     </Row>
                 </Container>
-            </div>
-
-            <div className="position-fixed" style={{
-                right: "1rem",
-                top: "5rem",
-                width: "275px"
-            }}>
-                <Toast 
-                    className="d-inline-block m-1 bg-secondary" 
-                    onClose={() => this.setState({ showAdvert: false })}
-                    show={this.state.showAdvert} 
-                    animation={true}>
-                    <Toast.Header>
-                    <img
-                        src={ process.env.PUBLIC_URL + "/images/stitchbob-yieldlings.jpg" }
-                        className="rounded me-2 mr-2"
-                        width="35"
-                        alt=""
-                        />
-                        <strong className="me-auto">
-                            Interested in NFTs?
-                        </strong>
-                        <div className="mr-auto"/>
-                    </Toast.Header>
-                    <Toast.Body className="bg-secondary">
-                        Check out the original series of Yieldly NFTs, Yieldlings, created by Stitchbob.
-                        <br />
-                        <a 
-                            href="https://ab2.gallery/address/5DYIZMX7N4SAB44HLVRUGLYBPSN4UMPDZVTX7V73AIRMJQA3LKTENTLFZ4"
-                            target="noreferrer">
-                            Stitchbob's AB2 Gallery
-                        </a>
-                    </Toast.Body>
-                </Toast>
             </div>
         </div>
         );
