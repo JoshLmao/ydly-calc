@@ -8,7 +8,6 @@ import {
 import NoLossLottery from "../NoLossLottery/NoLossLottery";
 import YLDYStaking from "../YLDYStaking/YLDYStaking";
 import AppStateHistoryGraph from "../AppStateHistoryGraph/AppStateHistoryGraph";
-import ClaimHistory from "../ClaimHistory";
 import ScrollToTopButton from '../ScrollToTopButton';
 
 class Home extends Component {
@@ -139,15 +138,6 @@ class Home extends Component {
                             />
                         </Col>
                     </Row>
-                </Container>
-            </div>
-
-            <div className="bg-dark border-top border-primary py-5">
-                <Container>
-                    <ClaimHistory
-                        userAddress={this.state.userAlgoAddress}
-                        appAddress="FMBXOFAQCSAD4UWU4Q7IX5AV4FRV6AKURJQYGXLW3CTPTQ7XBX6MALMSPY"
-                        />
                 </Container>
             </div>
         </div>

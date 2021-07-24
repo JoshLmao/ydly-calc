@@ -11,6 +11,7 @@ import Header from "../Header";
 import Footer from "../Footer";
 import FourOhFour from "../FourOhFour";
 import YLDYAssetStats from '../YLDYAssetStats/YLDYAssetStats';
+import StakeClaimStats from '../StakeClaimStats/StakeClaimStats';
 
 class App extends Component {
     constructor(props) {
@@ -28,6 +29,7 @@ class App extends Component {
                 <Switch>
                     <Route exact path="/" component={Home} />
                     <Route exact path="/yldy-stats" component={YLDYAssetStats} />
+                    <Route exact path="/stake-claim-stats" component={StakeClaimStats} />
                     <Route component={FourOhFour} />
                 </Switch>
                 

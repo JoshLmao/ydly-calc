@@ -106,10 +106,84 @@ export function doesTransactionGroupModifyState(transaction, userAddress, allTra
     return transactionAppIDTarget;
 }
 
+// Iterates through allTxs and gets any other txs with the same group id
+// Returns array of all grouped txs
+export function getGroupedTransactions (allTxs, groupID) {
+    if (!allTxs || !groupID) {
+        return null;
+    }
+
+    let txGroup = [];
+    for (let tx of allTxs) {
+        if (tx.group === groupID) {
+            txGroup.push(tx);
+        }
+    }
+    return txGroup;
+}
+
 export function isASATransaction (transaction) {
     return transaction["asset-transfer-transaction"] != null;
 }
 
 export function isALGOTransaction (transaction) {
     return transaction["payment-transaction"] != null;
+}
+
+// Filters out transactions that deposited ALGO or YLDY into the 
+// NLL/YLDY Staking apps and returns them
+export function filterStakeTransactions(allTransactions, userAddress) {
+    if (!allTransactions) {
+        return null;
+    }
+
+    // All txs when deposited in NLL or YLDY staking
+    let stakeTxs = [];
+
+    // Gets the related group txs, checks if UA is modified, then returns app id that modified UA
+    let getGroupModifyUATargetAppId = function (allTxs, groupID, usrAddr) {
+        if (groupID) {
+            let groupTxs = getGroupedTransactions(allTxs, groupID);
+            for (let groupTx of groupTxs) {
+                let containsUA = stateContainsKey(groupTx, btoa("UA"), usrAddr);
+                if (containsUA) {
+                    return groupTx["application-transaction"]["application-id"];
+                }
+            }
+        }
+        return -1;
+    }
+
+    for (let tx of allTransactions) {
+        // Ignore any tx not send by user
+        if (tx.sender !== userAddress) {
+            continue;
+        }
+
+        let isASA = isASATransaction(tx);
+        let isALGO = isALGOTransaction(tx);
+
+        if (isASA) {
+            let transactionAppIDTarget = getGroupModifyUATargetAppId(allTransactions, tx.group, userAddress);
+
+            // appID target should be YLDY Staking. Deposit YLDY into YLDY Staking
+            if (transactionAppIDTarget === constants.YLDY_STAKING_APP_ID) {
+                // Insert target application id as a new key of transaction
+                tx[YIELDLY_APP_ID_KEY] = transactionAppIDTarget;
+                stakeTxs.push(tx);
+            }
+        }
+        else if (isALGO) {
+            let transactionAppIDTarget = getGroupModifyUATargetAppId(allTransactions, tx.group, userAddress);
+
+            // Check app id target is NLL app. Deposit ALGO into NLL
+            if (transactionAppIDTarget === constants.NO_LOSS_LOTTERY_APP_ID) {
+                // Insert target application id as a new key of transaction
+                tx[YIELDLY_APP_ID_KEY] = transactionAppIDTarget;
+                stakeTxs.push(tx);
+            }
+        }
+    }
+
+    return stakeTxs;
 }

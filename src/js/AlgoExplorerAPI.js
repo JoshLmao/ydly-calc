@@ -157,6 +157,10 @@ export function getYLDYPrice (callback) {
 
 // Gets all transactions from an address.
 export async function getAddressTransactionsAsync(address, nextToken) {
+    if (!address) {
+        return null;
+    }
+    
     let endpoint = `v2/transactions?address=${address}`;
 
     if (nextToken) {
@@ -165,19 +169,35 @@ export async function getAddressTransactionsAsync(address, nextToken) {
 
     // Build URL and await request
     let fullUrl = `https://algoexplorerapi.io/idx2/${endpoint}`;
-    let result = await axios.get(fullUrl);
-    let data = result.data;
-
-    let allTransactions = data.transactions;
-
-    // if next token given
-    if (data["next-token"]) {
-        // Get next pages of transactions
-        let nextTransactions = await getAddressTransactionsAsync(address, data["next-token"]);
-        // Merge gathered transactions
-        allTransactions.concat(nextTransactions);
-        return allTransactions;
-    } else {
-        return allTransactions;
+    let result = null;
+    try {
+        result = await axios.get(fullUrl);
+    } 
+    catch (ex) {
+        // Error on axios get
+        return null;
     }
+
+    if (result) {
+        let allTransactions = result.data.transactions;
+    
+        // if next token given
+        if (result.data["next-token"]) {
+            // Get next pages of transactions
+            let nextTransactions = await getAddressTransactionsAsync(address, result.data["next-token"]);
+            // Merge gathered transactions
+            allTransactions.concat(nextTransactions);
+            return allTransactions;
+        } else {
+            return allTransactions;
+        }
+    }
+}
+
+// Gets a date time object from the transaction's round-time
+export function getDateTimeFromTransaction (tx) {
+    if (tx && tx["round-time"]) {
+        return new Date(tx["round-time"] * 1000);
+    }
+    return null;
 }
