@@ -102,3 +102,14 @@ export function shortenAddress(address, amt) {
 
     return `${start}...${end}`;
 }
+
+export function copyToClipboard (content) {
+    navigator.clipboard.writeText(content).then(
+        function () {
+            console.log("Async: Copying to clipboard was successful!", content);
+        },
+        function (err) {
+            console.error("Async: Could not copy text: ", err);
+        }
+    );
+};
