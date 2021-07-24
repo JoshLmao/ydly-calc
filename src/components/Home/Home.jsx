@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Form, Row, Col, Jumbotron } from "react-bootstrap";
+import { Container, Form, Row, Col, Jumbotron, Toast  } from "react-bootstrap";
 
 import {
     constants
@@ -19,6 +19,8 @@ class Home extends Component {
             
             nllAppID: constants.NO_LOSS_LOTTERY_APP_ID,
             yldyStakingAppID: constants.YLDY_STAKING_APP_ID,
+
+            showAdvert: true,
         };
     }
 
@@ -139,6 +141,40 @@ class Home extends Component {
                         </Col>
                     </Row>
                 </Container>
+            </div>
+
+            <div className="position-fixed" style={{
+                right: "1rem",
+                top: "5rem",
+                width: "275px"
+            }}>
+                <Toast 
+                    className="d-inline-block m-1 bg-secondary" 
+                    onClose={() => this.setState({ showAdvert: false })}
+                    show={this.state.showAdvert} 
+                    animation={true}>
+                    <Toast.Header>
+                    <img
+                        src={ process.env.PUBLIC_URL + "/images/stitchbob-yieldlings.jpg" }
+                        className="rounded me-2 mr-2"
+                        width="35"
+                        alt=""
+                        />
+                        <strong className="me-auto">
+                            Interested in NFT's?
+                        </strong>
+                        <div className="mr-auto"/>
+                    </Toast.Header>
+                    <Toast.Body className="bg-secondary">
+                        Check out the original series of Yieldly NFT's, Yieldlings, created by Stitchbob.
+                        <br />
+                        <a 
+                            href="https://ab2.gallery/address/5DYIZMX7N4SAB44HLVRUGLYBPSN4UMPDZVTX7V73AIRMJQA3LKTENTLFZ4"
+                            target="noreferrer">
+                            Stitchbob's AB2 Gallery
+                        </a>
+                    </Toast.Body>
+                </Toast>
             </div>
         </div>
         );
