@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Form, Row, Col, Jumbotron, Toast  } from "react-bootstrap";
+import { Container, Form, Row, Col, Jumbotron, Toast, Alert } from "react-bootstrap";
 
 import {
     constants
@@ -28,12 +28,23 @@ class Home extends Component {
         return (
             <div className="all-text-white primary-background">
                 <ScrollToTopButton />
-
                 <Jumbotron className="text-white bg-dark mb-0">
                     <Container className="py-5">
                         <div>
                             <Row className="my-3">
                                 <Col md={8}>
+                                    {
+                                        // Alert: Url is develop website
+                                        window?.location?.href?.includes("yldy-calc-develop") && (
+                                            <Alert variant="warning">
+                                                    <strong>Warning:</strong> You are using the develop website. Please use the main website 
+                                                    <br />
+                                                    <Alert.Link href="https://yldy-estimator.joshlmao.com">
+                                                        https://yldy-estimator.joshlmao.com
+                                                    </Alert.Link>
+                                            </Alert>
+                                        )
+                                    }
                                     <h1 className="text-white font-weight-bold pb-3">
                                         Estimate your Yieldly rewards in seconds!
                                     </h1>
@@ -161,12 +172,12 @@ class Home extends Component {
                         alt=""
                         />
                         <strong className="me-auto">
-                            Interested in NFT's?
+                            Interested in NFTs?
                         </strong>
                         <div className="mr-auto"/>
                     </Toast.Header>
                     <Toast.Body className="bg-secondary">
-                        Check out the original series of Yieldly NFT's, Yieldlings, created by Stitchbob.
+                        Check out the original series of Yieldly NFTs, Yieldlings, created by Stitchbob.
                         <br />
                         <a 
                             href="https://ab2.gallery/address/5DYIZMX7N4SAB44HLVRUGLYBPSN4UMPDZVTX7V73AIRMJQA3LKTENTLFZ4"
