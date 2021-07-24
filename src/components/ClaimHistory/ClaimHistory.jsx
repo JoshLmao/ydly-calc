@@ -298,7 +298,11 @@ class ClaimHistory extends Component {
                 {
                     this.state.allUserClaims && this.state.allUserClaims.length > 0 && (
                         <Row 
-                            className="py-3" >
+                            className="py-3">
+                            <h3 className="yldy-title">Claim Transactions</h3>
+                            <p className="p-0 small my-auto mx-2">
+                                All transactions where the user claimed ALGO or YLDY from the applications.
+                            </p>
                             <ClaimTable
                                 claimTransactions={this.state.allUserClaims}
                                 purposeText="Claim"

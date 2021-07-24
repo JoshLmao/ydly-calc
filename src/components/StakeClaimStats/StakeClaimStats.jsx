@@ -46,12 +46,19 @@ class StakeClaimStats extends Component {
             <div className="all-text-white primary-background">
                 <div className="bg-dark py-5">
                     <Container>
-                        <h3>Address:</h3>
+                        <p className="lead pt-2">
+                            Enter your Algorand address and press 
+                            <FontAwesomeIcon
+                                className="mx-2"
+                                icon={faArrowCircleRight}
+                                />
+                            to retrieve your claim and staking history.
+                        </p>
                         <div className="d-flex">
                             <Form.Control
                                 type="text"
                                 onChange={(e) => this.setState({ userAlgoAddress: e.target.value })}
-                                placeholder="An Algorand address that has interacted with the Yieldly platform"
+                                placeholder="Your Algorand address"
                                 />
                             <Button 
                                 className="mx-2"
@@ -62,14 +69,7 @@ class StakeClaimStats extends Component {
                                     />
                             </Button>
                         </div>
-                        <p className="lead pt-2">
-                            Enter your Algorand address and press 
-                            <FontAwesomeIcon
-                                className="mx-2"
-                                icon={faArrowCircleRight}
-                                />
-                            to retrieve your claim and staking history.
-                        </p>
+                        
                         {
                             this.state.loadingAllTx && (
                                 <FontAwesomeIcon
@@ -95,6 +95,7 @@ class StakeClaimStats extends Component {
                     <Container>
                         <StakeHistory
                             userAddress={this.state.userAlgoAddress}
+                            appAddress={this.state.appAddress}
                             allTransactions={this.state.allTransactions}
                             />
                     </Container>

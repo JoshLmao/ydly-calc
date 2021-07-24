@@ -65,20 +65,26 @@ export function filterClaimTransactions(allTransactions, userAddress, appAddress
 // given target key on the target address.
 // Returns true/false if local state is modified with targetKey & targetAddress
 export function stateContainsKey(transaction, targetKey, targetAddress) {
-    let localStateModify = transaction["local-state-delta"];
+    let val = getLocaleStateKey(transaction, targetKey, targetAddress);
+    return val != null;
+}
+
+// Try gets a value of a key in the transaction, if it modified the local-state-delta
+export function getLocaleStateKey (tx, targetKey, targetAddress) {
+    let localStateModify = tx["local-state-delta"];
     if (localStateModify) {
         for (let modifyState of localStateModify) {
             if (modifyState.address === targetAddress) {
                 // Iterate through modified keys, looking for UA
                 for (let kvp of modifyState.delta) {
-                    if (kvp.key === targetKey) {
-                        return true;
+                    if (kvp.key === btoa(targetKey)) {
+                        return kvp.value;
                     }
                 }
             }
         }
     }
-    return false;
+    return null;
 }
 
 // Finds if given transaction has a group of transactions, and if the group modifies
@@ -90,7 +96,7 @@ export function doesTransactionGroupModifyState(transaction, userAddress, allTra
         if (trans.group === transaction.group && trans["application-transaction"]) {
             // Check if this transaction is to modify user amount local state
             // Modify UA local state means user withdrew YLDY from contract so exclude transaction
-            let contains = stateContainsKey(trans, btoa("UA"), userAddress);
+            let contains = stateContainsKey(trans, "UA", userAddress);
             if (contains) {
                 break;
             }
@@ -132,20 +138,19 @@ export function isALGOTransaction (transaction) {
 
 // Filters out transactions that deposited ALGO or YLDY into the 
 // NLL/YLDY Staking apps and returns them
-export function filterStakeTransactions(allTransactions, userAddress) {
+export function filterStakeTransactions(allTransactions, userAddress, appAddress) {
     if (!allTransactions) {
         return null;
     }
 
     // All txs when deposited in NLL or YLDY staking
-    let stakeTxs = [];
+    let depositGroupedTxs = [];
 
     // Gets the related group txs, checks if UA is modified, then returns app id that modified UA
-    let getGroupModifyUATargetAppId = function (allTxs, groupID, usrAddr) {
-        if (groupID) {
-            let groupTxs = getGroupedTransactions(allTxs, groupID);
+    let getGroupModifyUATargetAppId = function (groupTxs, usrAddr) {
+        if (groupTxs) {
             for (let groupTx of groupTxs) {
-                let containsUA = stateContainsKey(groupTx, btoa("UA"), usrAddr);
+                let containsUA = stateContainsKey(groupTx, "UA", usrAddr);
                 if (containsUA) {
                     return groupTx["application-transaction"]["application-id"];
                 }
@@ -154,36 +159,50 @@ export function filterStakeTransactions(allTransactions, userAddress) {
         return -1;
     }
 
+    let groupIdsAdded = [];
     for (let tx of allTransactions) {
-        // Ignore any tx not send by user
-        if (tx.sender !== userAddress) {
+        // Ignore any tx not send by user or app
+        if (tx.sender === userAddress || tx.sender === appAddress) {
+            
+        }
+        else {
             continue;
         }
 
+        // If group is already added, skip
+        if (tx.group && groupIdsAdded.includes(tx.group)) {
+            continue;
+        }
+
+        // Determine if ASA or ALGO tx
         let isASA = isASATransaction(tx);
         let isALGO = isALGOTransaction(tx);
 
         if (isASA) {
-            let transactionAppIDTarget = getGroupModifyUATargetAppId(allTransactions, tx.group, userAddress);
+            let allGroupTxs = getGroupedTransactions(allTransactions, tx.group);
+            let transactionAppIDTarget = getGroupModifyUATargetAppId(allGroupTxs, userAddress);
 
             // appID target should be YLDY Staking. Deposit YLDY into YLDY Staking
             if (transactionAppIDTarget === constants.YLDY_STAKING_APP_ID) {
                 // Insert target application id as a new key of transaction
                 tx[YIELDLY_APP_ID_KEY] = transactionAppIDTarget;
-                stakeTxs.push(tx);
+                depositGroupedTxs.push(allGroupTxs);
+                groupIdsAdded.push(tx.group);
             }
         }
         else if (isALGO) {
-            let transactionAppIDTarget = getGroupModifyUATargetAppId(allTransactions, tx.group, userAddress);
+            let allGroupTxs = getGroupedTransactions(allTransactions, tx.group);
+            let transactionAppIDTarget = getGroupModifyUATargetAppId(allGroupTxs, userAddress);
 
             // Check app id target is NLL app. Deposit ALGO into NLL
             if (transactionAppIDTarget === constants.NO_LOSS_LOTTERY_APP_ID) {
                 // Insert target application id as a new key of transaction
                 tx[YIELDLY_APP_ID_KEY] = transactionAppIDTarget;
-                stakeTxs.push(tx);
+                depositGroupedTxs.push(allGroupTxs);
+                groupIdsAdded.push(tx.group);
             }
         }
     }
 
-    return stakeTxs;
+    return depositGroupedTxs;
 }
