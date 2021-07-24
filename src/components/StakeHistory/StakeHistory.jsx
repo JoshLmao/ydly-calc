@@ -1,50 +1,56 @@
-import React, { Component } from "react";
-import { Line } from "react-chartjs-2";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { Card, Row, Col } from "react-bootstrap";
-
-import { constants } from "../../js/consts";
-import { filterClaimTransactions, isALGOTransaction, isASATransaction, YIELDLY_APP_ID_KEY } from "../../js/AlgoExplorerHelper";
-import { formatNumber, fromMicroValue } from "../../js/utility";
+import React, { Component } from 'react';
+import { Card, Col, Row } from 'react-bootstrap';
+import { Line } from 'react-chartjs-2';
+import { getDateTimeFromTransaction } from '../../js/AlgoExplorerAPI';
+import { filterStakeTransactions, getLocaleStateKey, isALGOTransaction, isASATransaction, YIELDLY_APP_ID_KEY } from '../../js/AlgoExplorerHelper';
+import { constants } from '../../js/consts';
+import { formatNumber, fromMicroValue } from '../../js/utility';
 
 import ALGO_ICON from "../../svg/algo-icon.svg";
 import YLDY_ICON from "../../svg/yldy-icon.svg";
+import ClaimTable from '../ClaimHistory/ClaimTable/ClaimTable';
 
-// Adapter for ChartJS to use dates
-import 'chartjs-adapter-luxon';
-import ClaimTable from "./ClaimTable/ClaimTable";
-import { getDateTimeFromTransaction } from "../../js/AlgoExplorerAPI";
+function getDepositTxs (allGroupTxs, usrAddress) {
+    let allDeposits = [];
+    for (let group of allGroupTxs) {
+        for (let tx of group) {
+            if (tx.sender !== usrAddress) {
+                continue;
+            }
 
-class ClaimHistory extends Component {
+            let asaTx = isASATransaction(tx);
+            let algoTx = isALGOTransaction(tx);
+            let appID = tx[YIELDLY_APP_ID_KEY];
+
+            if (appID && (appID === constants.NO_LOSS_LOTTERY_APP_ID || appID === constants.YLDY_STAKING_APP_ID)){
+                if (asaTx || algoTx) {
+                    allDeposits.push(tx);
+                    break;
+                }
+            }
+        }
+    }
+    return allDeposits;
+}
+
+class StakeHistory extends Component {
     constructor(props) {
         super(props);
-
+        
         this.state = {
             userAddress: props.userAddress,
-            appAddress: props.appAddress,
-
+            appAddress: props.appAddress, 
             allTransactions: props.allTransactions,
-
-            allUserClaims: null,
-
-            loadingGraphData: false,
-            errorMsg: null,
-
-            sortEarliest: true,
         };
 
-        this.buildGraphData = this.buildGraphData.bind(this);
         this.onAllTransactionsUpdated = this.onAllTransactionsUpdated.bind(this);
+        this.buildGraphData = this.buildGraphData.bind(this);
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.userAddress !== this.props.userAddress) {
-            this.setState({
-                userAddress: this.props.userAddress,
-                errorMsg: null,
-            });
-        } 
+            this.setState({ userAddress: this.props.userAddress });
+        }
         if (prevProps.appAddress !== this.props.appAddress) {
             this.setState({ appAddress: this.props.appAddress });
         }
@@ -55,115 +61,129 @@ class ClaimHistory extends Component {
 
     onAllTransactionsUpdated() {
         if (this.state.allTransactions) {
+            let stakeTxs = filterStakeTransactions(this.state.allTransactions, this.state.userAddress, this.state.appAddress);
             this.setState({
-                loadingGraphData: true,
-                errorMsg: null,
-            });
-            
-            let filteredTransactions = filterClaimTransactions(this.state.allTransactions, this.state.userAddress, this.state.appAddress);
-            this.setState({
-                allUserClaims: filteredTransactions,
+                groupTransactions: stakeTxs,
+                depositTransactions: getDepositTxs(stakeTxs, this.state.userAddress),
             }, () => {
-                this.buildGraphData();
+                this.buildGraphData()
             });
         } else {
             this.setState({
                 errorMsg: "Unable to get any transactions. Check the address and try again",
                 lineData: null,
-                allUserClaims: null,
+                depositTransactions: null,
             });
         }
     }
 
-    buildGraphData () {
-        if (this.state.allUserClaims && this.state.allTransactions) {
-            // Check if user has any claims before building data
-            if (this.state.allUserClaims.length <= 0) {
+    buildGraphData() {
+        if (this.state.groupTransactions) {
+            if (this.state.groupTransactions.length <= 0) {
                 this.setState({
-                    errorMsg: "Address hasn't made any claims. Try claiming in the Yieldly app and try again.",
+                    errorMsg: "Address hasn't staked. Try staking in the Yieldly app and try again.",
                     loadingGraphData: false,
                 });
                 return;
             }
 
-            let labels = [];
-            let yldyStakeClaimData = [];
-            let algoClaimData = [];
-            let nllClaimData = [];
+            let nllStakeData = [];
+            let yldyStakeData = [];
 
-            // Iterate through all claim transactions
-            for (let transaction of this.state.allUserClaims) {
-                let dateTime = getDateTimeFromTransaction(transaction);
-                if (dateTime) {
-                    // Flatten date: Make DT object a day, no hrs/mins/secs/ms
-                    let flatDT = new Date(dateTime.getTime());
-                    flatDT.setMilliseconds(0);
-                    flatDT.setSeconds(0);
-                    flatDT.setMinutes(0);
-                    flatDT.setHours(0);
-
-                    // Add as a label
-                    labels.push(flatDT);
-
-                    if (isASATransaction(transaction)) {
-                        let asaTransaction = transaction["asset-transfer-transaction"];
-                        // Retrieve custom key of related Yieldly application id
-                        let appID = transaction[YIELDLY_APP_ID_KEY];
-
-                        if (appID === constants.NO_LOSS_LOTTERY_APP_ID) {
-                            // No Loss Lottery claim
-                            nllClaimData.push({
-                                x: dateTime.toISOString(),
-                                y: fromMicroValue(asaTransaction.amount),
-                            });
+            
+            for (let group of this.state.groupTransactions) {
+                for (let tx of group) {
+                    let dateTime = getDateTimeFromTransaction(tx);
+                    if (dateTime) {
+                        if (isASATransaction(tx)) {
+                            let asaInfo = tx["asset-transfer-transaction"];
+                            let appID = tx[YIELDLY_APP_ID_KEY];
+    
+                            // Only add ASA transfer into YLDY staking app
+                            if (appID === constants.YLDY_STAKING_APP_ID) {
+                                yldyStakeData.push({
+                                    x: dateTime.toISOString(),
+                                    y: fromMicroValue(asaInfo.amount),
+                                });
+                            }
                         }
-                        else if (appID === constants.YLDY_STAKING_APP_ID) {
-                            // YLDY staking claim
-                            yldyStakeClaimData.push({
+                        else if (isALGOTransaction(tx)) {
+                            let algoInfo = tx["payment-transaction"];
+                            nllStakeData.push({
                                 x: dateTime.toISOString(),
-                                y: fromMicroValue(asaTransaction.amount),
+                                y: fromMicroValue(algoInfo.amount)
                             });
                         }
                     }
-                    else if (isALGOTransaction(transaction)) {
-                        let algoTransaction = transaction["payment-transaction"];
-                        algoClaimData.push({
-                            x: dateTime.toISOString(),
-                            y: fromMicroValue(algoTransaction.amount),
-                        });
+                }
+            }
+            
+
+            let cumulativeNllTotalData = [];
+            let cumulativeYLDYStakingTotalData = [];
+
+            for (let group of this.state.groupTransactions) {
+                for (let tx of group) {
+                    let value = getLocaleStateKey(tx, "UA", this.state.userAddress);
+                    let dt = getDateTimeFromTransaction(tx);
+                    let id = -1;
+
+                    let appTx = tx["application-transaction"];
+                    if (appTx) {
+                        id = appTx["application-id"];
+                    }
+
+                    if (value && id) {
+                        if (id === constants.NO_LOSS_LOTTERY_APP_ID) {
+                            cumulativeNllTotalData.push({
+                                x: dt.toISOString(),
+                                y: fromMicroValue(value.uint)
+                            });
+                        }
+                        else if (id === constants.YLDY_STAKING_APP_ID) {
+                            cumulativeYLDYStakingTotalData.push({
+                                x: dt.toISOString(),
+                                y: fromMicroValue(value.uint)
+                            });
+                        }
                     }
                 }
             }
 
-            // Build final graph data
             let nllColor = "rgb(249, 85, 144)";
-            let stakingYldyColor = "rgb(254, 215, 56)";
-            let stakingAlgoColor = "grey";
+            let yldyColor = "rgb(254, 215, 56)";
             this.setState({
-                loadingGraphData: false,
                 lineData: {
-                    labels: labels,
                     datasets: [
                         {
-                            label: "No Loss Lottery | YLDY rewards",
-                            data: nllClaimData,
+                            label: "No Loss Lottery | ALGO deposited",
+                            data: nllStakeData,
                             backgroundColor: nllColor,
                             borderColor: nllColor,
                             borderWidth: 1,
                         },
                         {
-                            label: "YLDY Staking | YLDY rewards",
-                            data: yldyStakeClaimData,
-                            backgroundColor: stakingYldyColor,
-                            borderColor: stakingYldyColor,
+                            label: "YLDY Staking | YLDY deposited",
+                            data: yldyStakeData,
+                            backgroundColor: yldyColor,
+                            borderColor: yldyColor,
                             borderWidth: 1,
                         },
                         {
-                            label: "YLDY Staking | ALGO rewards",
-                            data: algoClaimData,
-                            backgroundColor: stakingAlgoColor,
-                            borderColor: stakingAlgoColor,
-                            borderWidth: 1,
+                            label: "No Loss Lottery | Cumulative ALGO",
+                            data: cumulativeNllTotalData,
+                            backgroundColor: "rgba(169, 169, 169, 0.5)",    //cs color: DarkGrey
+                            borderColor: "lightgrey",
+                            borderWidth: 2,
+                            fill: true,
+                        },
+                        {
+                            label: "YLDY Staking | Cumulative YLDY",
+                            data: cumulativeYLDYStakingTotalData,
+                            backgroundColor: "rgba(30, 144, 255, 0.5)",     //css color: DodgetBlue
+                            borderColor: "darkturquoise",
+                            borderWidth: 2,
+                            fill: true,
                         }
                     ]
                 }
@@ -175,30 +195,18 @@ class ClaimHistory extends Component {
         let textColor = "white";
         return (
             <div>
-                <h1 
-                    id="claim-history" 
-                    className="yldy-title">
-                    Claim History
+                <h1 className="yldy-title">
+                    Stake History
                 </h1>
                 <p>
-                    View your history of claimed rewards between No Loss Lottery and YLDY Staking. Click the button below to view your history. 
-                    Make sure your algorand address is entered at the top of the page.
-                    This may take some time, depending on the amount of transactions.
+                    View your history of staking between No Loss Lottery and YLDY Staking. Click the button below to view your history. 
+                    Make sure your algorand address is entered at the top of the page. This may take some time, depending on the amount of transactions.
                 </p>
                 {
                     this.state.errorMsg && (
                         <div style={{ color: "red" }}>
                             { this.state.errorMsg }
                         </div>
-                    )
-                }
-                {
-                    this.state.loadingGraphData && (
-                        <FontAwesomeIcon 
-                            icon={faSpinner} 
-                            size="2x" 
-                            spin 
-                            />
                     )
                 }
                 {
@@ -210,10 +218,10 @@ class ClaimHistory extends Component {
                                     x: {
                                         type: 'time',
                                         time: {
+                                            unit: 'day',
                                             displayFormats: {
                                                 'day': 'DD',
                                             },
-                                            unit: 'day',
                                         },
                                         title: {
                                             display: true,
@@ -221,13 +229,13 @@ class ClaimHistory extends Component {
                                             color: textColor
                                         },
                                         ticks: {
-                                            color: textColor,
+                                            color: textColor
                                         }
                                     },
                                     y: {
                                         title: {
                                             display: true,
-                                            text: "Claimed Amount",
+                                            text: "Amount",
                                             color: textColor,
                                         },
                                         ticks: {
@@ -236,14 +244,14 @@ class ClaimHistory extends Component {
                                     }
                                 }
                             }}
-                        />
+                            />
                     )
                 }
                 <Row 
                     className="py-3"
                     xs={1}
                     sm={1}
-                    md={3}>
+                    md={2}>
                     {
                         !this.state.lineData && (
                             <Col>
@@ -253,6 +261,9 @@ class ClaimHistory extends Component {
                     }
                     {
                         this.state.lineData && this.state.lineData.datasets.map((dataset, index) => {
+                            if (dataset.label.toLowerCase().includes("cumulative")) {
+                                return null;   // dont show cumulative totals
+                            }
                             let isALGO = dataset.label.includes("ALGO");
                             let isNLL = dataset.label.includes("No Loss Lottery");
                             let totalAmt = dataset.data.reduce(function(accumulation, b) { 
@@ -271,7 +282,7 @@ class ClaimHistory extends Component {
                                                 { dataset.label }
                                             </Card.Title>
                                             <div>
-                                                <b>Total Claimed:</b>
+                                                <b>Total stake:</b>
                                                 <img 
                                                     className="ml-2 mr-1"
                                                     alt={ isALGO ? "ALGO icon" : "YLDY icon" }
@@ -286,7 +297,7 @@ class ClaimHistory extends Component {
                                                     }
                                                 </span>
                                                 <br />
-                                                <b>Amount of claims:</b> {dataset.data.length} times.
+                                                <b>Times staked:</b> {dataset.data.length} times.
                                             </div>
                                         </Card.Body>
                                     </Card>
@@ -296,16 +307,16 @@ class ClaimHistory extends Component {
                     }
                 </Row>
                 {
-                    this.state.allUserClaims && this.state.allUserClaims.length > 0 && (
+                    this.state.depositTransactions && this.state.depositTransactions.length > 0 && (
                         <Row 
-                            className="py-3">
-                            <h3 className="yldy-title">Claim Transactions</h3>
+                            className="py-3" >
+                            <h3 className="yldy-title">Deposit Transactions</h3>
                             <p className="p-0 small my-auto mx-2">
-                                All transactions where the user claimed ALGO or YLDY from the applications.
+                                All transactions where the user deposited ALGO or YLDY into the application
                             </p>
                             <ClaimTable
-                                claimTransactions={this.state.allUserClaims}
-                                purposeText="Claim"
+                                claimTransactions={this.state.depositTransactions}
+                                purposeText="Stake"
                                 />
                         </Row>
                     )
@@ -315,4 +326,4 @@ class ClaimHistory extends Component {
     }
 }
 
-export default ClaimHistory;
+export default StakeHistory;

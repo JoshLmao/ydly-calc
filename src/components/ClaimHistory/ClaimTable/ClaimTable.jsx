@@ -24,6 +24,7 @@ class ClaimTable extends Component {
         this.state = {
             claimTransactions: props.claimTransactions,
             sortedUserClaims: props.claimTransactions,
+            purposeText: props.purposeText ?? "?",
             sortEarliest: true,
         };
 
@@ -72,8 +73,8 @@ class ClaimTable extends Component {
                                     <th>Tx ID</th>
                                     <th>From</th>
                                     <th>To</th>
-                                    <th>Claim Type</th>
-                                    <th>Claim Amount</th>
+                                    <th>{this.state.purposeText} Type</th>
+                                    <th>{this.state.purposeText} Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
