@@ -1,23 +1,12 @@
 import React, { Component } from "react";
 import { Button, Container } from "react-bootstrap";
-
-import CONFIG from "../../config.json";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons";
-import ALGO_ICON from "../../svg/algo-icon.svg";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
 
-const copyToClipboard = () => {
-    let text = CONFIG.algo_donations_address;
-    navigator.clipboard.writeText(text).then(
-    function () {
-        console.log("Async: Copying to clipboard was successful!", text);
-    },
-    function (err) {
-        console.error("Async: Could not copy text: ", err);
-    }
-    );
-};
+import ALGO_ICON from "../../svg/algo-icon.svg";
+import CONFIG from "../../config.json";
+import { copyToClipboard } from "../../js/utility";
 
 class Footer extends Component {
     render() {
@@ -37,7 +26,7 @@ class Footer extends Component {
                     <p className="small d-inline" style={{ wordWrap: "break-word" }}>
                         { CONFIG.algo_donations_address }
                     </p>
-                    <Button variant="white" onClick={() => copyToClipboard()}>
+                    <Button variant="white" onClick={() => copyToClipboard(CONFIG.algo_donations_address)}>
                         <FontAwesomeIcon icon={faCopy} />
                     </Button>
                 </Container>

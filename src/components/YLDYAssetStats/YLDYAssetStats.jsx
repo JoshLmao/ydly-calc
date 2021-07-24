@@ -1,4 +1,4 @@
-import { faArrowRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight, faCopy, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
 import { 
@@ -10,6 +10,7 @@ import {
 } from 'react-bootstrap';
 import { getUserStateValues, getYLDYTokenTopHoldersAsync } from '../../js/AlgoExplorerAPI';
 import { 
+    copyToClipboard,
     formatNumber, 
     fromMicroFormatNumber, 
     fromMicroValue, 
@@ -390,6 +391,14 @@ class YLDYAssetStats extends Component {
                                                             <a href={ "https://algoexplorer.io/address/" + holder.address }> 
                                                                 { shortenAddress(holder.address, 4) }
                                                             </a>
+                                                            <Button 
+                                                                className="mx-2 p-0"
+                                                                variant="white" 
+                                                                onClick={() => copyToClipboard(holder.address)}>
+                                                                <FontAwesomeIcon 
+                                                                    color="white"
+                                                                    icon={faCopy} />
+                                                            </Button>
                                                         </td>
                                                         <td className="text-right">
                                                             { 
@@ -403,6 +412,7 @@ class YLDYAssetStats extends Component {
                                                         <td className="text-right">
                                                             <Button 
                                                                 className="px-2 py-0"
+                                                                title="Click to retrieve address' staked YLDY"
                                                                 data-wallet-address={holder.address}
                                                                 onClick={(e) => {
                                                                     while (e.target.localName !== "button") {
