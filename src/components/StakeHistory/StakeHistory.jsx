@@ -323,7 +323,7 @@ class StakeHistory extends Component {
                                 </p>
                                 <CSVLink
                                     className="ml-auto my-auto"
-                                    filename={`claim-history-${getDateStringShort(new Date())}-${this.state.userAddress}.csv`}
+                                    filename={`stake-history-${getDateStringShort(new Date())}-${this.state.userAddress}.csv`}
                                     data={ buildCsvDataFromTxs(this.state.depositTransactions) }
                                     >
                                     Download as CSV
