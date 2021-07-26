@@ -123,7 +123,7 @@ export function buildCsvDataFromTxs(allTxs) {
         let csvData = [];
         // Add CSV headers
         csvData.push([
-            "date/time", "transaction", "sender", "receiver", "staking pool", "amount"
+            "date/time", "transaction", "sender", "receiver", "staking pool", "amount", "token"
         ]);
 
         for (let tx of allTxs) {
@@ -139,16 +139,18 @@ export function buildCsvDataFromTxs(allTxs) {
                 let asaTx = tx["asset-transfer-transaction"];
                 rowData.amount = fromMicroValue(asaTx.amount);
                 rowData.receiver = asaTx.receiver;
+                rowData.token = "YLDY";
             }
             else if (isALGOTransaction(tx)) {
                 let algoTx = tx["payment-transaction"];
                 rowData.amount = fromMicroValue(algoTx.amount);
                 rowData.receiver = algoTx.receiver;
+                rowData.token = "ALGO";
             }
 
             // Append data
             csvData.push([
-                rowData.dateTime, rowData.txID, rowData.sender, rowData.receiver, rowData.stakingPool, rowData.amount
+                rowData.dateTime, rowData.txID, rowData.sender, rowData.receiver, rowData.stakingPool, rowData.amount, rowData.token
             ]);
         }
 
