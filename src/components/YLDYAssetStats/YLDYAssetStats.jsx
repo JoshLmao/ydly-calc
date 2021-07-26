@@ -1,21 +1,12 @@
-import { faArrowRight, faCopy, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
 import { 
     Container, 
-    Table,
     Row,
     Col,
-    Button
 } from 'react-bootstrap';
-import { getUserStateValues, getYLDYTokenTopHoldersAsync } from '../../js/AlgoExplorerAPI';
 import { 
-    copyToClipboard,
     formatNumber, 
-    fromMicroFormatNumber, 
-    fromMicroValue, 
-    shortenAddress, 
-    toMicroValue 
+    fromMicroFormatNumber
 } from '../../js/utility';
 import { constants } from "../../js/consts";
 import { getApplicationData } from '../../js/FirebaseAPI';
@@ -24,19 +15,7 @@ import YLDY_ICON from "../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../svg/algo-icon.svg";
 
 import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
-
-function getYLDYStaked(btn, walletAddr) {
-    if (walletAddr) {
-        getUserStateValues(walletAddr, constants.YLDY_STAKING_APP_ID, (data) => {
-            let btnParent = btn.parentNode;
-            if (data) {
-                btnParent.innerHTML = fromMicroFormatNumber(data.userAmount, 2);
-            } else {
-                btnParent.innerHTML = "No value found.";
-            }
-        });
-    }
-}
+import TopYLDYHolders from './TopYLDYHolders/TopYLDYHolders';
 
 function calcDifference (initial, final) {
     return final - initial;
@@ -84,11 +63,6 @@ class YLDYAssetStats extends Component {
         super(props);
 
         this.state = {
-            limit: null,
-            minimumYldy: toMicroValue(1),
-
-            // All holders, original data from API
-            topHolders: null,
             // Limit amount when retrieving firebase data
             // 6 entries in a day, 7 days in a week
             dbWeekLimit: 6 * 7,
@@ -96,8 +70,6 @@ class YLDYAssetStats extends Component {
             nllWeekData: null,
             // YLDY Staking db data for week
             yldyWeekData: null,
-            // Current table data to display
-            topHoldersTableData: null,
 
             nllDifference: null,
             yldyDifference: null,
@@ -105,32 +77,12 @@ class YLDYAssetStats extends Component {
             tableLimit: null,
         };
 
-        this.refreshTopHolders = this.refreshTopHolders.bind(this);
         this.refreshNLLData = this.refreshNLLData.bind(this);
-        this.refreshYLDYStakingData = this.refreshYLDYStakingData.bind(this);
-        this.insertTableData = this.insertTableData.bind(this);
     }
 
     componentDidMount() {
-        this.refreshTopHolders();
         this.refreshNLLData();
         this.refreshYLDYStakingData();
-    }
-
-    refreshTopHolders() {
-        // Set to isLoading
-        this.setState({
-            loadingHolders: true,
-        });
-        // Get top holders
-        getYLDYTokenTopHoldersAsync(this.state.limit, this.state.minimumYldy, null).then((topHolders)  => {
-            this.setState({
-                loadingHolders: false,
-                topHolders: topHolders,
-            }, () => {
-                this.insertTableData();
-            });
-        });
     }
 
     refreshNLLData() {
@@ -175,23 +127,6 @@ class YLDYAssetStats extends Component {
                 });
             });
         });
-    }
-
-    insertTableData () {
-        if (this.state.topHolders) {
-            // Sort by highest amount
-            let sort = this.state.topHolders.sort((a, b) => {
-                if (a.amount > b.amount)
-                    return -1;
-                else if (a.mount < b.amount)
-                    return 1;
-                return 0;
-            });
-            // Set tableData
-            this.setState({
-                topHoldersTableData: sort,
-            });
-        }
     }
 
     render() {
@@ -305,136 +240,8 @@ class YLDYAssetStats extends Component {
                     />
 
                 <Container>
-                    {/* Top Holders parent */}
-                    <div className="py-3">
-                        {/* Top YLDY Holders */}
-                        <h3 className="yldy-title">
-                            Top YLDY Holders
-                        </h3>
-                        <p>
-                            Displaying the top '{this.state.topHoldersTableData?.length ?? "-1"}' <b>holders</b> of YLDY on the Algorand blockchain, 
-                            that have more than '{formatNumber(fromMicroValue(this.state.minimumYldy))}' YLDY.
-                            {' '}
-                            <br />
-                            Press the <FontAwesomeIcon icon={faArrowRight} className="mx-2" /> button to see how much YLDY the address has staked.
-                        </p>
-                        {/* Loading spinner for table data */}
-                        {
-                            this.state.loadingHolders && (
-                                <div className="d-flex">
-                                    <div className="mx-auto h-100 d-flex">
-                                        <FontAwesomeIcon 
-                                                icon={faSpinner} 
-                                                size="2x" 
-                                                spin 
-                                            />
-                                        <div className="mx-3 my-auto">
-                                            This may take some time...
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        }
-                        <div 
-                            className="yldy-scrollbar"
-                            style={{
-                                maxHeight: "450px",
-                            }}
-                        >
-                        {
-                            this.state.topHoldersTableData && (
-                                <Table 
-                                    bordered 
-                                    size="sm"
-                                    responsive="md"
-                                    className="m-0 all-text-white"
-                                    >
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Algorand Address</th>
-                                            <th className="text-right">
-                                                Total YLDY
-                                                <img 
-                                                    className="mx-2 my-auto"
-                                                    src={YLDY_ICON} 
-                                                    height="19" 
-                                                    width="19" 
-                                                    alt="Yieldly icon" 
-                                                    />
-                                            </th>
-                                            <th className="text-right">
-                                                YLDY Staked
-                                                <img 
-                                                    className="mx-2 my-auto"
-                                                    src={YLDY_ICON} 
-                                                    height="19" 
-                                                    width="19" 
-                                                    alt="Yieldly icon" 
-                                                    />
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                            this.state.topHoldersTableData.map((holder, index) => {
-                                                return (
-                                                    <tr 
-                                                        key={`${index}-${holder}`}
-                                                        style={{
-                                                            maxHeight: "400px",
-                                                            overflowY: "auto",
-                                                            width: "100%"
-                                                        }}>
-                                                        <td>{ index + 1}</td>
-                                                        <td>
-                                                            <a href={ "https://algoexplorer.io/address/" + holder.address }> 
-                                                                { shortenAddress(holder.address, 4) }
-                                                            </a>
-                                                            <Button 
-                                                                className="mx-2 p-0"
-                                                                variant="white" 
-                                                                onClick={() => copyToClipboard(holder.address)}>
-                                                                <FontAwesomeIcon 
-                                                                    color="white"
-                                                                    icon={faCopy} />
-                                                            </Button>
-                                                        </td>
-                                                        <td className="text-right">
-                                                            { 
-                                                                formatNumber(
-                                                                    fromMicroValue( 
-                                                                        holder.amount
-                                                                    ).toFixed(3)
-                                                                ) 
-                                                            }
-                                                        </td>
-                                                        <td className="text-right">
-                                                            <Button 
-                                                                className="px-2 py-0"
-                                                                title="Click to retrieve address' staked YLDY"
-                                                                data-wallet-address={holder.address}
-                                                                onClick={(e) => {
-                                                                    while (e.target.localName !== "button") {
-                                                                        e.target = e.target.parentNode;
-                                                                    }
-                                                                    getYLDYStaked(e.target, e.target.dataset.walletAddress) 
-                                                                }}>
-                                                                    <FontAwesomeIcon 
-                                                                        icon={faArrowRight}
-                                                                        />
-                                                            </Button>
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            })
-                                        }
-                                    </tbody>
-                                </Table>
-                            )
-                        }
-                        </div>
-                    </div>
+                    <TopYLDYHolders
+                        />
                 </Container>
             </div>
         );

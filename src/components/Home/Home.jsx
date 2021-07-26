@@ -58,10 +58,18 @@ class Home extends Component {
                             className="bg-secondary rounded">
                             Check out the original series of Yieldly NFTs, Yieldlings, created by Stitchbob.
                             <br />
+                            <a
+                                className="text-info"
+                                href="https://yieldlings.com/"
+                                target="noreferrer">
+                                    Yieldlings.com
+                            </a>
+                            {" | "}
                             <a 
+                                className="text-info"
                                 href="https://ab2.gallery/address/5DYIZMX7N4SAB44HLVRUGLYBPSN4UMPDZVTX7V73AIRMJQA3LKTENTLFZ4"
                                 target="noreferrer">
-                                Stitchbob's AB2 Gallery
+                                AB2 Gallery
                             </a>
                         </Toast.Body>
                     </Toast>
