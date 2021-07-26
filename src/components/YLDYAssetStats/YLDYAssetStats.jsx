@@ -87,45 +87,49 @@ class YLDYAssetStats extends Component {
 
     refreshNLLData() {
         getApplicationData(constants.NO_LOSS_LOTTERY_APP_ID, this.state.dbWeekLimit, (data) => {
-            this.setState({
-                nllWeekData: data,
-            }, () => {
-                let allKeys = Object.keys(this.state.nllWeekData);
-                let first = this.state.nllWeekData[allKeys[0]];
-                let last = this.state.nllWeekData[allKeys[allKeys.length - 1]];
-                let ticketDifference = calcDifference(first.GA, last.GA);
-                let percentIncrease = calcPercentDiff(first.GA, last.GA);
+            if (data) {
                 this.setState({
-                    nllDifference: {
-                        first: first.GA,
-                        last: last.GA,
-                        amount: ticketDifference,
-                        percent: percentIncrease,
-                    }
+                    nllWeekData: data,
+                }, () => {
+                    let allKeys = Object.keys(this.state.nllWeekData);
+                    let first = this.state.nllWeekData[allKeys[0]];
+                    let last = this.state.nllWeekData[allKeys[allKeys.length - 1]];
+                    let ticketDifference = calcDifference(first.GA, last.GA);
+                    let percentIncrease = calcPercentDiff(first.GA, last.GA);
+                    this.setState({
+                        nllDifference: {
+                            first: first.GA,
+                            last: last.GA,
+                            amount: ticketDifference,
+                            percent: percentIncrease,
+                        }
+                    });
                 });
-            });
+            }
         });
     }
 
     refreshYLDYStakingData() {
         getApplicationData(constants.YLDY_STAKING_APP_ID, this.state.dbWeekLimit, (data) => {
-            this.setState({
-                yldyWeekData: data,
-            }, () => {
-                let allKeys = Object.keys(this.state.yldyWeekData);
-                let first = this.state.yldyWeekData[allKeys[0]];
-                let last = this.state.yldyWeekData[allKeys[allKeys.length - 1]];
-                let ticketDifference = calcDifference(first.GA, last.GA);
-                let percentIncrease = calcPercentDiff(first.GA, last.GA);
+            if (data) {
                 this.setState({
-                    yldyDifference: {
-                        amount: ticketDifference,
-                        first: first.GA,
-                        last: last.GA,
-                        percent: percentIncrease,
-                    },
+                    yldyWeekData: data,
+                }, () => {
+                    let allKeys = Object.keys(this.state.yldyWeekData);
+                    let first = this.state.yldyWeekData[allKeys[0]];
+                    let last = this.state.yldyWeekData[allKeys[allKeys.length - 1]];
+                    let ticketDifference = calcDifference(first.GA, last.GA);
+                    let percentIncrease = calcPercentDiff(first.GA, last.GA);
+                    this.setState({
+                        yldyDifference: {
+                            amount: ticketDifference,
+                            first: first.GA,
+                            last: last.GA,
+                            percent: percentIncrease,
+                        },
+                    });
                 });
-            });
+            }
         });
     }
 

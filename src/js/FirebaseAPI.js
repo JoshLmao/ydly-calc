@@ -30,6 +30,11 @@ export function initFirebase() {
 }
 
 export function getApplicationData (appID, limit, dataCallback) {
+    if (!isFirebaseInitialized()) {
+        dataCallback(null);
+        return null;
+    }
+
     firebase.database().ref(`${appID}/`).limitToLast(limit).once('value').then((snapshot) => {
         if (dataCallback) {
             dataCallback(snapshot.val());
@@ -38,6 +43,11 @@ export function getApplicationData (appID, limit, dataCallback) {
 }
 
 export function getAllData (dataCallback) {
+    if (!isFirebaseInitialized()) {
+        dataCallback(null);
+        return null;
+    }
+    
     firebase.database().ref(`/`).once('value').then((snapshot) => {
         if (dataCallback) {
             dataCallback(snapshot.val());
