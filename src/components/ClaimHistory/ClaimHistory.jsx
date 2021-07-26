@@ -1,12 +1,14 @@
 import React, { Component } from "react";
 import { Line } from "react-chartjs-2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Card, Row, Col } from "react-bootstrap";
+import { CSVLink } from 'react-csv';
 
 import { constants } from "../../js/consts";
+import { getDateTimeFromTransaction } from "../../js/AlgoExplorerAPI";
 import { filterClaimTransactions, isALGOTransaction, isASATransaction, YIELDLY_APP_ID_KEY } from "../../js/AlgoExplorerHelper";
-import { formatNumber, fromMicroValue } from "../../js/utility";
+import { buildCsvDataFromTxs, formatNumber, fromMicroValue, getDateStringShort } from "../../js/utility";
 
 import ALGO_ICON from "../../svg/algo-icon.svg";
 import YLDY_ICON from "../../svg/yldy-icon.svg";
@@ -14,7 +16,6 @@ import YLDY_ICON from "../../svg/yldy-icon.svg";
 // Adapter for ChartJS to use dates
 import 'chartjs-adapter-luxon';
 import ClaimTable from "./ClaimTable/ClaimTable";
-import { getDateTimeFromTransaction } from "../../js/AlgoExplorerAPI";
 
 class ClaimHistory extends Component {
     constructor(props) {
@@ -299,10 +300,25 @@ class ClaimHistory extends Component {
                     this.state.allUserClaims && this.state.allUserClaims.length > 0 && (
                         <Row 
                             className="py-3">
-                            <h3 className="yldy-title">Claim Transactions</h3>
-                            <p className="p-0 small my-auto mx-2">
-                                All transactions where the user claimed ALGO or YLDY from the applications.
-                            </p>
+                            <div
+                                className="d-flex w-100">
+                                <h3 className="yldy-title">Claim Transactions</h3>
+                                <p className="p-0 small my-auto mx-2">
+                                    All transactions where the user claimed ALGO or YLDY from the applications.
+                                </p>
+                                <CSVLink
+                                    className="ml-auto my-auto"
+                                    filename={`claim-history-${getDateStringShort(new Date())}-${this.state.userAddress}.csv`}
+                                    data={ buildCsvDataFromTxs(this.state.allUserClaims) }
+                                    >
+                                    Download as CSV
+                                    <FontAwesomeIcon 
+                                        className="mx-2"
+                                        icon={faDownload}
+                                        />
+                                </CSVLink>
+                            </div>
+                            
                             <ClaimTable
                                 claimTransactions={this.state.allUserClaims}
                                 purposeText="Claim"
