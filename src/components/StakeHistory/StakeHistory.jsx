@@ -1,13 +1,18 @@
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
+import { CSVLink } from 'react-csv';
+
 import { getDateTimeFromTransaction } from '../../js/AlgoExplorerAPI';
 import { filterStakeTransactions, getLocaleStateKey, isALGOTransaction, isASATransaction, YIELDLY_APP_ID_KEY } from '../../js/AlgoExplorerHelper';
 import { constants } from '../../js/consts';
-import { formatNumber, fromMicroValue } from '../../js/utility';
+import { buildCsvDataFromTxs, formatNumber, fromMicroValue, getDateStringShort } from '../../js/utility';
 
 import ALGO_ICON from "../../svg/algo-icon.svg";
 import YLDY_ICON from "../../svg/yldy-icon.svg";
+
 import ClaimTable from '../ClaimHistory/ClaimTable/ClaimTable';
 
 function getDepositTxs (allGroupTxs, usrAddress) {
@@ -309,11 +314,27 @@ class StakeHistory extends Component {
                 {
                     this.state.depositTransactions && this.state.depositTransactions.length > 0 && (
                         <Row 
-                            className="py-3" >
-                            <h3 className="yldy-title">Deposit Transactions</h3>
-                            <p className="p-0 small my-auto mx-2">
-                                All transactions where the user deposited ALGO or YLDY into the application
-                            </p>
+                            className="py-3">
+                            <div
+                                className="w-100 d-flex">
+                                <h3 className="yldy-title">Deposit Transactions</h3>
+                                <p className="p-0 small my-auto mx-2">
+                                    All transactions where the user deposited ALGO or YLDY into the application
+                                </p>
+                                <CSVLink
+                                    className="ml-auto my-auto"
+                                    filename={`claim-history-${getDateStringShort(new Date())}-${this.state.userAddress}.csv`}
+                                    data={ buildCsvDataFromTxs(this.state.depositTransactions) }
+                                    >
+                                    Download as CSV
+                                    <FontAwesomeIcon 
+                                        className="mx-2"
+                                        icon={faDownload}
+                                        />
+                                </CSVLink>
+                            </div>
+                            
+
                             <ClaimTable
                                 claimTransactions={this.state.depositTransactions}
                                 purposeText="Stake"

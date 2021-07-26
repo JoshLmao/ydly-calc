@@ -1,3 +1,5 @@
+import { isALGOTransaction, isASATransaction, YIELDLY_APP_ID_KEY } from "./AlgoExplorerHelper";
+
 // Converts a microALGO to an ALGO
 export function microAlgoToAlgo (amount) {
     return fromMicroValue(amount)
@@ -113,3 +115,53 @@ export function copyToClipboard (content) {
         }
     );
 };
+
+
+// Builds a CSV file data from a list of transactions
+export function buildCsvDataFromTxs(allTxs) {
+    if (allTxs) {
+        let csvData = [];
+        // Add CSV headers
+        csvData.push([
+            "date/time", "transaction", "sender", "receiver", "staking pool", "amount"
+        ]);
+
+        for (let tx of allTxs) {
+            let dateTime = new Date(tx["round-time"] * 1000);
+            let rowData = {
+                dateTime: `${dateTime.toUTCString()}`,
+                txID: tx.id,
+                sender: tx.sender,
+                stakingPool: tx[YIELDLY_APP_ID_KEY],
+            };
+
+            if (isASATransaction(tx)) {
+                let asaTx = tx["asset-transfer-transaction"];
+                rowData.amount = fromMicroValue(asaTx.amount);
+                rowData.receiver = asaTx.receiver;
+            }
+            else if (isALGOTransaction(tx)) {
+                let algoTx = tx["payment-transaction"];
+                rowData.amount = fromMicroValue(algoTx.amount);
+                rowData.receiver = algoTx.receiver;
+            }
+
+            // Append data
+            csvData.push([
+                rowData.dateTime, rowData.txID, rowData.sender, rowData.receiver, rowData.stakingPool, rowData.amount
+            ]);
+        }
+
+        return csvData;
+    } else {
+        return null;
+    }
+}
+
+// Converts the given date to a string in the format: DD/MM/YYYY HH:MM
+export function getDateStringShort (date) {
+    if (date) {
+        return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+    }
+    return null;
+}
