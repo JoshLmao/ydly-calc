@@ -8,18 +8,19 @@ class FourOhFour extends Component {
     render() {
         let comedyGeniusSentences = [
             "You tried to hardfork from the main site and failed. Please don't try it again",
-            "This is a standard 404 message. Please return home.",
+            "Test 404 message, please ignore",
+            "Just like the week 4 rewards, this page has gone missing."
         ];
 
         let funnySentence = comedyGeniusSentences[Math.floor(Math.random() * comedyGeniusSentences.length)];
 
         return (
-            <div className="py-5 mt-5 bg-dark all-text-white" style={{
+            <div className="py-5 bg-dark all-text-white" style={{
                 minHeight: "100%"
             }}>
                 <Container className="py-5">
                     <h1 className="yieldly-main-color">
-                        你迷路了吗
+                        404 - Page not found
                     </h1>
                     <p>{ funnySentence }</p>
                     <Link to="/">
