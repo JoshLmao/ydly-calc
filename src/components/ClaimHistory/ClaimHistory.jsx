@@ -8,7 +8,7 @@ import { CSVLink } from 'react-csv';
 import { constants } from "../../js/consts";
 import { getDateTimeFromTransaction } from "../../js/AlgoExplorerAPI";
 import { filterClaimTransactions, isALGOTransaction, isASATransaction, YIELDLY_APP_ID_KEY } from "../../js/AlgoExplorerHelper";
-import { buildCsvDataFromTxs, formatNumber, fromMicroValue, getDateStringShort } from "../../js/utility";
+import { buildCsvDataFromTxs, formatNumber, fromMicroValue, getBestGraphHeight, getDateStringShort } from "../../js/utility";
 
 import ALGO_ICON from "../../svg/algo-icon.svg";
 import YLDY_ICON from "../../svg/yldy-icon.svg";
@@ -205,6 +205,7 @@ class ClaimHistory extends Component {
                 {
                     this.state.lineData && (
                         <Line
+                            height={ getBestGraphHeight() }
                             data={ this.state.lineData }
                             options={{
                                 scales: {
