@@ -167,3 +167,38 @@ export function getDateStringShort (date) {
     }
     return null;
 }
+
+// Gets the most suitable height for a graph to be, depending on screen width
+export function getBestGraphHeight() {
+    let winSize = getBootstrapWindowSize();
+    if (winSize === "xl" || winSize === "lg") {
+        return 150;
+    }
+    else if (winSize === "md") {
+        return 250;
+    }
+    else {
+        return 350;
+    }
+}
+
+// Gets the current bootstrap grid size which is dependant on window size
+export function getBootstrapWindowSize() {
+    // Bootstrap Grid boundaries
+    // https://getbootstrap.com/docs/4.0/layout/grid/
+    if (window.innerWidth < 576) {
+        return "xs";
+    } 
+    else if (window.innerWidth < 768) {
+        return "sm";
+    }
+    else if (window.innerWidth < 992) {
+        return "md";
+    }
+    else if (window.innerWidth < 1200) {
+        return "lg";
+    }
+    else {
+        return "xl";
+    }
+}
