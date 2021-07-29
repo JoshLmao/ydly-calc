@@ -6,7 +6,8 @@ import {
 } from 'react-bootstrap';
 import { 
     formatNumber, 
-    fromMicroFormatNumber
+    fromMicroFormatNumber,
+    getBestGraphHeight
 } from '../../js/utility';
 import { constants } from "../../js/consts";
 import { getApplicationData } from '../../js/FirebaseAPI';
@@ -184,6 +185,7 @@ class YLDYAssetStats extends Component {
                                     dataTitle="Total ALGO entered into NLL by everybody (GA)"
                                     lineColor="#6cdef9"
                                     lineHandleColor="grey"
+                                    graphHeight={ getBestGraphHeight() }
                                     />
                             </Col>
                         </Row>
@@ -232,6 +234,7 @@ class YLDYAssetStats extends Component {
                                     xAxisLabel="Date/Time of Record"
                                     yAxisLabel="Amount of YLDY"
                                     dataTitle="Total YLDY being staked by everybody (GA)"
+                                    graphHeight={ getBestGraphHeight() }
                                     />
                             </Col>
                         </Row>

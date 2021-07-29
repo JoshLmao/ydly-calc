@@ -9,6 +9,7 @@ import NoLossLottery from "../NoLossLottery/NoLossLottery";
 import YLDYStaking from "../YLDYStaking/YLDYStaking";
 import AppStateHistoryGraph from "../AppStateHistoryGraph/AppStateHistoryGraph";
 import ScrollToTopButton from '../ScrollToTopButton';
+import { getBestGraphHeight } from '../../js/utility';
 
 class Home extends Component {
     constructor(props) {
@@ -150,7 +151,7 @@ class Home extends Component {
                         xAxisLabel="Date/Time of Record"
                         yAxisLabel="Amount of YLDY"
                         dataTitle="YLDY in Global Unlock Rewards (TYUL)"
-                        graphHeight={150}
+                        graphHeight={ getBestGraphHeight() }
                         displayAverage
                         displayDataKeyDesc
                         />
@@ -179,7 +180,7 @@ class Home extends Component {
                                 lineHandleColor="grey"
                                 displayAverage
                                 displayDataKeyDesc
-                                graphHeight={175}
+                                graphHeight={ getBestGraphHeight() }
                             />
                         </Col>
                         <Col>
@@ -194,7 +195,7 @@ class Home extends Component {
                                 dataTitle="YLDY in Global Unlock Rewards (TYUL)"
                                 displayAverage
                                 displayDataKeyDesc
-                                graphHeight={175}
+                                graphHeight={ getBestGraphHeight() }
                             />
                         </Col>
                     </Row>
