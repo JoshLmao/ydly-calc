@@ -11,7 +11,7 @@ import {
     fromMicroFormatNumber,
     toMicroValue
 } from '../../../js/utility';
-import { getUserStateValues, getYieldlyHoldersStakesAsync, getYLDYTokenTopHoldersAsync } from '../../../js/AlgoExplorerAPI';
+import { getUserStateValues, getYLDYTokenTopHoldersAsync } from '../../../js/AlgoExplorerAPI';
 import { constants } from "../../../js/consts";
 
 import YLDY_ICON from "../../../svg/yldy-icon.svg";
