@@ -11,7 +11,7 @@ import {
     fromMicroFormatNumber,
     toMicroValue
 } from '../../../js/utility';
-import { getUserStateValues, getYLDYTokenTopHoldersAsync } from '../../../js/AlgoExplorerAPI';
+import { getUserStateValues, getYieldlyHoldersStakesAsync, getYLDYTokenTopHoldersAsync } from '../../../js/AlgoExplorerAPI';
 import { constants } from "../../../js/consts";
 
 import YLDY_ICON from "../../../svg/yldy-icon.svg";
@@ -39,7 +39,7 @@ class TopYLDYHolders extends Component {
             // Limit the amount of entries to retrieve for table
             limit: null,
             // Minimum amount of YLDY in wallets to get table data
-            minimumYldy: toMicroValue(1),
+            C: toMicroValue( 0.001 ),
             // All holders, original data from API
             topHolders: null,
             // Current table data to display
@@ -97,8 +97,8 @@ class TopYLDYHolders extends Component {
                     Top YLDY Holders
                 </h3>
                 <p>
-                    Displaying the top { this.state.topHoldersTableData ? `'${this.state.topHoldersTableData.length}'` : "" } <b>holders</b> of YLDY on the Algorand blockchain, 
-                    that have more than '{formatNumber(fromMicroValue(this.state.minimumYldy))}' YLDY.
+                    Displaying the top { this.state.topHoldersTableData?.length ?? "" } <b>holders</b> of YLDY on the Algorand blockchain, 
+                    that have more than { formatNumber(fromMicroValue(this.state.minimumYldy)) } YLDY.
                     {' '}
                     <br />
                     Press the <FontAwesomeIcon icon={faArrowRight} className="mx-2" /> buttons to see how much ALGO and YLDY the address has staked in the NLL or YLDY Staking pools.
@@ -207,7 +207,9 @@ class TopYLDYHolders extends Component {
                                                         </Button>
                                                     </div>
                                                 </td>
-                                                <td className="text-right">
+                                                <td 
+                                                    className="text-right"
+                                                    title={ fromMicroValue(holder.amount) }>
                                                     { 
                                                         formatNumber(
                                                             fromMicroValue( 

@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
-import {
-    Line
-} from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 
 import firebase from "firebase/app";
 import "firebase/database";
-import { formatNumber, fromMicroValue } from '../../js/utility';
+import { fromMicroValue } from '../../js/utility';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { calculateAverage } from '../../js/YLDYCalculation';
@@ -47,8 +45,6 @@ class AppStateHistoryGraph extends Component {
             lineColor: props.lineColor ?? 'rgba(254, 215, 56, 1)',
             // Prefix of the values in the data (YLDY/ALGO/etc)
             valueType: props.valueType,
-            // Should display text containing graph average text
-            displayAverage: props.displayAverage,
             // If t
             displayDataKeyDesc: props.displayDataKeyDesc,
 
@@ -93,15 +89,13 @@ class AppStateHistoryGraph extends Component {
                 for(let epochTimeKey in data) {
                     // Parse Epoch MS to Date and format display string
                     let date = new Date(parseInt(epochTimeKey));
-                    // Shorted locale to just hours and minutes, no seconds
-                    let hrsMins = date.toLocaleTimeString(navigator.language, {hour: '2-digit', minute:'2-digit'});
-                    // Format display string
-                    let formatted = `${date.toLocaleDateString()} ${hrsMins}`;
-                    graphLabels.push(formatted);
 
                     // Append data value
                     let dataValue = fromMicroValue(data[epochTimeKey][this.state.dataKey]).toFixed(this.state.decimalPrecision);
-                    graphData.push(dataValue);
+                    graphData.push({
+                        x: date.toISOString(),
+                        y: dataValue,
+                    });
                 }
 
                 // Update state once complete
@@ -120,7 +114,12 @@ class AppStateHistoryGraph extends Component {
                                 borderColor: this.state.lineColor,
                                 borderWidth: 1,
                                 data: graphData,
-                            }
+                                trendlineLinear: { 
+                                    style: "#3e95cd", 
+                                    lineStyle: "line", 
+                                    width: 1 
+                                }
+                            },
                         ]
                     }
                 });
@@ -153,14 +152,6 @@ class AppStateHistoryGraph extends Component {
                                         ` This plots the '${this.state.dataKey}' value in the application's global state over time.`
                                     )
                                 }
-                            </div>
-                        )
-                    }
-                    
-                    {
-                        this.state.displayAverage && this.state.dataAverage && (
-                            <div>
-                                The average of all { this.state.dataLimit } entries is <b>'{ formatNumber(this.state.dataAverage.toFixed(3)) }' {this.state.valueType}</b>
                             </div>
                         )
                     }
@@ -197,7 +188,14 @@ class AppStateHistoryGraph extends Component {
                                     },
                                     ticks: {
                                         color: "white"
-                                    }
+                                    },
+                                    type: 'time',
+                                    time: {
+                                        unit: 'day',
+                                        displayFormats: {
+                                            'day': 'DD',
+                                        },
+                                    },
                                 },
                                 // Y Axis
                                 y: {
