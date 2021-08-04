@@ -138,7 +138,6 @@ class YLDYAssetStats extends Component {
         return (
             <div className="bg-dark py-2 all-text-white">
                 <Container className="py-5">
-                    {/* Moving averages */}
                     <div className="py-3">
                         <Row className="py-3">
                             <Col lg="4">
@@ -189,9 +188,30 @@ class YLDYAssetStats extends Component {
                                     />
                             </Col>
                         </Row>
+                        <Row>
+                            <Col>
+                                <AppStateHistoryGraph
+                                    applicationID={ constants.NO_LOSS_LOTTERY_APP_ID }
+                                    dataKey="TYUL"
+                                    valueType="YLDY"
+                                    sectionTitle="Global Rewards History"
+                                    sectionShortDesc="History of the global unlock rewards for the No Loss Lottery."
+                                    xAxisLabel="Date/Time of Record"
+                                    yAxisLabel="Amount of YLDY"
+                                    dataTitle="YLDY in Global Unlock Rewards (TYUL)"
+                                    graphHeight={ getBestGraphHeight() }
+                                    displayAverage
+                                    displayDataKeyDesc
+                                    />
+                            </Col>
+                        </Row>
+                    </div>
+                </Container>
 
-                        
+                <div className="border-top border-primary" />
 
+                <Container className="py-5">
+                    <div>
                         <Row className="py-3">
                             <Col lg="4">
                                 <h2 className="yldy-title">YLDY Staking</h2>
@@ -236,6 +256,41 @@ class YLDYAssetStats extends Component {
                                     dataTitle="Total YLDY being staked by everybody (GA)"
                                     graphHeight={ getBestGraphHeight() }
                                     />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <AppStateHistoryGraph
+                                    applicationID={constants.YLDY_STAKING_APP_ID}
+                                    dataKey="TAP"
+                                    valueType="ALGO"
+                                    sectionTitle="ALGO Global Rewards History"
+                                    sectionShortDesc="History of ALGO as a global reward in YLDY Staking."
+                                    xAxisLabel="Date/Time of Record"
+                                    yAxisLabel="Amount of ALGO"
+                                    dataTitle="ALGO in Global Unlock Rewards (TAP)"
+                                    decimalPrecision={2}
+                                    lineColor="#6cdef9"
+                                    lineHandleColor="grey"
+                                    displayAverage
+                                    displayDataKeyDesc
+                                    graphHeight={ getBestGraphHeight() }
+                                />
+                            </Col>
+                            <Col>
+                                <AppStateHistoryGraph
+                                    applicationID={constants.YLDY_STAKING_APP_ID}
+                                    dataKey="TYUL"
+                                    valueType="YLDY"
+                                    sectionTitle="YLDY Global Rewards History"
+                                    sectionShortDesc="History of YLDY as a global reward in YLDY Staking."
+                                    xAxisLabel="Date/Time of Record"
+                                    yAxisLabel="Amount of YLDY"
+                                    dataTitle="YLDY in Global Unlock Rewards (TYUL)"
+                                    displayAverage
+                                    displayDataKeyDesc
+                                    graphHeight={ getBestGraphHeight() }
+                                />
                             </Col>
                         </Row>
                     </div>

@@ -276,7 +276,9 @@ class NoLossLottery extends Component {
                                 />
                                 YLDY Claimable Rewards
                             </p>
-                            <p className="display-4">
+                            <p 
+                                className="display-4"
+                                title={this.state.totalClaimableRewards ?? ""}>
                                 {
                                     this.state.totalClaimableRewards != null
                                     ? 

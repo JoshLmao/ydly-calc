@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { Line } from 'react-chartjs-2';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 import firebase from "firebase/app";
 import "firebase/database";
+
 import { fromMicroValue } from '../../js/utility';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { calculateAverage } from '../../js/YLDYCalculation';
 import { getApplicationData, isFirebaseInitialized } from '../../js/FirebaseAPI';
 
@@ -114,11 +115,6 @@ class AppStateHistoryGraph extends Component {
                                 borderColor: this.state.lineColor,
                                 borderWidth: 1,
                                 data: graphData,
-                                trendlineLinear: { 
-                                    style: "#3e95cd", 
-                                    lineStyle: "line", 
-                                    width: 1 
-                                }
                             },
                         ]
                     }

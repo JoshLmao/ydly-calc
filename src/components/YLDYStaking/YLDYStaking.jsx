@@ -10,6 +10,7 @@ import {
   fromMicroValue,
   getDayDifference,
   isStringBlank,
+  toMicroValue,
 } from "../../js/utility";
 import { constants } from '../../js/consts';
 import {
@@ -202,8 +203,7 @@ class YLDYStaking extends Component {
             // Attempt to parse user value, check if valid number
             let yldyStakedNum = parseFloat(this.state.yldyStaked);
             if (yldyStakedNum > 0) {
-                // Multiply by 10^6
-                let yldyStaked = yldyStakedNum * 1000000;
+                let yldyStaked = toMicroValue(yldyStakedNum);
                 // Determine USS
                 let uss = this.state.user?.stakingShares ?? 0;
 
@@ -291,7 +291,9 @@ class YLDYStaking extends Component {
                                     />
                                 ALGO Claimable Rewards
                             </p>
-                            <p className="display-4">
+                            <p 
+                                className="display-4"
+                                title={this.state.claimableAlgoRewards ?? ""}>
                                 {
                                     this.state.claimableAlgoRewards != null
                                     ? 
@@ -310,7 +312,9 @@ class YLDYStaking extends Component {
                                     />
                                 YLDY Claimable Rewards
                             </p>
-                            <p className="display-4">
+                            <p 
+                                className="display-4" 
+                                title={this.state.claimableYldyRewards ?? ""}>
                                 {
                                     this.state.claimableYldyRewards != null
                                     ? 
