@@ -1,4 +1,5 @@
 import { isALGOTransaction, isASATransaction, YIELDLY_APP_ID_KEY } from "./AlgoExplorerHelper";
+import { constants } from "./consts";
 
 // Converts a microALGO to an ALGO
 export function microAlgoToAlgo (amount) {
@@ -200,5 +201,17 @@ export function getBootstrapWindowSize() {
     }
     else {
         return "xl";
+    }
+}
+
+// Converts an app id to it's display name
+export function appIDToName (appID) {
+    switch (appID) {
+        case constants.NO_LOSS_LOTTERY_APP_ID:
+            return "No Loss Lottery";
+        case constants.YLDY_STAKING_APP_ID:
+            return "YLDY Staking";
+        default:
+            return "Unknown " + appID;
     }
 }

@@ -7,9 +7,8 @@ import {
 
 import NoLossLottery from "../NoLossLottery/NoLossLottery";
 import YLDYStaking from "../YLDYStaking/YLDYStaking";
-import AppStateHistoryGraph from "../AppStateHistoryGraph/AppStateHistoryGraph";
 import ScrollToTopButton from '../ScrollToTopButton';
-import { getBestGraphHeight } from '../../js/utility';
+import HistoricalRewards from '../HistoricalRewards';
 
 class Home extends Component {
     constructor(props) {
@@ -135,70 +134,38 @@ class Home extends Component {
                 </Jumbotron>
 
                 <div
-                    className="bg-dark border-top border-primary py-5"
+                    className="bg-dark border-top border-primary py-3"
                     id="no-loss-lottery">
                     <Container>
                         <NoLossLottery
                             userAlgoAddress={this.state.userAlgoAddress}
                             firebase={this.state.firebase}
                         />
-                    <AppStateHistoryGraph
-                        applicationID={this.state.nllAppID}
-                        dataKey="TYUL"
-                        valueType="YLDY"
-                        sectionTitle="Global Rewards History"
-                        sectionShortDesc="History of the global unlock rewards for the No Loss Lottery."
-                        xAxisLabel="Date/Time of Record"
-                        yAxisLabel="Amount of YLDY"
-                        dataTitle="YLDY in Global Unlock Rewards (TYUL)"
-                        graphHeight={ getBestGraphHeight() }
-                        displayAverage
-                        displayDataKeyDesc
-                        />
+                        <Row>
+                            <Col>
+                                <HistoricalRewards
+                                    appID={constants.NO_LOSS_LOTTERY_APP_ID}
+                                    stakeToken="ALGO"
+                                    />
+                            </Col>
+                        </Row>
                     </Container>
                 </div>
 
-                <div className="bg-dark border-top border-info py-5" id="yldy-staking">
+                <div className="bg-dark border-top border-info py-3" id="yldy-staking">
                     <Container>
                         <YLDYStaking
                             userAlgoAddress={this.state.userAlgoAddress}
                             firebase={this.state.firebase}
                         />
-                    <Row className="py-3">
-                        <Col>
-                            <AppStateHistoryGraph
-                                applicationID={this.state.yldyStakingAppID}
-                                dataKey="TAP"
-                                valueType="ALGO"
-                                sectionTitle="ALGO Global Rewards History"
-                                sectionShortDesc="History of ALGO as a global reward in YLDY Staking."
-                                xAxisLabel="Date/Time of Record"
-                                yAxisLabel="Amount of ALGO"
-                                dataTitle="ALGO in Global Unlock Rewards (TAP)"
-                                decimalPrecision={2}
-                                lineColor="#6cdef9"
-                                lineHandleColor="grey"
-                                displayAverage
-                                displayDataKeyDesc
-                                graphHeight={ getBestGraphHeight() }
-                            />
-                        </Col>
-                        <Col>
-                            <AppStateHistoryGraph
-                                applicationID={this.state.yldyStakingAppID}
-                                dataKey="TYUL"
-                                valueType="YLDY"
-                                sectionTitle="YLDY Global Rewards History"
-                                sectionShortDesc="History of YLDY as a global reward in YLDY Staking."
-                                xAxisLabel="Date/Time of Record"
-                                yAxisLabel="Amount of YLDY"
-                                dataTitle="YLDY in Global Unlock Rewards (TYUL)"
-                                displayAverage
-                                displayDataKeyDesc
-                                graphHeight={ getBestGraphHeight() }
-                            />
-                        </Col>
-                    </Row>
+                        <Row className="py-3">
+                            <Col>
+                                <HistoricalRewards
+                                    appID={constants.YLDY_STAKING_APP_ID}
+                                    stakeToken="YLDY"
+                                    />
+                            </Col>
+                        </Row>
                 </Container>
             </div>
         </div>
