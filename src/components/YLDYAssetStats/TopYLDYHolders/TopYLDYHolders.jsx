@@ -39,7 +39,7 @@ class TopYLDYHolders extends Component {
             // Limit the amount of entries to retrieve for table
             limit: null,
             // Minimum amount of YLDY in wallets to get table data
-            C: toMicroValue( 0.001 ),
+            minimumYldy: toMicroValue( 0.001 ),
             // All holders, original data from API
             topHolders: null,
             // Current table data to display
