@@ -16,7 +16,8 @@ import YLDY_ICON from "../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../svg/algo-icon.svg";
 
 import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
-import TopYLDYHolders from './TopYLDYHolders/TopYLDYHolders';
+//import TopYLDYHolders from './TopYLDYHolders/TopYLDYHolders';
+import TopStakers from './TopStakers';
 
 function calcDifference (initial, final) {
     return final - initial;
@@ -301,8 +302,12 @@ class YLDYAssetStats extends Component {
                     className="border-top border-primary my-3 pb-3"
                     />
 
-                <Container>
+                {/* <Container>
                     <TopYLDYHolders
+                        />
+                </Container> */}
+                <Container>
+                    <TopStakers
                         />
                 </Container>
             </div>

@@ -54,3 +54,16 @@ export function getAllData (dataCallback) {
         }
     });
 }
+
+export function getAllStakingData (dataCallback) {
+    if (!isFirebaseInitialized()) {
+        dataCallback(null);
+        return null;
+    }
+
+    firebase.database().ref("top-stakers/").once('value').then((snapshot) => {
+        if (dataCallback) {
+            dataCallback(snapshot.val());
+        }
+    })
+}

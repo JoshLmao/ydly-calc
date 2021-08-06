@@ -144,11 +144,12 @@ if __name__ == '__main__':
 
     logging.info("Finished parsing stake info. Saving...")
 
-    finalJSON = {}
-    finalJSON['yieldlyData'] = allInfo
-
     dateTime = datetime.utcnow()
     dateTime = dateTime.replace(microsecond=0)
+
+    finalJSON = {}
+    finalJSON['yieldlyData'] = allInfo
+    finalJSON['snapshotEpoch'] = dateTime.timestamp()
 
     dataStr = json.dumps(finalJSON)
     dateTimeStr = str(dateTime.date()) + "_" + str(dateTime.time()).replace(":", "-")
