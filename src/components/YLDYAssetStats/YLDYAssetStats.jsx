@@ -16,7 +16,6 @@ import YLDY_ICON from "../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../svg/algo-icon.svg";
 
 import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
-//import TopYLDYHolders from './TopYLDYHolders/TopYLDYHolders';
 import TopStakers from './TopStakers';
 
 function calcDifference (initial, final) {

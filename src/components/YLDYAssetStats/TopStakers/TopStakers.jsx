@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Table } from 'react-bootstrap';
 import { constants } from '../../../js/consts';
 import { getAllStakingData } from '../../../js/FirebaseAPI';
-import { shortenAddress, fromMicroValue, fromMicroFormatNumber } from '../../../js/utility';
+import { shortenAddress, fromMicroFormatNumber } from '../../../js/utility';
 
 import YLDY_ICON from "../../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../../svg/algo-icon.svg";
