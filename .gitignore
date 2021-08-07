@@ -352,3 +352,5 @@ MigrationBackup/
 # Ignore any build folder
 [Bb]uild/*
 utils/yldy-state-fetcher/yldy-estimator-firebase-adminsdk-wxrrz-00381bf9b3.json
+
+src/data/*.json
