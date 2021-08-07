@@ -210,10 +210,21 @@ class HistoricalRewards extends Component {
                 <Container>
                     <h2 className="yldy-title">When should I claim? | { appIDToName(this.state.appID) }</h2>
                     <p>
-                        When is the best time to claim your rewards? The graph below shows how your fluctuate over time, even during the day.
+                        When is the best time to claim your rewards? The graph below shows how your rewards fluctuate over time, even during the day.
                         To maximise your rewards, you should claim when the rewards are the highest, which appears to be before the rewards update to a new day.
                         <br/>
-                        Credit to Tommasso for initially creating the idea.
+                        Credit to Tommasso. Check out his detailed explaination 
+                        <a 
+                            href="https://www.reddit.com/r/algorand/comments/ojhord/yieldly_algo_staking_nll_new_rewards_unlock/"
+                            className="mx-1">
+                            here
+                        </a> 
+                        and his more detailed charts 
+                        <a 
+                            href="https://yieldly-charts.vercel.app/"
+                            className="mx-1">
+                            here
+                        </a>
                     </p>
                     <Row>
                         <Col md={6}>
