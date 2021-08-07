@@ -67,3 +67,10 @@ body {
 .yldy-title {
     color: $yldy-primary;
 }
+
+// Pagination page-item styling
+.page-item .page-link {
+    background-color: $dark-accent;
+    text-decoration: none;
+    border: 0px;
+}
