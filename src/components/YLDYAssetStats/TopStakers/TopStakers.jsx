@@ -1,15 +1,49 @@
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
-import { Table } from 'react-bootstrap';
+import { Card, Col, Row, Table } from 'react-bootstrap';
 import { constants } from '../../../js/consts';
 import { getAllStakingData } from '../../../js/FirebaseAPI';
-import { shortenAddress, fromMicroFormatNumber } from '../../../js/utility';
+import { shortenAddress, fromMicroFormatNumber} from '../../../js/utility';
 
 import YLDY_ICON from "../../../svg/yldy-icon.svg";
 import ALGO_ICON from "../../../svg/algo-icon.svg";
 
 const YLDY_ASSET_ID = 226701642;
+
+function tryGetStateValue(addrData, key, defaultVal = 0) {
+    if (addrData && addrData.stateData) {
+        let foundVal = addrData.stateData[key];
+        return isNaN(foundVal) ? defaultVal : foundVal;
+    }
+    return defaultVal;
+}
+
+function analyseStakingData (stakingData) {
+    let totalStakedALGO = 0;
+    let totalStakedYLDY = 0
+    for (let addrData of stakingData.yieldlyData) {
+        totalStakedALGO += tryGetStateValue(addrData, constants.NO_LOSS_LOTTERY_APP_ID);
+        totalStakedYLDY += tryGetStateValue(addrData, constants.YLDY_STAKING_APP_ID);
+    }
+
+    return [
+        {
+            title: "Totals",
+            infos: [
+                { key: "ALGO Staked", value: fromMicroFormatNumber(totalStakedALGO, 3) },
+                { key: "YLDY Staked", value: fromMicroFormatNumber(totalStakedYLDY, 3) }
+            ]
+        },
+        {
+            title: "Averages",
+            infos: [
+                { key: "ALGO Staked", value: fromMicroFormatNumber(totalStakedALGO / stakingData.yieldlyData.length, 3) },
+                { key: "YLDY Staked", value: fromMicroFormatNumber(totalStakedYLDY / stakingData.yieldlyData.length, 3) },
+            ]
+        }
+    ]
+}
 
 class TopStakers extends Component {
     constructor(props) {
@@ -19,19 +53,23 @@ class TopStakers extends Component {
             stakingData: null,
             sortBy: 'staked-yldy',
             loadingStakers: false,
+
+            useFirebaseData: true,
         };
     }
 
     componentDidMount() {
-        this.setState({
-            loadingStakers: true,
-        });
-        getAllStakingData((stakingData) => {
+        if (this.state.useFirebaseData) {
             this.setState({
-                stakingData: stakingData,
-                loadingStakers: false,
+                loadingStakers: true,
             });
-        })
+            getAllStakingData((stakingData) => {
+                this.setState({
+                    stakingData: stakingData,
+                    loadingStakers: false,
+                });
+            });
+        }
     }
 
     render() {
@@ -41,7 +79,8 @@ class TopStakers extends Component {
                     Yieldly Staking Statistics
                 </h3>
                 <p>
-                    A snapshot of all wallets that have opted-in to the YLDY asset and their balances. This data is not live and requires manually updating by myself, 
+                    A snapshot of all wallets that have opted-in to the YLDY asset and have staked in a Yieldly application on the blockchain. 
+                    This data is not live and requires manually updating by myself, 
                     which I aim to do every Friday.
                     <br />
                     {
@@ -84,6 +123,7 @@ class TopStakers extends Component {
                                 >
                                 <thead>
                                     <tr>
+                                        <th>#</th>
                                         <th>Algorand Address</th>
                                         <th>
                                             Wallet: ALGO
@@ -152,6 +192,9 @@ class TopStakers extends Component {
                                                 <tr
                                                     key={"staker-" + index}>
                                                     <td>
+                                                        { index + 1 }
+                                                    </td>
+                                                    <td>
                                                         <a href={"https://algoexplorer.io/address/" + data.address}>
                                                             { shortenAddress(data.address, 4) }
                                                         </a>
@@ -205,7 +248,45 @@ class TopStakers extends Component {
                         )   
                     }
                 </div>
-               
+                {
+                    this.state.stakingData && (
+                        <Row className="py-3">
+                            {
+                                analyseStakingData(this.state.stakingData)
+                                .map((data, index) => {
+                                    return (
+                                        <Col>
+                                            <Card
+                                                key={"staking-data-infos-" + index}
+                                                border="primary"
+                                                className="rounded bg-dark my-2">
+                                                <Card.Body>
+                                                    <Card.Title 
+                                                        className="yldy-title">
+                                                        { data.title }
+                                                    </Card.Title>
+                                                    <div>
+                                                        {
+                                                            data.infos.map((info, index) => {
+                                                                return (
+                                                                    <div
+                                                                        key={"data-infos" + index}>
+                                                                        <b>{ info.key + ": "}</b>
+                                                                        <span>{ info.value }</span>
+                                                                    </div>
+                                                                )
+                                                            })
+                                                        }
+                                                    </div>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                    )
+                                })
+                            }
+                        </Row>
+                    )
+                }
             </div>
         );
     }
