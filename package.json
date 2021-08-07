@@ -1,6 +1,6 @@
 {
   "name": "ydly-calc",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "homepage": "https://yldy-estimator.joshlmao.com",
   "description": "Web app for estimating your YLDY reward stake from the current global rewards from the No Loss Lottery and YLDY Staking pool",
   "private": true,

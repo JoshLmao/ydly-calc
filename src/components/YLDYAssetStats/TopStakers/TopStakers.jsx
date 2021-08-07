@@ -77,9 +77,10 @@ class TopStakers extends Component {
         };
 
         this.onUpdateSort = this.onUpdateSort.bind(this);
+        this.onGetStakingData = this.onGetStakingData.bind(this);
     }
 
-    componentDidMount() {
+    onGetStakingData() {
         if (this.state.useFirebaseData) {
             this.setState({
                 loadingStakers: true,
@@ -185,6 +186,14 @@ class TopStakers extends Component {
                         )
                     }
                 </p>
+                {
+                    !this.state.stakingData && !this.state.loadingStakers && (
+                        <Button
+                            onClick={() => this.onGetStakingData() }>
+                            Retrieve top stakers data
+                        </Button>
+                    )
+                }
                 {
                     this.state.loadingStakers && (
                         <div className="d-flex">
