@@ -1,7 +1,7 @@
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
-import { Card, Col, Row, Table } from 'react-bootstrap';
+import { Card, Col, Pagination, Row, Table } from 'react-bootstrap';
 import { constants } from '../../../js/consts';
 import { getAllStakingData } from '../../../js/FirebaseAPI';
 import { shortenAddress, fromMicroFormatNumber} from '../../../js/utility';
@@ -55,6 +55,9 @@ class TopStakers extends Component {
             loadingStakers: false,
 
             useFirebaseData: true,
+
+            pageActive: 0,
+            pageSegment: 1000,
         };
     }
 
@@ -73,6 +76,27 @@ class TopStakers extends Component {
     }
 
     render() {
+        let paginationTotal = 0;
+        let paginationItms = [];
+        if (this.state.stakingData) {
+            // Total is all entries / segmenting of pagination
+            paginationTotal = Math.floor(this.state.stakingData.yieldlyData.length / this.state.pageSegment);
+            // Add 1 for last set of 1000 data entries
+            paginationTotal += 1;
+            // Create all pagination items
+            for (let i = 0; i < paginationTotal; i++) {
+                paginationItms.push(
+                    <Pagination.Item 
+                        key={ i }
+                        active={ i === this.state.pageActive }
+                        onClick={(e) => this.setState({ pageActive: parseInt(e.target.innerText) })}>
+                        { i }
+                    </Pagination.Item>,
+                )
+            }
+        }
+
+
         return (
             <div className="py-3">
                 <h3 className="yldy-title">
@@ -104,6 +128,15 @@ class TopStakers extends Component {
                                     This may take some time...
                                 </div>
                             </div>
+                        </div>
+                    )
+                }
+                {
+                    this.state.stakingData && paginationTotal && (
+                        <div className="w-100 text-right">
+                            <Pagination>
+                                { paginationItms }
+                            </Pagination>
                         </div>
                     )
                 }
@@ -166,6 +199,11 @@ class TopStakers extends Component {
                                 <tbody>
                                     {
                                         this.state.stakingData.yieldlyData.map((data, index) => {
+                                            let rangeStart = this.state.pageSegment * (this.state.pageActive);
+                                            let rangeEnd = (this.state.pageSegment * (this.state.pageActive + 1)) - 1;
+                                            if (index < rangeStart || index > rangeEnd) {
+                                                return null;
+                                            }
                                             let walletAlgo = 0, walletYldy = 0, stakeAlgo = 0, stakeYldy = 0;
                                             if (data.assets) {
                                                 walletAlgo = data.assets.ALGO;
