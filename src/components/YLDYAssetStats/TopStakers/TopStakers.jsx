@@ -149,8 +149,8 @@ class TopStakers extends Component {
                     <Pagination.Item 
                         key={ "pagination-key-" + i }
                         active={ i === this.state.pageActive }
-                        onClick={(e) => this.setState({ pageActive: parseInt(e.target.innerText) })}>
-                        { i }
+                        onClick={(e) => this.setState({ pageActive: parseInt(e.target.innerText) - 1 })}>
+                        { i + 1 }
                     </Pagination.Item>,
                 )
             }
