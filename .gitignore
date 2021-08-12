@@ -353,4 +353,5 @@ MigrationBackup/
 [Bb]uild/*
 utils/yldy-state-fetcher/yldy-estimator-firebase-adminsdk-wxrrz-00381bf9b3.json
 
-src/data/*.json
+# Ignore historical top-stakers data json files
+utils/top-stakers/history/*.json
