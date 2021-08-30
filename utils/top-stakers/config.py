@@ -1,6 +1,6 @@
 # Path to save the top stakers .json file to.
 # Leave blank to save next to .py file
-SAVE_FOLDER = "src/data/"
+SAVE_FOLDER = "utils/top-stakers/history/"
 # Prefix of file name. Adds the date/time and file extension after
 SAVE_FILENAME_PREFIX = "yldy-top-stakers"
 
