@@ -27,7 +27,15 @@ function getDepositTxs (allGroupTxs, usrAddress) {
             let algoTx = isALGOTransaction(tx);
             let appID = tx[YIELDLY_APP_ID_KEY];
 
-            if (appID && (appID === constants.NO_LOSS_LOTTERY_APP_ID || appID === constants.YLDY_STAKING_APP_ID)){
+            if (appID && (appID === constants.NO_LOSS_LOTTERY_APP_ID || appID === constants.YLDY_STAKING_APP_ID)) {
+                if (algoTx) {
+                    // Ignore if is a app tx fee
+                    let amount = tx["payment-transaction"].amount;
+                    if (amount === 1000) {
+                        continue;
+                    }
+                }
+
                 if (asaTx || algoTx) {
                     allDeposits.push(tx);
                     break;
@@ -95,30 +103,27 @@ class StakeHistory extends Component {
             let nllStakeData = [];
             let yldyStakeData = [];
 
-            
-            for (let group of this.state.groupTransactions) {
-                for (let tx of group) {
-                    let dateTime = getDateTimeFromTransaction(tx);
-                    if (dateTime) {
-                        if (isASATransaction(tx)) {
-                            let asaInfo = tx["asset-transfer-transaction"];
-                            let appID = tx[YIELDLY_APP_ID_KEY];
-    
-                            // Only add ASA transfer into YLDY staking app
-                            if (appID === constants.YLDY_STAKING_APP_ID) {
-                                yldyStakeData.push({
-                                    x: dateTime.toISOString(),
-                                    y: fromMicroValue(asaInfo.amount),
-                                });
-                            }
-                        }
-                        else if (isALGOTransaction(tx)) {
-                            let algoInfo = tx["payment-transaction"];
-                            nllStakeData.push({
+            for (let tx of this.state.depositTransactions) {
+                let dateTime = getDateTimeFromTransaction(tx);
+                if (dateTime) {
+                    if (isASATransaction(tx)) {
+                        let asaInfo = tx["asset-transfer-transaction"];
+                        let appID = tx[YIELDLY_APP_ID_KEY];
+
+                        // Only add ASA transfer into YLDY staking app
+                        if (appID === constants.YLDY_STAKING_APP_ID) {
+                            yldyStakeData.push({
                                 x: dateTime.toISOString(),
-                                y: fromMicroValue(algoInfo.amount)
+                                y: fromMicroValue(asaInfo.amount),
                             });
                         }
+                    }
+                    else if (isALGOTransaction(tx)) {
+                        let algoInfo = tx["payment-transaction"];
+                        nllStakeData.push({
+                            x: dateTime.toISOString(),
+                            y: fromMicroValue(algoInfo.amount)
+                        });
                     }
                 }
             }
