@@ -3,6 +3,7 @@ import {
     Container, 
     Row,
     Col,
+    Form
 } from 'react-bootstrap';
 import { 
     formatNumber, 
@@ -17,6 +18,8 @@ import ALGO_ICON from "../../svg/algo-icon.svg";
 
 import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 import TopStakers from './TopStakers';
+
+const DATA_ENTRIES_ONE_DAY = 6;
 
 function calcDifference (initial, final) {
     return final - initial;
@@ -138,13 +141,65 @@ class YLDYAssetStats extends Component {
         return (
             <div className="bg-dark py-2 all-text-white">
                 <Container className="py-5">
+                    <div>
+                        <h2
+                            className="yldy-title">
+                            Yieldly Statistics
+                        </h2>
+                        <p className="lead">
+                            Select a time period to display the historical data stored in the currently tracked pools. It may take a while to retrieve and display the data once changed.
+                        </p>
+                        <Row>
+                            <Col
+                                md="auto my-auto">
+                                <Form.Label 
+                                    className="lead font-weight-bold">
+                                    Time Period:
+                                </Form.Label>
+                            </Col>
+                            <Col>
+                                <Form.Control
+                                    as="select"
+                                    defaultValue="7"
+                                    value={this.state.fbDataDayLimit}
+                                    placeholder="Week value here"
+                                    onChange={(e) => this.setState({
+                                        dbWeekLimit: DATA_ENTRIES_ONE_DAY * e.target.value,
+                                    }, () => {
+                                        this.refreshNLLData();
+                                        this.refreshYLDYStakingData();
+                                    }) }>
+                                    {
+                                        [
+                                            { val: 7, name: "week" },
+                                            { val: 14, name: "fortnight" },
+                                            { val: 30, name: "month" },
+                                        ].map((value) => {
+                                            return (
+                                                <option 
+                                                    value={value.val} 
+                                                    key={value.name}>
+                                                        { value.name }
+                                                </option>
+                                            );
+                                        })
+                                    }
+                                </Form.Control>
+                            </Col>
+                        </Row>
+                    </div>
+                </Container>
+
+                <div className="bg-dark border-top border-info py-3" />
+
+                <Container>
                     <div className="py-3">
                         <Row className="py-3">
                             <Col lg="4">
                                 <h2 className="yldy-title">No Loss Lottery</h2>
                                 <IndividualStatistic
                                     className="my-4"
-                                    title="ALGO (tickets) deposited in last 7 days"
+                                    title={ `ALGO (tickets) deposited in last ${this.state.dbWeekLimit / DATA_ENTRIES_ONE_DAY} days` }
                                     value={ 
                                         this.state.nllDifference
                                         ?
@@ -156,7 +211,7 @@ class YLDYAssetStats extends Component {
                                     />
                                 <IndividualStatistic
                                     className="my-4"
-                                    title="Growth (%) in last 7 days"
+                                    title={ `Growth (%) in last ${this.state.dbWeekLimit / DATA_ENTRIES_ONE_DAY} days` }
                                     value={    
                                         this.state.nllDifference 
                                         ?
@@ -185,6 +240,8 @@ class YLDYAssetStats extends Component {
                                     lineColor="#6cdef9"
                                     lineHandleColor="grey"
                                     graphHeight={ getBestGraphHeight() }
+                                    allowCustomTimePeriods={ true }
+                                    dataLimit={ this.state.dbWeekLimit }
                                     />
                             </Col>
                         </Row>
@@ -202,6 +259,7 @@ class YLDYAssetStats extends Component {
                                     graphHeight={ getBestGraphHeight() }
                                     displayAverage
                                     displayDataKeyDesc
+                                    dataLimit={ this.state.dbWeekLimit }
                                     />
                             </Col>
                         </Row>
@@ -217,7 +275,7 @@ class YLDYAssetStats extends Component {
                                 <h2 className="yldy-title">YLDY Staking</h2>
                                 <IndividualStatistic 
                                     className="my-4"
-                                    title="YLDY staked in last 7 days"
+                                    title={ `YLDY staked in last ${this.state.dbWeekLimit / DATA_ENTRIES_ONE_DAY} days` }
                                     value={ 
                                         this.state.yldyDifference
                                         ?
@@ -229,7 +287,7 @@ class YLDYAssetStats extends Component {
                                     />
                                 <IndividualStatistic
                                     className="my-4" 
-                                    title="Growth (%) in last 7 days"
+                                    title={ `Growth (%) in last ${this.state.dbWeekLimit / DATA_ENTRIES_ONE_DAY} days` }
                                     value={ 
                                         this.state.yldyDifference
                                         ?
@@ -255,6 +313,7 @@ class YLDYAssetStats extends Component {
                                     yAxisLabel="Amount of YLDY"
                                     dataTitle="Total YLDY being staked by everybody (GA)"
                                     graphHeight={ getBestGraphHeight() }
+                                    dataLimit={ this.state.dbWeekLimit }
                                     />
                             </Col>
                         </Row>
@@ -275,6 +334,7 @@ class YLDYAssetStats extends Component {
                                     displayAverage
                                     displayDataKeyDesc
                                     graphHeight={ getBestGraphHeight() }
+                                    dataLimit={ this.state.dbWeekLimit }
                                 />
                             </Col>
                             <Col>
@@ -290,6 +350,7 @@ class YLDYAssetStats extends Component {
                                     displayAverage
                                     displayDataKeyDesc
                                     graphHeight={ getBestGraphHeight() }
+                                    dataLimit={ this.state.dbWeekLimit }
                                 />
                             </Col>
                         </Row>

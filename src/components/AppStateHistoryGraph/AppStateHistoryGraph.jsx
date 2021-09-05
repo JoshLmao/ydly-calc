@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Line } from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { Col, Row, Form } from 'react-bootstrap';
 
 import firebase from "firebase/app";
 import "firebase/database";
@@ -9,6 +10,8 @@ import "firebase/database";
 import { fromMicroValue } from '../../js/utility';
 import { calculateAverage } from '../../js/YLDYCalculation';
 import { getApplicationData, isFirebaseInitialized } from '../../js/FirebaseAPI';
+
+const DATA_ENTRIES_ONE_DAY = 6;
 
 class AppStateHistoryGraph extends Component {
     constructor(props) {
@@ -18,7 +21,7 @@ class AppStateHistoryGraph extends Component {
             // Application ID to use for this graph
             applicationID: props.applicationID,
             // Limit on the amount of data to show
-            dataLimit: props.dataLimit ?? 6 * 7,
+            dataLimit: props.dataLimit ?? DATA_ENTRIES_ONE_DAY * 7,
 
             // Amount of decimal precision to use on the data values
             decimalPrecision: props.decimalPrecision ?? 0,
@@ -53,6 +56,9 @@ class AppStateHistoryGraph extends Component {
             firebaseData: null,
             // State of line, used in graph
             lineState: null,
+
+            // Should the user be allowed to set custom time period to display data
+            allowCustomTimePeriods: props.allowCustomTimePeriods ?? false,
         };
 
         this.createState = this.createState.bind(this);
@@ -61,6 +67,16 @@ class AppStateHistoryGraph extends Component {
     componentDidMount() {
         // Get data and set state if firebase set
         this.createState();
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.dataLimit !== this.props.dataLimit) {
+            this.setState({
+                dataLimit: this.props.dataLimit,
+            }, () => {
+                this.createState();
+            });
+        }
     }
 
     createState() {
@@ -152,6 +168,7 @@ class AppStateHistoryGraph extends Component {
                         )
                     }
                 </div>
+               
                 {
                     this.state.loadingFirebaseData &&
                         <div className="w-100">
