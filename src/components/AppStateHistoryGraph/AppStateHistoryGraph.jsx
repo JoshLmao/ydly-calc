@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Line } from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { Col, Row, Form } from 'react-bootstrap';
 
 import firebase from "firebase/app";
 import "firebase/database";

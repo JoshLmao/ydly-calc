@@ -10,6 +10,8 @@ import YLDYStaking from "../YLDYStaking/YLDYStaking";
 import ScrollToTopButton from '../ScrollToTopButton';
 import HistoricalRewards from '../HistoricalRewards';
 
+import ALGO_LOGO from "../../svg/algo-icon.svg"
+
 class Home extends Component {
     constructor(props) {
         super(props);
@@ -32,7 +34,7 @@ class Home extends Component {
                 <Jumbotron className="text-white bg-dark mb-0">
                     <Container className="py-5">
                         <div>
-                            <Row className="my-3">
+                            <Row className="my-1">
                                 <Col md={8}>
                                     {
                                         // Alert: Url is develop website
@@ -81,6 +83,27 @@ class Home extends Component {
                                     This will update custom tickets or staked YLDY values
                                     entered below.
                                     </p>
+
+                                    <Row className="rounded bg-secondary float-left py-3 px-1 mx-1">
+                                        <Col md="auto">
+                                            <img
+                                                src={ALGO_LOGO}
+                                                height="auto"
+                                                width="50"
+                                                alt="algorand icon"
+                                                className="fixed-left"
+                                                />
+                                        </Col>
+                                        <Col>
+                                            Track NFT sales and prices on the Algorand blockchain
+                                            <br/>
+                                            <a
+                                                href="https://nftexplorer.app"
+                                                >
+                                                NFTExplorer.app
+                                            </a>
+                                        </Col>
+                                    </Row>
                                 </Col>
                             </Row>
                         </div>
