@@ -13,7 +13,6 @@ import FourOhFour from "../FourOhFour";
 import YLDYAssetStats from '../YLDYAssetStats/YLDYAssetStats';
 import StakeClaimStats from '../StakeClaimStats/StakeClaimStats';
 import OpulStaking from '../StakingPools/OPULStaking';
-import YLDYStaking from '../StakingPools/YLDYStaking/YLDYStaking';
 
 class App extends Component {
     constructor(props) {
