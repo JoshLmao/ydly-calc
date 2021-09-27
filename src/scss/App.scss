@@ -6,6 +6,9 @@ $yldy-primary: rgb(254, 215, 56);
 // Complimentary color to dark
 $dark-accent: #1c385a;
 
+$opul-primary: #b1b1b1;
+$opul-secondary: #ff5400;
+
 $font-family-base: "Red Hat Display", avenir, -apple-system, sans-serif;
 html {
     scroll-behavior: smooth;
@@ -60,12 +63,19 @@ body {
     color: $primary;
     text-shadow: 2px 2px $info;
 }
+.opul-title-shadowed {
+    color: $opul-primary;
+    text-shadow: 2px 2px $opul-secondary,
+}
 .info-title-shadowed {
     color: $info;
     text-shadow: 2px 2px $primary;
 }
 .yldy-title {
     color: $yldy-primary;
+}
+.text-opul {
+    color: $opul-primary;
 }
 
 // Pagination page-item styling

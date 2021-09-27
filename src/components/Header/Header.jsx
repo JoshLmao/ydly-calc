@@ -43,12 +43,52 @@ class Header extends Component {
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="w-100">   
-                            <a className="nav-link ml-lg-2" href="/#no-loss-lottery">
-                                <Button variant="primary" className="text-white font-weight-bold">No Loss Lottery</Button>
-                            </a>
-                            <a className="nav-link ml-lg-2" href="/#yldy-staking">
-                                <Button variant="info" className="text-white font-weight-bold">YLDY Staking</Button>
-                            </a>
+                            {
+                                [
+                                    {
+                                        text: "No Loss Lottery",
+                                        variant: "primary",
+                                        href: "/#no-loss-lottery",
+                                    },
+                                    {
+                                        text: "YLDY Staking",
+                                        variant: "info",
+                                        href: "/#yldy-staking",
+                                    },
+                                    {
+                                        text: "OPUL Staking",
+                                        variant: "secondary",
+                                        to: "/opul-staking"
+                                    }
+                                ].map((info, index) => {
+                                    if (info.href) {
+                                        return (
+                                            <a 
+                                                className="nav-link ml-lg-2" 
+                                                href={ info.href }>
+                                                <Button 
+                                                    variant={ info.variant }
+                                                    className="text-white font-weight-bold">
+                                                    { info.text }
+                                                </Button>
+                                            </a>
+                                        );
+                                    } else if (info.to) {
+                                        return (
+                                            <Link 
+                                                className="nav-link ml-lg-2" 
+                                                to={ info.to }>
+                                                <Button 
+                                                    variant={ info.variant }
+                                                    className="text-white font-weight-bold">
+                                                    { info.text }
+                                                </Button>
+                                            </Link>
+                                        );
+                                    }
+                                    return null;
+                                })
+                            }
                             <a className="nav-link ml-lg-2" href="/yldy-stats">
                                 <Button variant="outline-light" className="font-weight-bold">Yieldly Statistics</Button>
                             </a>

@@ -6,11 +6,8 @@ import { Line } from "react-chartjs-2";
 
 import { constants } from "../../js/consts";
 import { getApplicationData } from '../../js/FirebaseAPI';
-import { appIDToName, getBestGraphHeight, toMicroValue } from '../../js/utility';
+import { appIDToName, getBestGraphHeight, toMicroValue, unitToIcon } from '../../js/utility';
 import { calculateYLDYRewardsFromDayPeriod } from '../../js/YLDYCalculation';
-
-import ALGO_ICON from "../../svg/algo-icon.svg";
-import YLDY_ICON from "../../svg/yldy-icon.svg";
 
 class HistoricalRewards extends Component {
     constructor(props) {
@@ -22,6 +19,9 @@ class HistoricalRewards extends Component {
             fbDataDayLimit: 7,  // Amount of days to display firebase data
 
             stakeToken: props.stakeToken ?? "?",
+
+            // What unit is given to the user when claimed? YLDY, ALGO, OPUL
+            claimTokens: props.claimTokens,
 
             loadingFirebaseData: false,
             loadingGraphData: false,
@@ -169,7 +169,7 @@ class HistoricalRewards extends Component {
                     position: 'left',
                     title: {
                         display: true,
-                        text: "YLDY",
+                        text: this.state.claimTokens ? this.state.claimTokens[0] : "YLDY",
                         color: "white"
                     },
                     ticks: {
@@ -187,7 +187,7 @@ class HistoricalRewards extends Component {
                         position: 'right',
                         title: {
                             display: true,
-                            text: "ALGO",
+                            text: this.state.claimTokens ? this.state.claimTokens[1] : "ALGO",
                             color: "white"
                         },
                     }
@@ -236,7 +236,7 @@ class HistoricalRewards extends Component {
                                     <InputGroup.Prepend>
                                         <InputGroup.Text>
                                             <img
-                                                src={ this.state.stakeToken === "ALGO" ? ALGO_ICON : YLDY_ICON }
+                                                src={ unitToIcon(this.state.stakeToken) }
                                                 className="my-auto mr-1"
                                                 height={25}
                                                 width={25}

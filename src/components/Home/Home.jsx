@@ -123,6 +123,7 @@ class Home extends Component {
                                 <HistoricalRewards
                                     appID={constants.NO_LOSS_LOTTERY_APP_ID}
                                     stakeToken="ALGO"
+                                    claimTokens={[ "YLDY" ]}
                                     />
                             </Col>
                         </Row>
@@ -138,8 +139,9 @@ class Home extends Component {
                         <Row className="py-3">
                             <Col>
                                 <HistoricalRewards
-                                    appID={constants.YLDY_STAKING_APP_ID}
+                                    appID={ constants.YLDY_STAKING_APP_ID }
                                     stakeToken="YLDY"
+                                    claimTokens={[ "YLDY", "ALGO" ]}
                                     />
                             </Col>
                         </Row>

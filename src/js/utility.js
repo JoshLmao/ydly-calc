@@ -1,6 +1,10 @@
 import { isALGOTransaction, isASATransaction, YIELDLY_APP_ID_KEY } from "./AlgoExplorerHelper";
 import { constants } from "./consts";
 
+import YLDY_ICON from "../svg/yldy-icon.svg";
+import ALGO_ICON from "../svg/algo-icon.svg";
+import OPUL_LOGO from "../svg/opul-icon.svg";
+
 // Converts a microALGO to an ALGO
 export function microAlgoToAlgo (amount) {
     return fromMicroValue(amount)
@@ -211,7 +215,23 @@ export function appIDToName (appID) {
             return "No Loss Lottery";
         case constants.YLDY_STAKING_APP_ID:
             return "YLDY Staking";
+        case constants.OPUL_STAKING_APP_ID:
+            return "OPUL Staking";
         default:
             return "Unknown " + appID;
+    }
+}
+
+// Converts a unit/currency to it's svg icon
+export function unitToIcon (unit) {
+    switch(unit.toLowerCase()) {
+        case "opul":
+            return OPUL_LOGO;
+        case "algo":
+            return ALGO_ICON;
+        case "yldy":
+            return YLDY_ICON;
+        default:
+            return null;
     }
 }
