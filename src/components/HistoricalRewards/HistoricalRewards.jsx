@@ -120,7 +120,7 @@ class HistoricalRewards extends Component {
             if (claimableYldyData.length > 0) {
                 allDatasets.push(
                     {
-                        label: "Claimable YLDY",
+                        label: `Claimable ${this.state.claimTokens ? this.state.claimTokens[0] : "?"}`,
                         data: claimableYldyData,
                         backgroundColor: yldyLineColor,
                         borderColor: yldyLineColor,
@@ -132,7 +132,7 @@ class HistoricalRewards extends Component {
             if (claimableAlgoData.length > 0) {
                 allDatasets.push(
                     {
-                        label: "Claimable ALGO",
+                        label: `Claimable ${this.state.claimTokens ? this.state.claimTokens[1] : "?"}`,
                         data: claimableAlgoData,
                         yAxisID: "right-y-axis",
                         backgroundColor: algoLineColor,

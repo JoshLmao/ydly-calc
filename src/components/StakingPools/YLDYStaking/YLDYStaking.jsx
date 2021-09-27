@@ -10,6 +10,8 @@ class YLDYStaking extends Component {
         super(props);
 
         this.state = {
+            userAlgoAddress: props.userAlgoAddress ?? "",
+
             yldyStakingAppID: constants.YLDY_STAKING_APP_ID,
             applicationKeysConfig: [
                 {
@@ -44,7 +46,34 @@ class YLDYStaking extends Component {
                     title: "Total ALGO Available in Pool (TYUL)",
                     isRewardKey: true,
                 },
-            ]
+            ],
+            // Config for application keys to get from user's app info
+            userKeysConfig: [
+                {
+                    key: "USS",
+                    title: "User Staking Shares (USS)",
+                    type: "number",
+                },
+                {
+                    key: "UT",
+                    title: "User Time (UT)",
+                    type: "time"
+                },
+                {
+                    key: "UA",
+                    title: "User Amount (UA)",
+                    type: "number",
+                    hidden: true,
+                }
+            ],
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.userAlgoAddress !== this.props.userAlgoAddress) {
+            this.setState({
+                userAlgoAddress: this.props.userAlgoAddress,
+            });
         }
     }
 
@@ -76,6 +105,8 @@ class YLDYStaking extends Component {
                     <StakePoolCalculator
                         stakePoolID={ this.state.yldyStakingAppID }
                         applicationKeysConfig={ this.state.applicationKeysConfig }
+                        userAddress={ this.state.userAlgoAddress }
+                        userKeysConfig={ this.state.userKeysConfig }
                         primaryValueUnit="YLDY"
                         />
                 </Container>

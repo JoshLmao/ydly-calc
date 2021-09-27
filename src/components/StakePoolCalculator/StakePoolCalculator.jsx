@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
 
-import { formatNumber, fromMicroValue, getDayDifference, toMicroValue, unitToIcon } from '../../js/utility';
+import { formatNumber, fromMicroValue, getDayDifference, isStringBlank, toMicroValue, unitToIcon } from '../../js/utility';
 import { calculateRewardsPoolPercentageShare, calculateYLDYRewardsFromDayPeriod } from '../../js/YLDYCalculation';
 import {
     getContractValues,
@@ -28,17 +28,22 @@ class StakePoolCalculator extends Component {
             stakePoolID: props.stakePoolID,
             // Array of keys to get values out of application to display
             applicationKeysConfig: props.applicationKeysConfig,
-
+            // User's algo address to use with userKeyConfig
+            userAddress: props.userAddress ?? null,
+            // Array of keys to get values out of user address
+            userKeysConfig: props.userKeysConfig,
+            
             primaryValueUnit: props.primaryValueUnit ?? "Primary",
             rewardValueUnit: props.rewardValueUnit ?? "YLDY",
 
             // value staked
-            stakedAmount: 1000,
+            stakedAmount: 0,
             // Amount of days to display period
             daysPeriod: 1,
             // Amount determined to be claimable for user
             amountClaimable: 0,
 
+            // Values from user's algo address
             userValues: null,
             // Values from app contract, stored by applicationKeys
             applicationValues: null,
@@ -48,11 +53,16 @@ class StakePoolCalculator extends Component {
 
             // Key used to represent total pool amount
             stakingPoolRewardKeys: rewardKeys,
+
+            // is loading flags
+            fetchingGlobalVars: false,
+            fetchingUserVars: false,
         };
 
         this.updateResults = this.updateResults.bind(this);
         this.onTimePeriodChanged = this.onTimePeriodChanged.bind(this);
         this.onStakedAmountChanged = this.onStakedAmountChanged.bind(this);
+        this.fetchUserVariables = this.fetchUserVariables.bind(this);
     }
     
     componentDidMount() {
@@ -68,7 +78,7 @@ class StakePoolCalculator extends Component {
             // Call API and get keys
             getContractValues(this.state.stakePoolID, allKeys, (contractVars) => {
                 this.setState({
-                    global: contractVars,
+                    applicationValues: contractVars,
                     fetchingGlobalVars: false,
                 }, () => {
                     this.updateResults();
@@ -86,7 +96,13 @@ class StakePoolCalculator extends Component {
     }
 
     componentDidUpdate(prevProps) {
-         
+        if (prevProps.userAddress !== this.props.userAddress) {
+            this.setState({
+                userAddress: this.props.userAddress
+            }, () => {
+                this.fetchUserVariables();
+            });
+        }
     }
 
     onStakedAmountChanged(e) {
@@ -117,11 +133,65 @@ class StakePoolCalculator extends Component {
         );
     }
 
+    fetchUserVariables() {
+        if (this.state.errorMessage) {
+            this.setState({
+                errorMessage: null,
+            });
+        }
+
+        // Only fetch user vars if address is given.
+        if (this.state.userAddress && !this.state.fetchingUserVars && this.state.userKeysConfig) {
+            if (isStringBlank(this.state.userAddress)) {
+                return;
+            }
+
+            this.setState({
+                fetchingUserVars: true,
+            });
+            console.log("Retrieving NLL user state vars...");
+
+            // Get user state values on algo address
+            let allKeys = this.state.userKeysConfig.map((info) => {
+                return info.key;
+            });
+            getUserStateValues(this.state.userAddress, this.state.stakePoolID, allKeys, (userAppValues) => {
+                if (userAppValues) {
+                    console.log(`Successfully got user variables from application '${this.state.stakePoolID}' on address '${this.state.userAddress}'`);
+                    this.setState({
+                        userValues: userAppValues,
+                        daysPeriod: getDayDifference( userAppValues["UT"], this.state.applicationValues["GT"] ),
+                        stakedAmount: userAppValues["UA"] / 1000000,
+                        fetchingUserVars: false,
+                    },
+                    () => {
+                        this.updateResults();
+                    }
+                    );
+                } else {
+                    console.error("No user state values in address!");
+                    this.setState({
+                        errorMessage: "Address hasn't interacted with Yiedly contract or another error",
+                        fetchingUserVars: false,
+                    });
+                }
+            });
+        } else {
+            console.error("Algo address is empty or currently updating values!");
+            this.setState({
+                errorMessage: "Algorand address is empty or already updating values! Please try entering a new Algorand address",
+                // Reset if value existed
+                totalClaimableRewards: null,
+            });
+        }
+    }
+
     updateResults() {
         // Check required variables are valid
-        if (this.state.daysPeriod && this.state.stakedAmount && this.state.global) {
+        if (this.state.daysPeriod && this.state.stakedAmount > -1 && this.state.applicationValues) {
             console.log(`Amount: ${this.state.stakedAmount} | Period: ${this.state.daysPeriod}`);
 
+            // Get USS if available, convert amount to microValue
             let uss = this.state.user?.stakingShares ?? 0;
             let uStakedAmount = toMicroValue(this.state.stakedAmount);
 
@@ -131,8 +201,8 @@ class StakePoolCalculator extends Component {
                     uss,
                     this.state.daysPeriod,
                     uStakedAmount,
-                    this.state.global["GSS"],
-                    this.state.global[rewardInfo.key],
+                    this.state.applicationValues["GSS"],
+                    this.state.applicationValues[rewardInfo.key],
                 );
 
                 allClaimableRewards.push({
@@ -145,37 +215,6 @@ class StakePoolCalculator extends Component {
                 totalClaimableRewards: allClaimableRewards,
             });
         }
-
-        /*
-        if (this.state.stakedAmount && this.state.global) {
-            // Parse to float and check for valid number
-            let ticketsNumber = parseFloat(this.state.algoTickets);
-            if (ticketsNumber > 0) {
-                // Multiply by 10^6 as formula/other values are 10^6
-                let algoTickets = ticketsNumber * 1000000;
-                let uss = this.state.user?.stakingShares ?? 0;
-
-                // Calculate YLDY rewards in current pool
-                let totalRewards = calculateYLDYRewardsFromDayPeriod(
-                    uss,
-                    this.state.daysPeriod,
-                    algoTickets,
-                    this.state.global.stakingShares,
-                    this.state.global.totalYldyRewards
-                );
-                // Update value
-                this.setState({ totalClaimableRewards: totalRewards });
-            } else {
-                // Unable to parse tickets. Validate the value and try again...
-                // Reset last rewards value as new value is invalid
-                if (this.state.totalClaimableRewards) {
-                    this.setState({ totalClaimableRewards: null });
-                }
-            }
-        } else if (this.state.totalClaimableRewards) {
-            this.setState({ totalClaimableRewards: null });
-        }
-        */
     }
 
     render() {
@@ -183,8 +222,11 @@ class StakePoolCalculator extends Component {
             <div>
                 {/* Display error message if one is set*/}
                 {
-                    this.state.usrVarsErrorMsg && (
-                        <p className="text-danger">{this.state.usrVarsErrorMsg}</p>
+                    this.state.errorMessage && (
+                        <p 
+                            className="text-danger">
+                            {this.state.errorMessage}
+                        </p>
                     )
                 }
 
@@ -221,10 +263,10 @@ class StakePoolCalculator extends Component {
                                 '{this.state.daysPeriod}' day(s), with the current global
                                 unlock rewards pool at '
                                 {
-                                    this.state.global
+                                    this.state.applicationValues
                                     ? 
                                     formatNumber(
-                                        (this.state.global[this.state.stakingPoolRewardKey] / 1000).toFixed(0)
+                                        (this.state.applicationValues[this.state.stakingPoolRewardKey] / 1000).toFixed(0)
                                     )
                                     : 
                                     "?"
@@ -233,11 +275,11 @@ class StakePoolCalculator extends Component {
                             </p>
                             <p className="small">
                                 {
-                                    this.state.global?.totalYldyRewards != null && this.state.totalClaimableRewards != null && (
+                                    this.state.applicationValues?.totalYldyRewards != null && this.state.totalClaimableRewards != null && (
                                         <div>
                                             {
                                                 calculateRewardsPoolPercentageShare(
-                                                    fromMicroValue(this.state.global.totalYldyRewards),
+                                                    fromMicroValue(this.state.applicationValues?.totalYldyRewards),
                                                     this.state.totalClaimableRewards
                                                 ).toFixed(10)
                                             }
@@ -246,13 +288,13 @@ class StakePoolCalculator extends Component {
                                     )
                                 }
                                 {
-                                    this.state.user?.time && this.state.global?.time && (
+                                    this.state.user?.time && this.state.applicationValues?.time && (
                                         <div>
                                             You currently have '
                                             {
                                                 getDayDifference(
-                                                    this.state.user.time,
-                                                    this.state.global.time
+                                                    this.state.userValues["GT"],
+                                                    this.state.applicationValues["GT"]
                                                 )
                                             }
                                             ' days of unclaimed rewards.
@@ -316,10 +358,10 @@ class StakePoolCalculator extends Component {
                     className="py-5"
                     md={3}>
                     {
-                        this.state.global && this.state.applicationKeysConfig.map((keyConfig, index) => {
-                            let globalValue = null;
-                            if (this.state.global[keyConfig.key]) {
-                                globalValue = this.state.global[keyConfig.key];
+                        this.state.applicationValues && this.state.applicationKeysConfig.map((keyConfig, index) => {
+                            let appValue = null;
+                            if (this.state.applicationValues[keyConfig.key]) {
+                                appValue = this.state.applicationValues[keyConfig.key];
                             }
 
                             return (
@@ -341,24 +383,24 @@ class StakePoolCalculator extends Component {
                                             <h1>
                                                 {
                                                     // Value couldn't be found, null
-                                                    !globalValue && (
+                                                    !appValue && (
                                                         `${keyConfig.key} is not defined`
                                                     )
                                                 }
 
                                                 {
                                                     // Value type is a time value
-                                                    globalValue && keyConfig.type ===  "time" && (
+                                                    appValue && keyConfig.type ===  "time" && (
                                                         <>
                                                             {
-                                                                new Date(globalValue * 1000).toDateString() 
+                                                                new Date(appValue * 1000).toDateString() 
                                                             }
                                                         </>
                                                     )
                                                 }
                                                 {
                                                     // If value type is a currency
-                                                    globalValue && keyConfig.type === "currency" && (
+                                                    appValue && keyConfig.type === "currency" && (
                                                         <>
                                                             <img
                                                                 src={ unitToIcon(keyConfig.unit) }
@@ -369,18 +411,18 @@ class StakePoolCalculator extends Component {
                                                             />
                                                             {
                                                                 formatNumber(
-                                                                    fromMicroValue(globalValue).toFixed(0)
+                                                                    fromMicroValue(appValue).toFixed(0)
                                                                 )
                                                             }
                                                         </>
                                                     )
                                                 }
                                                 {
-                                                    globalValue && keyConfig.type === "number" && (
+                                                    appValue && keyConfig.type === "number" && (
                                                         <>
                                                             {
                                                                 formatNumber(
-                                                                    fromMicroValue(globalValue).toFixed(0)
+                                                                    fromMicroValue(appValue).toFixed(0)
                                                                 )
                                                             }
                                                         </>

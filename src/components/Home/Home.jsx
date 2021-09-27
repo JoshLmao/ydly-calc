@@ -132,6 +132,7 @@ class Home extends Component {
 
                 <div className="bg-dark border-top border-info py-3" id="yldy-staking">
                     <YLDYStaking 
+                        userAlgoAddress={ this.state.userAlgoAddress }
                         />
             </div>
         </div>
