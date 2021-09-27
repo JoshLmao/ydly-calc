@@ -122,6 +122,13 @@ class Home extends Component {
                             <Col>
                                 <HistoricalRewards
                                     appID={constants.NO_LOSS_LOTTERY_APP_ID}
+                                    rewardKeysConfig={[ 
+                                        {
+                                            key: "TYUL",
+                                            unit: "YLDY",
+                                            lineColor: "orange",
+                                        }
+                                    ]}
                                     stakeToken="ALGO"
                                     claimTokens={[ "YLDY" ]}
                                     />

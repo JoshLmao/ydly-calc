@@ -114,6 +114,19 @@ class YLDYStaking extends Component {
                 <Container>
                     <HistoricalRewards
                         appID={ this.state.yldyStakingAppID }
+                        rewardKeysConfig={[ 
+                            {
+                                key: "TYUL",
+                                unit: "YLDY",
+                                lineColor: "orange",
+                            },
+                            {
+                                key: "TAP",
+                                unit: "ALGO",
+                                lineColor: "#6CDEF9",
+                                stepped: true,
+                            }
+                        ]}
                         stakeToken="YLDY"
                         claimTokens={[ "YLDY", "ALGO" ]}
                         />

@@ -78,6 +78,13 @@ class OpulStaking extends Component {
                 <Container>
                     <HistoricalRewards
                         appID={ this.state.opulStakingAppID }
+                        rewardKeysConfig={[ 
+                            {
+                                key: "TYUL",
+                                unit: "OPUL",
+                                lineColor: "#ff5400",
+                            }
+                        ]}
                         stakeToken="YLDY"
                         claimTokens={ [ "OPUL" ] }
                         />

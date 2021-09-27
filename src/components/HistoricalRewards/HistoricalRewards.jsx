@@ -15,6 +15,7 @@ class HistoricalRewards extends Component {
 
         this.state = {
             appID: props.appID ?? constants.YLDY_STAKING_APP_ID,     // main app id to use as data
+            rewardKeysConfig: props.rewardKeysConfig ?? [],
             stakedYLDY: 1000, // Amount of YLDY staked
             fbDataDayLimit: 7,  // Amount of days to display firebase data
 
@@ -73,74 +74,57 @@ class HistoricalRewards extends Component {
                 loadingGraphData: true,
             });
 
-            let claimableYldyData = [];
-            let claimableAlgoData = [];
-
+            // Init obj and arrays
+            let claimableRewardsData = {};
+            for (let config of this.state.rewardKeysConfig) {
+                claimableRewardsData[config.key] = [];
+            }
+            
+            // Iterate over stored data in firebase db
             for (let epochTimeKey in this.state.firebaseData) {
                 let dt = new Date(parseInt(epochTimeKey));
                 let globalStateInfo = this.state.firebaseData[epochTimeKey];
 
-                let stakedYLDY = toMicroValue(this.state.stakedYLDY);
+                let stakedAmount = toMicroValue(this.state.stakedYLDY);
 
-                // Determine claimable YLDY amount, add to data if TYUL value exists
-                if (globalStateInfo.TYUL) {
-                    let claimableYldy = calculateYLDYRewardsFromDayPeriod(
-                        0,
-                        1,
-                        stakedYLDY,
-                        globalStateInfo.GSS,
-                        globalStateInfo.TYUL
-                    );
-                    claimableYldyData.push({
-                        x: dt.toISOString(),
-                        y: claimableYldy,
-                    });
-                }
-
-                // Determine claimable ALGO amount and add to data if TAP value exists
-                if (globalStateInfo.TAP) {
-                    let claimableAlgo = calculateYLDYRewardsFromDayPeriod(
-                        0,
-                        1,
-                        stakedYLDY,
-                        globalStateInfo.GSS,
-                        globalStateInfo.TAP,
-                    );
-                    claimableAlgoData.push({
-                        x: dt.toISOString(),
-                        y: claimableAlgo,
-                    });
+                // iterate through keys config
+                for (let config of this.state.rewardKeysConfig) {
+                    let rewardValue = globalStateInfo[config.key];
+                    // if key is stored and valid...
+                    if (rewardValue) {
+                        let claimableAmount = calculateYLDYRewardsFromDayPeriod(
+                            0,
+                            1,
+                            stakedAmount,
+                            globalStateInfo.GSS,
+                            rewardValue
+                        );
+                        claimableRewardsData[config.key].push({
+                            x: dt.toISOString(),
+                            y: claimableAmount,
+                        });
+                    }
                 }
             }
 
-            let yldyLineColor = "orange";
-            let algoLineColor = "#6CDEF9";
             let allDatasets = [];
-            
-            if (claimableYldyData.length > 0) {
-                allDatasets.push(
-                    {
-                        label: `Claimable ${this.state.claimTokens ? this.state.claimTokens[0] : "?"}`,
-                        data: claimableYldyData,
-                        backgroundColor: yldyLineColor,
-                        borderColor: yldyLineColor,
-                        borderWidth: 1,
-                        yAxisID: "left-y-axis",
-                    }
-                );
-            }
-            if (claimableAlgoData.length > 0) {
-                allDatasets.push(
-                    {
-                        label: `Claimable ${this.state.claimTokens ? this.state.claimTokens[1] : "?"}`,
-                        data: claimableAlgoData,
-                        yAxisID: "right-y-axis",
-                        backgroundColor: algoLineColor,
-                        borderColor: algoLineColor,
-                        borderWidth: 1,
-                        stepped: true,
-                    }
-                );
+            let i = 0;
+            for (let config of this.state.rewardKeysConfig) {
+                if (claimableRewardsData[config.key].length > 0) {
+                    allDatasets.push(
+                        {
+                            label: `Claimable ${config.unit}`,
+                            data: claimableRewardsData[config.key],
+                            backgroundColor: config.lineColor,
+                            borderColor: config.lineColor,
+                            borderWidth: 1,
+                            yAxisID: i === 0 ? "left-y-axis" : 'right-y-axis',   // first dataset, map to left. second, map to right
+                            stepped: config.stepped,
+                        }
+                    );
+
+                    i++;
+                }
             }
 
             // Build initial scales with X and left Y axis
@@ -164,22 +148,28 @@ class HistoricalRewards extends Component {
                         },
                     },
                 },
-                'left-y-axis': {
-                    type: 'linear',
-                    position: 'left',
-                    title: {
-                        display: true,
-                        text: this.state.claimTokens ? this.state.claimTokens[0] : "YLDY",
-                        color: "white"
-                    },
-                    ticks: {
-                        precision: 100,
-                    }
-                },
             };
 
+            if (this.state.rewardKeysConfig.length === 1) {
+                allScales = {
+                    ...allScales,
+                    'left-y-axis': {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: this.state.rewardKeysConfig[0].unit,
+                            color: "white"
+                        },
+                        ticks: {
+                            precision: 100,
+                        }
+                    },
+                }
+            }
+
             // Add right Y axis if both data exist
-            if (claimableYldyData.length > 0 && claimableAlgoData.length > 0) {
+            if (this.state.rewardKeysConfig.length > 1) {
                 allScales = {
                     ...allScales,
                     'right-y-axis': {
@@ -187,7 +177,7 @@ class HistoricalRewards extends Component {
                         position: 'right',
                         title: {
                             display: true,
-                            text: this.state.claimTokens ? this.state.claimTokens[1] : "ALGO",
+                            text: this.state.rewardKeysConfig[1].unit,
                             color: "white"
                         },
                     }
