@@ -57,6 +57,9 @@ class StakePoolCalculator extends Component {
             // is loading flags
             fetchingGlobalVars: false,
             fetchingUserVars: false,
+
+            // What sass/bootstrap variant to use
+            variant: props.variant ?? "primary"
         };
 
         this.updateResults = this.updateResults.bind(this);
@@ -232,7 +235,9 @@ class StakePoolCalculator extends Component {
 
                 <Row className="py-5">
                     <Col md="6">
-                        <Card className="p-3 p-md-5 my-3 bg-dark border-primary glow-pink">
+                        <Card 
+                            className={`p-3 p-md-5 my-3 bg-dark border-${this.state.variant} glow-${this.state.variant}` }
+                            >
                             {
                                 this.state.totalClaimableRewards && this.state.totalClaimableRewards.map((claimableInfo) => {
                                     return (
@@ -261,17 +266,29 @@ class StakePoolCalculator extends Component {
                             <p className="small">
                                 The amount of rewards available to current address after 
                                 '{this.state.daysPeriod}' day(s), with the current global
-                                unlock rewards pool at '
+                                unlock rewards pool at 
+                                {" "}
                                 {
-                                    this.state.applicationValues
-                                    ? 
-                                    formatNumber(
-                                        (this.state.applicationValues[this.state.stakingPoolRewardKey] / 1000).toFixed(0)
-                                    )
-                                    : 
-                                    "?"
+                                    this.state.applicationValues && this.state.stakingPoolRewardKeys.map((info, index) => {
+                                        return (
+                                            <>
+                                            '{
+                                                formatNumber(
+                                                    (this.state.applicationValues[info.key] / 1000).toFixed(0)
+                                                )
+                                            }'
+                                            { info.unit }
+                                            {
+                                                index < this.state.stakingPoolRewardKeys.length - 1 && (
+                                                    <>
+                                                        {" and "}
+                                                    </>
+                                                )
+                                            }
+                                            </>
+                                        )
+                                    })
                                 }
-                                ' { this.state.rewardValueUnit }
                             </p>
                             <p className="small">
                                 {
@@ -305,7 +322,9 @@ class StakePoolCalculator extends Component {
                         </Card>
                     </Col>
                     <Col md="6">
-                        <Card className="p-3 p-md-5 my-3 bg-dark border-primary glow-pink">
+                        <Card 
+                            className={ `p-3 p-md-5 my-3 bg-dark border-${this.state.variant} glow-${this.state.variant}` }
+                            >
                             <Form>
                                 <Form.Group controlId="tickets">
                                     <Form.Label 

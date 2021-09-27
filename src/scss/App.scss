@@ -6,18 +6,18 @@ $yldy-primary: rgb(254, 215, 56);
 // Complimentary color to dark
 $dark-accent: #1c385a;
 
-$opul-primary: #b1b1b1;
-$opul-secondary: #ff5400;
+$opul-primary: #ff5400;
+$opul-secondary: #313131;
 
 $font-family-base: "Red Hat Display", avenir, -apple-system, sans-serif;
 html {
     scroll-behavior: smooth;
 }
 
-.glow-pink {
+.glow-primary {
   box-shadow: 2px 2px 20px $primary;
 }
-.glow-blue {
+.glow-info {
   box-shadow: 2px 2px 20px $info;
 }
 
@@ -83,4 +83,11 @@ body {
     background-color: $dark-accent;
     text-decoration: none;
     border: 0px;
+}
+
+.border-opul {
+    border-color: $opul-primary !important
+}
+.glow-opul {
+    box-shadow: 2px 2px 20px $opul-primary;
 }

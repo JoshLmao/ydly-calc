@@ -108,6 +108,8 @@ class YLDYStaking extends Component {
                         userAddress={ this.state.userAlgoAddress }
                         userKeysConfig={ this.state.userKeysConfig }
                         primaryValueUnit="YLDY"
+                        sassSuffix="info"
+                        variant="info"
                         />
                 </Container>
 

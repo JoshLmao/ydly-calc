@@ -72,6 +72,7 @@ class OpulStaking extends Component {
                         applicationKeysConfig={ this.state.opulAppKeysConfig }
                         primaryValueUnit="YLDY"
                         rewardValueUnit="OPUL"
+                        variant="opul"
                         />
                 </Container>
 

@@ -260,7 +260,7 @@ class NoLossLottery extends Component {
 
                 <Row className="py-5">
                     <Col md="6">
-                        <Card className="p-3 p-md-5 my-3 bg-dark border-primary glow-pink">
+                        <Card className="p-3 p-md-5 my-3 bg-dark border-primary glow-primary">
                             <p className="lead font-weight-bold">
                                 <img
                                     className="my-auto mr-2"
@@ -329,7 +329,7 @@ class NoLossLottery extends Component {
                         </Card>
                     </Col>
                     <Col md="6">
-                        <Card className="p-3 p-md-5 my-3 bg-dark border-primary glow-pink">
+                        <Card className="p-3 p-md-5 my-3 bg-dark border-primary glow-primary">
                             <Form>
                                 <Form.Group controlId="tickets">
                                     <Form.Label className="lead font-weight-bold">
