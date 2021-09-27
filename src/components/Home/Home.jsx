@@ -6,11 +6,11 @@ import {
 } from "../../js/consts";
 
 import NoLossLottery from "../NoLossLottery/NoLossLottery";
-import YLDYStaking from "../YLDYStaking/YLDYStaking";
 import ScrollToTopButton from '../ScrollToTopButton';
 import HistoricalRewards from '../HistoricalRewards';
 
 import ALGO_LOGO from "../../svg/algo-icon.svg"
+import YLDYStaking from '../StakingPools/YLDYStaking';
 
 class Home extends Component {
     constructor(props) {
@@ -131,21 +131,8 @@ class Home extends Component {
                 </div>
 
                 <div className="bg-dark border-top border-info py-3" id="yldy-staking">
-                    <Container>
-                        <YLDYStaking
-                            userAlgoAddress={this.state.userAlgoAddress}
-                            firebase={this.state.firebase}
+                    <YLDYStaking 
                         />
-                        <Row className="py-3">
-                            <Col>
-                                <HistoricalRewards
-                                    appID={ constants.YLDY_STAKING_APP_ID }
-                                    stakeToken="YLDY"
-                                    claimTokens={[ "YLDY", "ALGO" ]}
-                                    />
-                            </Col>
-                        </Row>
-                </Container>
             </div>
         </div>
         );

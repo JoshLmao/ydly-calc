@@ -14,11 +14,11 @@ class StakePoolCalculator extends Component {
         super(props);
 
         // Determine which value is the one that users can claim from
-        let rewardKey = null;
+        let rewardKeys = [];
         if (props.applicationKeysConfig) {
-            for( let config of props.applicationKeysConfig) {
-                if (config.isRewardKey) {
-                    rewardKey = config.key;
+            for( let configInfo of props.applicationKeysConfig) {
+                if (configInfo.isRewardKey) {
+                    rewardKeys.push(configInfo);
                 }
             }
         }
@@ -47,7 +47,7 @@ class StakePoolCalculator extends Component {
             errorMessage: null,
 
             // Key used to represent total pool amount
-            stakingPoolRewardKey: rewardKey,
+            stakingPoolRewardKeys: rewardKeys,
         };
 
         this.updateResults = this.updateResults.bind(this);
@@ -124,15 +124,25 @@ class StakePoolCalculator extends Component {
 
             let uss = this.state.user?.stakingShares ?? 0;
             let uStakedAmount = toMicroValue(this.state.stakedAmount);
-            let totalRewards = calculateYLDYRewardsFromDayPeriod(
-                uss,
-                this.state.daysPeriod,
-                uStakedAmount,
-                this.state.global["GSS"],
-                this.state.global[this.state.stakingPoolRewardKey],
-            );
+
+            let allClaimableRewards = [];
+            for (let rewardInfo of this.state.stakingPoolRewardKeys) {
+                let claimable = calculateYLDYRewardsFromDayPeriod(
+                    uss,
+                    this.state.daysPeriod,
+                    uStakedAmount,
+                    this.state.global["GSS"],
+                    this.state.global[rewardInfo.key],
+                );
+
+                allClaimableRewards.push({
+                    key: rewardInfo.key,
+                    unit: rewardInfo.unit,
+                    claimable: claimable,
+                });
+            }
             this.setState({
-                totalClaimableRewards: totalRewards,
+                totalClaimableRewards: allClaimableRewards,
             });
         }
 
@@ -181,27 +191,31 @@ class StakePoolCalculator extends Component {
                 <Row className="py-5">
                     <Col md="6">
                         <Card className="p-3 p-md-5 my-3 bg-dark border-primary glow-pink">
-                            <p className="lead font-weight-bold">
-                                <img
-                                    className="my-auto mr-2"
-                                    src={ unitToIcon(this.state.rewardValueUnit) }
-                                    width={25}
-                                    height={25}
-                                    alt="Yieldly icon"
-                                />
-                                { this.state.rewardValueUnit } Claimable Rewards
-                            </p>
-                            <p 
-                                className="display-4"
-                                title={this.state.totalClaimableRewards ?? ""}>
-                                {
-                                    this.state.totalClaimableRewards != null
-                                    ? 
-                                    this.state.totalClaimableRewards?.toFixed(2)
-                                    : 
-                                    "0"
-                                }
-                            </p>
+                            {
+                                this.state.totalClaimableRewards && this.state.totalClaimableRewards.map((claimableInfo) => {
+                                    return (
+                                        <>
+                                            <p className="lead font-weight-bold">
+                                                <img
+                                                    className="my-auto mr-2"
+                                                    src={ unitToIcon(claimableInfo.unit) }
+                                                    width={25}
+                                                    height={25}
+                                                    alt="Yieldly icon"
+                                                />
+                                                { claimableInfo.unit } Claimable Rewards
+                                            </p>
+                                            <p 
+                                                className="display-4"
+                                                title={`${claimableInfo.claimable} ${claimableInfo.unit}` ?? ""}>
+                                                {
+                                                    claimableInfo.claimable.toFixed(2)
+                                                }
+                                            </p>
+                                        </>
+                                    );
+                                })
+                            }
                             <p className="small">
                                 The amount of rewards available to current address after 
                                 '{this.state.daysPeriod}' day(s), with the current global

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Container } from 'react-bootstrap';
-import { constants } from '../../js/consts';
-import HistoricalRewards from '../HistoricalRewards';
-import StakePoolCalculator from '../StakePoolCalculator/StakePoolCalculator';
+import { constants } from '../../../js/consts';
+import HistoricalRewards from '../../HistoricalRewards';
+import StakePoolCalculator from '../../StakePoolCalculator/StakePoolCalculator';
 
 class OpulStaking extends Component {
     constructor(props) {
@@ -79,7 +79,7 @@ class OpulStaking extends Component {
                     <HistoricalRewards
                         appID={ this.state.opulStakingAppID }
                         stakeToken="YLDY"
-                        claimToken="OPUL"
+                        claimTokens={ [ "OPUL" ] }
                         />
                 </Container>
             </div>

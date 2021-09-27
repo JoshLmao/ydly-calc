@@ -12,7 +12,8 @@ import Footer from "../Footer";
 import FourOhFour from "../FourOhFour";
 import YLDYAssetStats from '../YLDYAssetStats/YLDYAssetStats';
 import StakeClaimStats from '../StakeClaimStats/StakeClaimStats';
-import OpulStaking from '../OpulStakingPool/OpulStaking';
+import OpulStaking from '../StakingPools/OPULStaking';
+import YLDYStaking from '../StakingPools/YLDYStaking/YLDYStaking';
 
 class App extends Component {
     constructor(props) {
@@ -33,6 +34,7 @@ class App extends Component {
 
                     {/* OPUL Staking Calc */}
                     <Route exact path="/opul-staking" component={ OpulStaking } />
+                    <Route exact path="/yldy-staking" component={ YLDYStaking } />
 
                     <Route exact path="/yldy-stats" component={YLDYAssetStats} />
                     <Route exact path="/stake-claim-stats" component={StakeClaimStats} />
