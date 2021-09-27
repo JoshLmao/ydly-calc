@@ -3,6 +3,8 @@ export const constants = {
     NO_LOSS_LOTTERY_APP_ID: 233725844,
     // Algorand application id for YLDY staking
     YLDY_STAKING_APP_ID: 233725850,
+    // Algorand application id for OPUL staking
+    OPUL_STAKING_APP_ID: 233725844,
 
     // Algorand asset id for YLDY
     YLDY_ASSET_ID: 226701642,

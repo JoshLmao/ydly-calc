@@ -138,18 +138,13 @@ class NoLossLottery extends Component {
             console.log("Retrieving NLL user state vars...");
 
             // Get user state values on algo address
-            getUserStateValues(this.state.algoAddress, this.state.contractID, (data) => {
-                if (data) {
+            getUserStateValues(this.state.algoAddress, this.state.contractID, [ "USS", "UT", "UA" ],  (userAppValues) => {
+                if (userAppValues) {
                     console.log(`Successfully got user variables from application '${this.state.contractID}' on address '${this.state.algoAddress}'`);
-                    this.setState(
-                    {
-                        user: {
-                            time: data.userTime,
-                            amount: data.userAmount,
-                            stakingShares: data.userStakingShares,
-                        },
-                        daysPeriod: getDayDifference( data.userTime, this.state.global.time ),
-                        algoTickets: data.userAmount / 1000000,
+                    this.setState({
+                        user: userAppValues,
+                        daysPeriod: getDayDifference( userAppValues["UT"], this.state.global.time ),
+                        algoTickets: userAppValues["UA"] / 1000000,
                         fetchingUsrVars: false,
                     },
                     () => {
