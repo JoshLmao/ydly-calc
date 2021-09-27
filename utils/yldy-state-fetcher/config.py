@@ -5,6 +5,8 @@ SLEEP_HOURS = 4
 nllApplicationID = 233725844
 # YLDY Staking ID
 yldyStakingApplicationID = 233725850
+# OPUL Staking ID
+opulStakingAppID = 0
 
 # Dictionary of all application id's and their global state keys
 # to retrieve every X hours
@@ -16,6 +18,10 @@ APP_ID_STATE_KEYS_DICT = {
     # YLDY Staking global state keys to track. Refer to yieldly-app-states.md for more info
     yldyStakingApplicationID: [
         "TYUL", "TAP", "GA", "GSS"
+    ],
+    # Opul state keys to track
+    opulStakingAppID: [
+        
     ]
 }
 
