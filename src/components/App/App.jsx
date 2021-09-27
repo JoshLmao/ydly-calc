@@ -34,7 +34,6 @@ class App extends Component {
 
                     {/* OPUL Staking Calc */}
                     <Route exact path="/opul-staking" component={ OpulStaking } />
-                    <Route exact path="/yldy-staking" component={ YLDYStaking } />
 
                     <Route exact path="/yldy-stats" component={YLDYAssetStats} />
                     <Route exact path="/stake-claim-stats" component={StakeClaimStats} />
