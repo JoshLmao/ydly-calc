@@ -6,11 +6,11 @@ import {
 } from "../../js/consts";
 
 import NoLossLottery from "../NoLossLottery/NoLossLottery";
-import YLDYStaking from "../YLDYStaking/YLDYStaking";
 import ScrollToTopButton from '../ScrollToTopButton';
 import HistoricalRewards from '../HistoricalRewards';
 
 import ALGO_LOGO from "../../svg/algo-icon.svg"
+import YLDYStaking from '../StakingPools/YLDYStaking';
 
 class Home extends Component {
     constructor(props) {
@@ -122,7 +122,15 @@ class Home extends Component {
                             <Col>
                                 <HistoricalRewards
                                     appID={constants.NO_LOSS_LOTTERY_APP_ID}
+                                    rewardKeysConfig={[ 
+                                        {
+                                            key: "TYUL",
+                                            unit: "YLDY",
+                                            lineColor: "orange",
+                                        }
+                                    ]}
                                     stakeToken="ALGO"
+                                    claimTokens={[ "YLDY" ]}
                                     />
                             </Col>
                         </Row>
@@ -130,20 +138,9 @@ class Home extends Component {
                 </div>
 
                 <div className="bg-dark border-top border-info py-3" id="yldy-staking">
-                    <Container>
-                        <YLDYStaking
-                            userAlgoAddress={this.state.userAlgoAddress}
-                            firebase={this.state.firebase}
+                    <YLDYStaking 
+                        userAlgoAddress={ this.state.userAlgoAddress }
                         />
-                        <Row className="py-3">
-                            <Col>
-                                <HistoricalRewards
-                                    appID={constants.YLDY_STAKING_APP_ID}
-                                    stakeToken="YLDY"
-                                    />
-                            </Col>
-                        </Row>
-                </Container>
             </div>
         </div>
         );

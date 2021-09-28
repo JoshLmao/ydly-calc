@@ -6,15 +6,18 @@ $yldy-primary: rgb(254, 215, 56);
 // Complimentary color to dark
 $dark-accent: #1c385a;
 
+$opul-primary: #ff5400;
+$opul-secondary: #313131;
+
 $font-family-base: "Red Hat Display", avenir, -apple-system, sans-serif;
 html {
     scroll-behavior: smooth;
 }
 
-.glow-pink {
+.glow-primary {
   box-shadow: 2px 2px 20px $primary;
 }
-.glow-blue {
+.glow-info {
   box-shadow: 2px 2px 20px $info;
 }
 
@@ -60,6 +63,10 @@ body {
     color: $primary;
     text-shadow: 2px 2px $info;
 }
+.opul-title-shadowed {
+    color: $opul-primary;
+    text-shadow: 2px 2px $opul-secondary,
+}
 .info-title-shadowed {
     color: $info;
     text-shadow: 2px 2px $primary;
@@ -67,10 +74,20 @@ body {
 .yldy-title {
     color: $yldy-primary;
 }
+.text-opul {
+    color: $opul-primary;
+}
 
 // Pagination page-item styling
 .page-item .page-link {
     background-color: $dark-accent;
     text-decoration: none;
     border: 0px;
+}
+
+.border-opul {
+    border-color: $opul-primary !important
+}
+.glow-opul {
+    box-shadow: 2px 2px 20px $opul-primary;
 }

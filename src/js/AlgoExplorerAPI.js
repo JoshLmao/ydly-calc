@@ -24,36 +24,29 @@ export function getContractValues(contractId, keys, callback) {
 }
 
 // Gets the UserTime and UserAmount values from the 
-export function getUserStateValues (algoAddress, contractID, callback) {
+export function getUserStateValues (algoAddress, contractID, appKeys, callback) {
     let endpoint = `accounts/${algoAddress}`;
     queryAlgoExplorerAPI("v2", endpoint, (data) => {
         if (data) {
             // Get all app states
             let appStates = data["apps-local-state"];
             if (appStates) {
+
                 for (let appState of appStates) {
-                    // Check current app is the app id we want
                     if (appState.id === contractID && appState["key-value"]) {
                         let userValues = {};
-                        // Iterate through all states of this app
-                        for (let kvp of appState["key-value"]) {
-                            // User Time
-                            if (kvp.key === btoa("UT")) {   
-                                userValues.userTime = kvp.value.uint;
-                            }
-                            // User Amount
-                            else if (kvp.key === btoa("UA")) {  
-                                userValues.userAmount = kvp.value.uint;
-                            }
-                            else if (kvp.key === btoa("USS")) {
-                                userValues.userStakingShares = kvp.value.uint;
+                        
+                        for (let key of appKeys) {
+                            for (let kvp of appState["key-value"]) {
+                                if (kvp.key === btoa(key)) {
+                                    userValues[key] = kvp.value.uint;
+                                    break;
+                                }
                             }
                         }
-                        // Once successful, use callback
-                        if (userValues) {
-                            if (callback)
-                                callback(userValues);
 
+                        if (callback) {
+                            callback(userValues);
                             return;
                         }
                     }

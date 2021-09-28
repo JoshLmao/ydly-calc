@@ -45,11 +45,19 @@ export function calculateYLDYRewards (usrStakingShares, usrTime, globalTime, usr
 // globalStakingShares (GSS)
 // totalYldyUnlockRewards (TYDL)
 export function calculateYLDYRewardsFromDayPeriod(usrStakingShares, daysPeriod, usrAmount, globalStakingShares, totalYldyUnlockRewards) {
+    if (globalStakingShares <= 0) {
+        return 0; // no shares, no share
+    }
+
     let microUsrAmount = usrStakingShares + (daysPeriod * usrAmount);
     let amount = (microUsrAmount / globalStakingShares) * totalYldyUnlockRewards;
 
     let finalAmount = fromMicroValue(amount);
-    return finalAmount;
+    if (isNaN(finalAmount)) {
+        return 0;
+    } else {
+        return finalAmount;
+    }
 }
 
 // Calculates how much share of the current rewards pool the user has
