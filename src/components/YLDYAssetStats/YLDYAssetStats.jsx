@@ -5,19 +5,11 @@ import {
     Col,
     Form
 } from 'react-bootstrap';
-import { 
-    formatNumber, 
-    fromMicroFormatNumber,
-    getBestGraphHeight
-} from '../../js/utility';
 import { constants } from "../../js/consts";
 import { getApplicationData } from '../../js/FirebaseAPI';
 
-import YLDY_ICON from "../../svg/yldy-icon.svg";
-import ALGO_ICON from "../../svg/algo-icon.svg";
-
-import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 import TopStakers from './TopStakers';
+import PoolStatistics from '../PoolStatistics/PoolStatistics';
 
 const DATA_ENTRIES_ONE_DAY = 6;
 
@@ -27,39 +19,6 @@ function calcDifference (initial, final) {
 
 function calcPercentDiff(initial, final) {
     return 100 * ((final - initial) / Math.abs(initial));
-}
-
-function IndividualStatistic (props) {
-    return (
-        <div className={`text-center ${props.className ? props.className : ""}`}>
-            <p className="lead">
-                { props.title }
-            </p>
-            <h1>
-                {
-                    props.icon && (
-                        <img
-                            src={ props.icon }
-                            height="25"
-                            width="25"
-                            alt="YLDY"
-                            className="mx-2"
-                            />
-                    )
-                }
-                {
-                    formatNumber( props.value )
-                }
-            </h1>
-            {
-                props.footerText && (
-                    <p className="small text-muted">
-                        { props.footerText }
-                    </p>
-                )
-            }
-        </div>
-    );
 }
 
 class YLDYAssetStats extends Component {
@@ -78,7 +37,9 @@ class YLDYAssetStats extends Component {
             nllDifference: null,
             yldyDifference: null,
 
-            tableLimit: null,
+
+            algoLineColor: "#6cdef9",
+            yldyLineColor: "rgba(254, 215, 56, 1)",
         };
 
         this.refreshNLLData = this.refreshNLLData.bind(this);
@@ -193,168 +154,58 @@ class YLDYAssetStats extends Component {
                 <div className="bg-dark border-top border-info py-3" />
 
                 <Container>
-                    <div className="py-3">
-                        <Row className="py-3">
-                            <Col lg="4">
-                                <h2 className="yldy-title">No Loss Lottery</h2>
-                                <IndividualStatistic
-                                    className="my-4"
-                                    title={ `ALGO (tickets) deposited in last ${this.state.dbWeekLimit / DATA_ENTRIES_ONE_DAY} days` }
-                                    value={ 
-                                        this.state.nllDifference
-                                        ?
-                                        fromMicroFormatNumber(this.state.nllDifference?.amount, 0) 
-                                        :
-                                        "0"
-                                    }
-                                    icon={ ALGO_ICON }
-                                    />
-                                <IndividualStatistic
-                                    className="my-4"
-                                    title={ `Growth (%) in last ${this.state.dbWeekLimit / DATA_ENTRIES_ONE_DAY} days` }
-                                    value={    
-                                        this.state.nllDifference 
-                                        ?
-                                        this.state.nllDifference?.percent.toFixed(3) + "%" 
-                                        :
-                                        "0"
-                                    }
-                                    footerText={ 
-                                        this.state.nllDifference
-                                        ?
-                                        `${ fromMicroFormatNumber( this.state.nllDifference?.first, 0 ) } ALGO -> ${ fromMicroFormatNumber( this.state.nllDifference?.last, 0 ) } ALGO` 
-                                        :
-                                        ""
-                                    }
-                                    />
-                                
-                            </Col>
-                            <Col lg="8">
-                                <AppStateHistoryGraph
-                                    applicationID={ constants.NO_LOSS_LOTTERY_APP_ID }
-                                    dataKey="GA"
-                                    valueType="ALGO"
-                                    xAxisLabel="Date/Time of Record"
-                                    yAxisLabel="Amount of ALGO"
-                                    dataTitle="Total ALGO entered into NLL by everybody (GA)"
-                                    lineColor="#6cdef9"
-                                    lineHandleColor="grey"
-                                    graphHeight={ getBestGraphHeight() }
-                                    allowCustomTimePeriods={ true }
-                                    dataLimit={ this.state.dbWeekLimit }
-                                    />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <AppStateHistoryGraph
-                                    applicationID={ constants.NO_LOSS_LOTTERY_APP_ID }
-                                    dataKey="TYUL"
-                                    valueType="YLDY"
-                                    sectionTitle="Global Rewards History"
-                                    sectionShortDesc="History of the global unlock rewards for the No Loss Lottery."
-                                    xAxisLabel="Date/Time of Record"
-                                    yAxisLabel="Amount of YLDY"
-                                    dataTitle="YLDY in Global Unlock Rewards (TYUL)"
-                                    graphHeight={ getBestGraphHeight() }
-                                    displayAverage
-                                    displayDataKeyDesc
-                                    dataLimit={ this.state.dbWeekLimit }
-                                    />
-                            </Col>
-                        </Row>
-                    </div>
+                    <PoolStatistics
+                        appID={ constants.NO_LOSS_LOTTERY_APP_ID }
+                        stakeConfig={
+                            [
+                                {
+                                    unit: "ALGO",
+                                    key: "GA",
+                                    lineColor: this.state.algoLineColor,
+                                }
+                            ]
+                        }
+                        rewardsConfig={
+                            [
+                                {
+                                    unit: "YLDY",
+                                    key: "TYUL",
+                                    lineColor: this.state.yldyLineColor,
+                                }
+                            ]
+                        }
+                        />
                 </Container>
 
                 <div className="border-top border-primary" />
 
                 <Container className="py-5">
-                    <div>
-                        <Row className="py-3">
-                            <Col lg="4">
-                                <h2 className="yldy-title">YLDY Staking</h2>
-                                <IndividualStatistic 
-                                    className="my-4"
-                                    title={ `YLDY staked in last ${this.state.dbWeekLimit / DATA_ENTRIES_ONE_DAY} days` }
-                                    value={ 
-                                        this.state.yldyDifference
-                                        ?
-                                        fromMicroFormatNumber(this.state.yldyDifference?.amount, 0) 
-                                        :
-                                        "0"
-                                    }
-                                    icon={ YLDY_ICON }
-                                    />
-                                <IndividualStatistic
-                                    className="my-4" 
-                                    title={ `Growth (%) in last ${this.state.dbWeekLimit / DATA_ENTRIES_ONE_DAY} days` }
-                                    value={ 
-                                        this.state.yldyDifference
-                                        ?
-                                        this.state.yldyDifference?.percent.toFixed(3) + "%"
-                                        :
-                                        "0"
-                                    }
-                                    footerText={ 
-                                        this.state.yldyDifference
-                                        ?
-                                        `${ fromMicroFormatNumber(this.state.yldyDifference?.first, 0) }  YLDY -> ${ fromMicroFormatNumber(this.state.yldyDifference?.last, 0) } YLDY` 
-                                        :
-                                        ""
-                                    }
-                                    />
-                            </Col>
-                            <Col lg="8">
-                                <AppStateHistoryGraph
-                                    applicationID={ constants.YLDY_STAKING_APP_ID }
-                                    dataKey="GA"
-                                    valueType="YLDY"
-                                    xAxisLabel="Date/Time of Record"
-                                    yAxisLabel="Amount of YLDY"
-                                    dataTitle="Total YLDY being staked by everybody (GA)"
-                                    graphHeight={ getBestGraphHeight() }
-                                    dataLimit={ this.state.dbWeekLimit }
-                                    />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col>
-                                <AppStateHistoryGraph
-                                    applicationID={constants.YLDY_STAKING_APP_ID}
-                                    dataKey="TAP"
-                                    valueType="ALGO"
-                                    sectionTitle="ALGO Global Rewards History"
-                                    sectionShortDesc="History of ALGO as a global reward in YLDY Staking."
-                                    xAxisLabel="Date/Time of Record"
-                                    yAxisLabel="Amount of ALGO"
-                                    dataTitle="ALGO in Global Unlock Rewards (TAP)"
-                                    decimalPrecision={2}
-                                    lineColor="#6cdef9"
-                                    lineHandleColor="grey"
-                                    displayAverage
-                                    displayDataKeyDesc
-                                    graphHeight={ getBestGraphHeight() }
-                                    dataLimit={ this.state.dbWeekLimit }
-                                />
-                            </Col>
-                            <Col>
-                                <AppStateHistoryGraph
-                                    applicationID={constants.YLDY_STAKING_APP_ID}
-                                    dataKey="TYUL"
-                                    valueType="YLDY"
-                                    sectionTitle="YLDY Global Rewards History"
-                                    sectionShortDesc="History of YLDY as a global reward in YLDY Staking."
-                                    xAxisLabel="Date/Time of Record"
-                                    yAxisLabel="Amount of YLDY"
-                                    dataTitle="YLDY in Global Unlock Rewards (TYUL)"
-                                    displayAverage
-                                    displayDataKeyDesc
-                                    graphHeight={ getBestGraphHeight() }
-                                    dataLimit={ this.state.dbWeekLimit }
-                                />
-                            </Col>
-                        </Row>
-                    </div>
+                    <PoolStatistics
+                        appID={ constants.YLDY_STAKING_APP_ID }
+                        stakeConfig={
+                            [
+                                {
+                                    unit: "YLDY",
+                                    key: "GA",
+                                    lineColor: this.state.yldyLineColor,
+                                }
+                            ]
+                        }
+                        rewardsConfig={
+                            [
+                                {
+                                    unit: "ALGO",
+                                    key: "TAP",
+                                    lineColor: this.state.algoLineColor,
+                                },
+                                {
+                                    unit: "YLDY",
+                                    key: "TYUL",
+                                    lineColor: this.state.yldyLineColor,
+                                }
+                            ]
+                        }
+                        />
                 </ Container>
 
                 {/* Divider */}

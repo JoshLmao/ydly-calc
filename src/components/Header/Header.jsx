@@ -58,12 +58,13 @@ class Header extends Component {
                                     {
                                         text: "OPUL Staking",
                                         variant: "secondary",
-                                        to: "/opul-staking"
+                                        to: "/yldy-opul-staking"
                                     }
                                 ].map((info, index) => {
                                     if (info.href) {
                                         return (
                                             <a 
+                                                key={`pool-${index}`}
                                                 className="nav-link ml-lg-2" 
                                                 href={ info.href }>
                                                 <Button 
@@ -76,6 +77,7 @@ class Header extends Component {
                                     } else if (info.to) {
                                         return (
                                             <Link 
+                                                key={`pool-${index}`}
                                                 className="nav-link ml-lg-2" 
                                                 to={ info.to }>
                                                 <Button 
@@ -90,10 +92,18 @@ class Header extends Component {
                                 })
                             }
                             <a className="nav-link ml-lg-2" href="/yldy-stats">
-                                <Button variant="outline-light" className="font-weight-bold">Yieldly Statistics</Button>
+                                <Button 
+                                    variant="outline-light" 
+                                    className="font-weight-bold">
+                                    Yieldly Statistics
+                                </Button>
                             </a>
                             <a className="nav-link ml-lg-2" href="/stake-claim-stats">
-                                <Button variant="outline-light" className="font-weight-bold">Stake/Claim Statistics</Button>
+                                <Button 
+                                    variant="outline-light" 
+                                    className="font-weight-bold">
+                                    Stake/Claim Statistics
+                                </Button>
                             </a>
                             
                             {/* Invis Margin separator */}

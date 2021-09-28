@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
+import { DateTime } from "luxon";
 
-import { formatNumber, fromMicroValue, getDayDifference, isStringBlank, toMicroValue, unitToIcon } from '../../js/utility';
+import { convertFromMicroValue, formatNumber, fromMicroValue, getDayDifference, isStringBlank, toMicroValue, unitToIcon } from '../../js/utility';
 import { calculateRewardsPoolPercentageShare, calculateYLDYRewardsFromDayPeriod } from '../../js/YLDYCalculation';
 import {
     getContractValues,
@@ -152,7 +153,7 @@ class StakePoolCalculator extends Component {
             this.setState({
                 fetchingUserVars: true,
             });
-            console.log("Retrieving NLL user state vars...");
+            //console.log("Retrieving NLL user state vars...");
 
             // Get user state values on algo address
             let allKeys = this.state.userKeysConfig.map((info) => {
@@ -160,7 +161,7 @@ class StakePoolCalculator extends Component {
             });
             getUserStateValues(this.state.userAddress, this.state.stakePoolID, allKeys, (userAppValues) => {
                 if (userAppValues) {
-                    console.log(`Successfully got user variables from application '${this.state.stakePoolID}' on address '${this.state.userAddress}'`);
+                    //console.log(`Successfully got user variables from application '${this.state.stakePoolID}' on address '${this.state.userAddress}'`);
                     this.setState({
                         userValues: userAppValues,
                         daysPeriod: getDayDifference( userAppValues["UT"], this.state.applicationValues["GT"] ),
@@ -192,7 +193,7 @@ class StakePoolCalculator extends Component {
     updateResults() {
         // Check required variables are valid
         if (this.state.daysPeriod && this.state.stakedAmount > -1 && this.state.applicationValues) {
-            console.log(`Amount: ${this.state.stakedAmount} | Period: ${this.state.daysPeriod}`);
+            //console.log(`Amount: ${this.state.stakedAmount} | Period: ${this.state.daysPeriod}`);
 
             // Get USS if available, convert amount to microValue
             let uss = this.state.user?.stakingShares ?? 0;
@@ -239,9 +240,10 @@ class StakePoolCalculator extends Component {
                             className={`p-3 p-md-5 my-3 bg-dark border-${this.state.variant} glow-${this.state.variant}` }
                             >
                             {
-                                this.state.totalClaimableRewards && this.state.totalClaimableRewards.map((claimableInfo) => {
+                                this.state.totalClaimableRewards && this.state.totalClaimableRewards.map((claimableInfo, index) => {
                                     return (
-                                        <>
+                                        <div
+                                            key={`total-claimable-${index}`}>
                                             <p className="lead font-weight-bold">
                                                 <img
                                                     className="my-auto mr-2"
@@ -259,7 +261,7 @@ class StakePoolCalculator extends Component {
                                                     claimableInfo.claimable.toFixed(2)
                                                 }
                                             </p>
-                                        </>
+                                        </div>
                                     );
                                 })
                             }
@@ -271,13 +273,15 @@ class StakePoolCalculator extends Component {
                                 {
                                     this.state.applicationValues && this.state.stakingPoolRewardKeys.map((info, index) => {
                                         return (
-                                            <>
+                                            <b
+                                                key={ `app-val-${index}` }
+                                                >
                                             '{
                                                 formatNumber(
-                                                    (this.state.applicationValues[info.key] / 1000).toFixed(0)
+                                                    fromMicroValue( this.state.applicationValues[info.key] ).toFixed(0)
                                                 )
                                             }'
-                                            { info.unit }
+                                            { " " + info.unit }
                                             {
                                                 index < this.state.stakingPoolRewardKeys.length - 1 && (
                                                     <>
@@ -285,7 +289,7 @@ class StakePoolCalculator extends Component {
                                                     </>
                                                 )
                                             }
-                                            </>
+                                            </b>
                                         )
                                     })
                                 }
@@ -412,7 +416,7 @@ class StakePoolCalculator extends Component {
                                                     appValue && keyConfig.type ===  "time" && (
                                                         <>
                                                             {
-                                                                new Date(appValue * 1000).toDateString() 
+                                                                DateTime.fromSeconds(appValue).toLocaleString(DateTime.DATETIME_SHORT)
                                                             }
                                                         </>
                                                     )
@@ -429,6 +433,13 @@ class StakePoolCalculator extends Component {
                                                                 alt="Currency icon for key"
                                                             />
                                                             {
+                                                                // If needs to be by specific decimal amount
+                                                                keyConfig.decimals
+                                                                ?
+                                                                formatNumber(
+                                                                    convertFromMicroValue(appValue, keyConfig.decimals).toFixed(0)
+                                                                )
+                                                                :
                                                                 formatNumber(
                                                                     fromMicroValue(appValue).toFixed(0)
                                                                 )

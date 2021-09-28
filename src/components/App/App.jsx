@@ -3,6 +3,7 @@ import {
     BrowserRouter,
     Route,
     Switch,
+    Redirect
 } from 'react-router-dom';
 import { initFirebase } from '../../js/FirebaseAPI';
 
@@ -31,11 +32,15 @@ class App extends Component {
                     {/* Homepage */}
                     <Route exact path="/" component={Home} />
 
-                    {/* OPUL Staking Calc */}
-                    <Route exact path="/opul-staking" component={ OpulStaking } />
+                    {/* YLDY/OPUL Staking pool */}
+                    <Route exact path="/yldy-opul-staking" component={ OpulStaking } />
+                    
+                    {/* Redirect route from old url */}
+                    <Redirect from="/opul-staking" to="/yldy-opul-staking" />
 
                     <Route exact path="/yldy-stats" component={YLDYAssetStats} />
                     <Route exact path="/stake-claim-stats" component={StakeClaimStats} />
+                    
                     <Route component={FourOhFour} />
                 </Switch>
                 
