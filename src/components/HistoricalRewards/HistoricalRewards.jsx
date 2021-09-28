@@ -256,7 +256,6 @@ class HistoricalRewards extends Component {
                                 </Form.Label>
                                 <Form.Control
                                     as="select"
-                                    defaultValue="7"
                                     size="lg"
                                     defaultValue={ this.state.fbDataDayLimit }
                                     placeholder="Week value here"
