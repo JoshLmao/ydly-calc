@@ -274,10 +274,10 @@ class StakePoolCalculator extends Component {
                                             <>
                                             '{
                                                 formatNumber(
-                                                    (this.state.applicationValues[info.key] / 1000).toFixed(0)
+                                                    fromMicroValue( this.state.applicationValues[info.key] ).toFixed(0)
                                                 )
                                             }'
-                                            { info.unit }
+                                            { " " + info.unit }
                                             {
                                                 index < this.state.stakingPoolRewardKeys.length - 1 && (
                                                     <>
