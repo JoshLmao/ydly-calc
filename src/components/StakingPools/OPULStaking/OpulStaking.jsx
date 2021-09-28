@@ -22,7 +22,7 @@ class OpulStaking extends Component {
                 {
                     key: "GSS",
                     type: "number",
-                    title: "Global Staking Shares (GSS)",
+                    title: "Global Staking Shares (GSS)"
                 },
                 {
                     // Total amount staked
@@ -49,7 +49,7 @@ class OpulStaking extends Component {
                 <Container>
                     <h1
                         className="display-4 font-weight-bold text-center my-4 opul-title-shadowed">
-                        OPUL Staking
+                        YLDY to OPUL Staking
                     </h1>
                     <p className="small text-center">
                         application address:{" "}

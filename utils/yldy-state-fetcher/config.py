@@ -6,7 +6,7 @@ nllApplicationID = 233725844
 # YLDY Staking ID
 yldyStakingApplicationID = 233725850
 # OPUL Staking ID
-opulStakingAppID = 0
+opulStakingAppID = 348079765
 
 # Dictionary of all application id's and their global state keys
 # to retrieve every X hours
@@ -21,8 +21,8 @@ APP_ID_STATE_KEYS_DICT = {
     ],
     # Opul state keys to track
     opulStakingAppID: [
-        
-    ]
+        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+    ],
 }
 
 # Pyrebase config

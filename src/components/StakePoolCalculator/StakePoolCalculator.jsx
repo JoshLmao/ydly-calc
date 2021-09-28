@@ -110,7 +110,7 @@ class StakePoolCalculator extends Component {
 
     onStakedAmountChanged(e) {
         this.setState({
-                stakedAmount: e.target.value,
+                stakedAmount: e.target.value < 0 ? 0 : e.target.value,
             },
             () => {
                 this.updateResults();
