@@ -258,7 +258,7 @@ class HistoricalRewards extends Component {
                                     as="select"
                                     defaultValue="7"
                                     size="lg"
-                                    value={this.state.fbDataDayLimit}
+                                    defaultValue={ this.state.fbDataDayLimit }
                                     placeholder="Week value here"
                                     onChange={(e) => this.setState({
                                         fbDataDayLimit: e.target.value,

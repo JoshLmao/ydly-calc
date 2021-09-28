@@ -123,7 +123,9 @@ class PoolStatistics extends Component {
                     {
                         this.state.stakeConfig && this.state.stakeConfig.length > 0 && this.state.stakeConfig.map((config, index) => {
                             return (
-                                <Row className="py-3">
+                                <Row 
+                                    className="py-3"
+                                    key={`stake-conf-${index}`}>
                                     <Col lg="4">
                                         <IndividualStatistic
                                             className="my-4"
@@ -180,7 +182,8 @@ class PoolStatistics extends Component {
                     {
                         this.state.rewardsConfig && this.state.rewardsConfig.length > 0 && this.state.rewardsConfig.map((config, index) => {
                             return (
-                                <Col>
+                                <Col
+                                    key={`reward-${index}`}>
                                     <AppStateHistoryGraph
                                         applicationID={ this.state.appID }
                                         dataKey={ config.key }

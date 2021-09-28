@@ -64,6 +64,7 @@ class Header extends Component {
                                     if (info.href) {
                                         return (
                                             <a 
+                                                key={`pool-${index}`}
                                                 className="nav-link ml-lg-2" 
                                                 href={ info.href }>
                                                 <Button 
@@ -76,6 +77,7 @@ class Header extends Component {
                                     } else if (info.to) {
                                         return (
                                             <Link 
+                                                key={`pool-${index}`}
                                                 className="nav-link ml-lg-2" 
                                                 to={ info.to }>
                                                 <Button 

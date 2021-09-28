@@ -240,9 +240,10 @@ class StakePoolCalculator extends Component {
                             className={`p-3 p-md-5 my-3 bg-dark border-${this.state.variant} glow-${this.state.variant}` }
                             >
                             {
-                                this.state.totalClaimableRewards && this.state.totalClaimableRewards.map((claimableInfo) => {
+                                this.state.totalClaimableRewards && this.state.totalClaimableRewards.map((claimableInfo, index) => {
                                     return (
-                                        <>
+                                        <div
+                                            key={`total-claimable-${index}`}>
                                             <p className="lead font-weight-bold">
                                                 <img
                                                     className="my-auto mr-2"
@@ -260,7 +261,7 @@ class StakePoolCalculator extends Component {
                                                     claimableInfo.claimable.toFixed(2)
                                                 }
                                             </p>
-                                        </>
+                                        </div>
                                     );
                                 })
                             }
@@ -272,7 +273,9 @@ class StakePoolCalculator extends Component {
                                 {
                                     this.state.applicationValues && this.state.stakingPoolRewardKeys.map((info, index) => {
                                         return (
-                                            <>
+                                            <b
+                                                key={ `app-val-${index}` }
+                                                >
                                             '{
                                                 formatNumber(
                                                     fromMicroValue( this.state.applicationValues[info.key] ).toFixed(0)
@@ -286,7 +289,7 @@ class StakePoolCalculator extends Component {
                                                     </>
                                                 )
                                             }
-                                            </>
+                                            </b>
                                         )
                                     })
                                 }
