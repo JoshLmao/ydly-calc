@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Container } from 'react-bootstrap';
 import { constants } from '../../../js/consts';
 import HistoricalRewards from '../../HistoricalRewards';
+import PoolStatistics from '../../PoolStatistics/PoolStatistics';
 import StakePoolCalculator from '../../StakePoolCalculator/StakePoolCalculator';
 
 class OpulStaking extends Component {
@@ -35,10 +36,13 @@ class OpulStaking extends Component {
                     key: "TYUL",
                     type: "currency",
                     unit: "OPUL",
-                    title: "Total Available in Pool (TYUL)",
+                    title: "Total Available in Pool (TYL)",
+                    decimals: 10,
                     isRewardKey: true,
                 },
             ],
+
+            opulLineColor: "#ff5400",
         };
     }
 
@@ -49,13 +53,13 @@ class OpulStaking extends Component {
                 <Container>
                     <h1
                         className="display-4 font-weight-bold text-center my-4 opul-title-shadowed">
-                        YLDY to OPUL Staking
+                        YLDY/OPUL Staking
                     </h1>
                     <p className="small text-center">
                         application address:{" "}
                         <a
                             href={
-                            "https://algoexplorer.io/application/" +
+                        "https://algoexplorer.io/application/" +
                             this.state.opulStakingAppID
                             }
                             target="_blank"
@@ -76,6 +80,8 @@ class OpulStaking extends Component {
                         />
                 </Container>
 
+                <div className="border-opul border-top mt-5 pb-5" />
+
                 <Container>
                     <HistoricalRewards
                         appID={ this.state.opulStakingAppID }
@@ -88,6 +94,34 @@ class OpulStaking extends Component {
                         ]}
                         stakeToken="YLDY"
                         claimTokens={ [ "OPUL" ] }
+                        />
+                </Container>
+
+                <div className="border-opul border-top mt-5 pb-5" />
+
+                <Container
+                    className="py-3">
+                    <PoolStatistics
+                        title="YLDY/OPUL Pool Statistics"
+                        appID={ this.state.opulStakingAppID }
+                        stakeConfig={
+                            [
+                                {
+                                    unit: "YLDY",
+                                    key: "GA"
+                                }
+                            ]
+                        }
+                        rewardsConfig={
+                            [
+                                {
+                                    unit: "OPUL",
+                                    key: "TYUL",
+                                    decimals: 10,
+                                    lineColor: this.state.opulLineColor
+                                }
+                            ]
+                        }
                         />
                 </Container>
             </div>

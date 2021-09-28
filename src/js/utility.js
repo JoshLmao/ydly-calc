@@ -19,6 +19,16 @@ export function toMicroValue(val) {
     return val * 1000000; // 10 ^6
 }
 
+// Converts from a micro value with a specific amount of decimals
+export function convertFromMicroValue(val, decimals) {
+    let dec = 1;
+    for (let i = 0; i < decimals; i++) {
+        dec = dec * 10;
+    }
+
+    return val / dec;
+}
+
 // Converts a time period into UNIX
 export function daysToUnix (days) {
     if (days <= 0)
@@ -183,7 +193,7 @@ export function getBestGraphHeight() {
         return 250;
     }
     else {
-        return 350;
+        return 300;
     }
 }
 

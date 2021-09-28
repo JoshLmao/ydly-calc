@@ -6,7 +6,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import firebase from "firebase/app";
 import "firebase/database";
 
-import { fromMicroValue } from '../../js/utility';
+import { convertFromMicroValue } from '../../js/utility';
 import { calculateAverage } from '../../js/YLDYCalculation';
 import { getApplicationData, isFirebaseInitialized } from '../../js/FirebaseAPI';
 
@@ -24,6 +24,8 @@ class AppStateHistoryGraph extends Component {
 
             // Amount of decimal precision to use on the data values
             decimalPrecision: props.decimalPrecision ?? 0,
+            // Amount of decimals to divide original number by before formatting
+            decimals: props.decimals ?? 6,
 
             // Target firebase key to use and show values for
             // firebaseDB/{applicationID}/{dataKey}
@@ -48,8 +50,6 @@ class AppStateHistoryGraph extends Component {
             lineColor: props.lineColor ?? 'rgba(254, 215, 56, 1)',
             // Prefix of the values in the data (YLDY/ALGO/etc)
             valueType: props.valueType,
-            // If t
-            displayDataKeyDesc: props.displayDataKeyDesc,
 
             // Data gained from Firebase
             firebaseData: null,
@@ -107,7 +107,7 @@ class AppStateHistoryGraph extends Component {
                     let date = new Date(parseInt(epochTimeKey));
 
                     // Append data value
-                    let dataValue = fromMicroValue(data[epochTimeKey][this.state.dataKey]).toFixed(this.state.decimalPrecision);
+                    let dataValue = convertFromMicroValue(data[epochTimeKey][this.state.dataKey], this.state.decimals).toFixed(this.state.decimalPrecision);
                     graphData.push({
                         x: date.toISOString(),
                         y: dataValue,
@@ -157,12 +157,6 @@ class AppStateHistoryGraph extends Component {
                         this.state.sectionShortDesc && (
                             <div>
                                 { this.state.sectionShortDesc }
-
-                                {
-                                    this.state.displayDataKeyDesc && (
-                                        ` This plots the '${this.state.dataKey}' value in the application's global state over time.`
-                                    )
-                                }
                             </div>
                         )
                     }
