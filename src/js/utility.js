@@ -26,6 +26,15 @@ export function convertFromMicroValue(val, decimals) {
         dec = dec * 10;
     }
 
+    return val * dec;
+}
+
+export function convertToMicroValue(val, decimals) {
+    let dec = 1;
+    for (let i = 0; i < decimals; i++) {
+        dec = dec * 10;
+    }
+
     return val / dec;
 }
 

@@ -52,11 +52,10 @@ export function calculateYLDYRewardsFromDayPeriod(usrStakingShares, daysPeriod, 
     let microUsrAmount = usrStakingShares + (daysPeriod * usrAmount);
     let amount = (microUsrAmount / globalStakingShares) * totalYldyUnlockRewards;
 
-    let finalAmount = fromMicroValue(amount);
-    if (isNaN(finalAmount)) {
+    if (isNaN(amount)) {
         return 0;
     } else {
-        return finalAmount;
+        return amount;
     }
 }
 

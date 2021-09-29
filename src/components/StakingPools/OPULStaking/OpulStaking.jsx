@@ -89,6 +89,7 @@ class OpulStaking extends Component {
                             {
                                 key: "TYUL",
                                 unit: "OPUL",
+                                decimals: 10,
                                 lineColor: "#ff5400",
                             }
                         ]}

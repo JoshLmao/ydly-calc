@@ -6,7 +6,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import firebase from "firebase/app";
 import "firebase/database";
 
-import { convertFromMicroValue } from '../../js/utility';
+import { convertFromMicroValue, convertToMicroValue } from '../../js/utility';
 import { calculateAverage } from '../../js/YLDYCalculation';
 import { getApplicationData, isFirebaseInitialized } from '../../js/FirebaseAPI';
 
@@ -107,7 +107,7 @@ class AppStateHistoryGraph extends Component {
                     let date = new Date(parseInt(epochTimeKey));
 
                     // Append data value
-                    let dataValue = convertFromMicroValue(data[epochTimeKey][this.state.dataKey], this.state.decimals).toFixed(this.state.decimalPrecision);
+                    let dataValue = convertToMicroValue(data[epochTimeKey][this.state.dataKey], this.state.decimals).toFixed(this.state.decimalPrecision);
                     graphData.push({
                         x: date.toISOString(),
                         y: dataValue,
