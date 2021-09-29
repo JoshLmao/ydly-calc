@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
 import { DateTime } from "luxon";
 
-import { convertFromMicroValue, convertToMicroValue, formatNumber, fromMicroValue, getDayDifference, isStringBlank, toMicroValue, unitToIcon } from '../../js/utility';
+import { convertToMicroValue, formatNumber, fromMicroValue, getDayDifference, isStringBlank, toMicroValue, unitToIcon } from '../../js/utility';
 import { calculateRewardsPoolPercentageShare, calculateYLDYRewardsFromDayPeriod } from '../../js/YLDYCalculation';
 import {
     getContractValues,
