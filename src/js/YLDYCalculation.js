@@ -1,8 +1,4 @@
 
-// Calculates the global staking shares
-
-import { fromMicroValue } from "./utility";
-
 // Global Staking Shares = ((Current Block Timestamp – Global Time) / Time Period) * Global Amount. 
 export function calculateGlobalStakingShares (currentBlockTimestamp, globalTime, timePeriodUnix, globalAmount) {
     let time = currentBlockTimestamp - globalTime;

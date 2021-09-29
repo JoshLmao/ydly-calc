@@ -6,7 +6,7 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import firebase from "firebase/app";
 import "firebase/database";
 
-import { convertFromMicroValue, convertToMicroValue } from '../../js/utility';
+import { convertToMicroValue } from '../../js/utility';
 import { calculateAverage } from '../../js/YLDYCalculation';
 import { getApplicationData, isFirebaseInitialized } from '../../js/FirebaseAPI';
 
