@@ -284,7 +284,7 @@ class StakePoolCalculator extends Component {
                                                 >
                                             '{
                                                 formatNumber(
-                                                    fromMicroValue( this.state.applicationValues[info.key] ).toFixed(0)
+                                                    convertToMicroValue( this.state.applicationValues[info.key], info.decimals ?? 6 ).toFixed(0)
                                                 )
                                             }'
                                             { " " + info.unit }

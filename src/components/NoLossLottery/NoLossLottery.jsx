@@ -294,7 +294,7 @@ class NoLossLottery extends Component {
                                     this.state.global
                                     ? 
                                     formatNumber(
-                                        (this.state.global.totalYldyRewards / 1000).toFixed(0)
+                                        fromMicroValue( this.state.global.totalYldyRewards ).toFixed(0)
                                     )
                                     : 
                                     "?"
