@@ -127,6 +127,7 @@ class Home extends Component {
                                             key: "TYUL",
                                             unit: "YLDY",
                                             lineColor: "orange",
+                                            decimals: 6,
                                         }
                                     ]}
                                     stakeToken="ALGO"

@@ -123,12 +123,14 @@ class YLDYStaking extends Component {
                                 key: "TYUL",
                                 unit: "YLDY",
                                 lineColor: "orange",
+                                decimals: 6,
                             },
                             {
                                 key: "TAP",
                                 unit: "ALGO",
                                 lineColor: "#6CDEF9",
                                 stepped: true,
+                                decimals: 6,
                             }
                         ]}
                         stakeToken="YLDY"

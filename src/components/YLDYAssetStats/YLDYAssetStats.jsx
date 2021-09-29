@@ -188,6 +188,7 @@ class YLDYAssetStats extends Component {
                                     unit: "YLDY",
                                     key: "GA",
                                     lineColor: this.state.yldyLineColor,
+                                    decimals: 6,
                                 }
                             ]
                         }
