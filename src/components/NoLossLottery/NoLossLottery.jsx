@@ -15,6 +15,7 @@ import {
   formatNumber,
   isStringBlank,
   getDayDifference,
+  convertToMicroValue,
 } from "../../js/utility";
 
 import YLDY_ICON from "../../svg/yldy-icon.svg";
@@ -217,6 +218,9 @@ class NoLossLottery extends Component {
                     this.state.global.stakingShares,
                     this.state.global.totalYldyRewards
                 );
+
+                totalRewards = convertToMicroValue(totalRewards,  6);
+
                 // Update value
                 this.setState({ totalClaimableRewards: totalRewards });
             } else {
