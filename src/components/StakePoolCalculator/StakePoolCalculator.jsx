@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
 import { DateTime } from "luxon";
 
-import { convertFromMicroValue, formatNumber, fromMicroValue, getDayDifference, isStringBlank, toMicroValue, unitToIcon } from '../../js/utility';
+import { convertFromMicroValue, convertToMicroValue, formatNumber, fromMicroValue, getDayDifference, isStringBlank, toMicroValue, unitToIcon } from '../../js/utility';
 import { calculateRewardsPoolPercentageShare, calculateYLDYRewardsFromDayPeriod } from '../../js/YLDYCalculation';
 import {
     getContractValues,
@@ -197,17 +197,23 @@ class StakePoolCalculator extends Component {
 
             // Get USS if available, convert amount to microValue
             let uss = this.state.user?.stakingShares ?? 0;
-            let uStakedAmount = toMicroValue(this.state.stakedAmount);
+            let stakedAmount = this.state.stakedAmount;
+            stakedAmount = toMicroValue(stakedAmount);
 
             let allClaimableRewards = [];
             for (let rewardInfo of this.state.stakingPoolRewardKeys) {
+
                 let claimable = calculateYLDYRewardsFromDayPeriod(
                     uss,
                     this.state.daysPeriod,
-                    uStakedAmount,
+                    stakedAmount,
                     this.state.applicationValues["GSS"],
                     this.state.applicationValues[rewardInfo.key],
                 );
+
+                if (rewardInfo.decimals) {
+                    claimable = convertToMicroValue(claimable, rewardInfo.decimals);
+                }
 
                 allClaimableRewards.push({
                     key: rewardInfo.key,
@@ -437,7 +443,7 @@ class StakePoolCalculator extends Component {
                                                                 keyConfig.decimals
                                                                 ?
                                                                 formatNumber(
-                                                                    convertFromMicroValue(appValue, keyConfig.decimals).toFixed(0)
+                                                                    convertToMicroValue(appValue, keyConfig.decimals).toFixed(0)
                                                                 )
                                                                 :
                                                                 formatNumber(

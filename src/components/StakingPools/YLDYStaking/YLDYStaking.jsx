@@ -37,6 +37,7 @@ class YLDYStaking extends Component {
                     unit: "YLDY",
                     title: "Total YLDY Available in Pool (TYUL)",
                     isRewardKey: true,
+                    decimals: 6,
                 },
                 {
                     // Reward Algo
@@ -45,6 +46,7 @@ class YLDYStaking extends Component {
                     unit: "ALGO",
                     title: "Total ALGO Available in Pool (TYUL)",
                     isRewardKey: true,
+                    decimals: 6,
                 },
             ],
             // Config for application keys to get from user's app info

@@ -6,7 +6,7 @@ import { Line } from "react-chartjs-2";
 
 import { constants } from "../../js/consts";
 import { getApplicationData } from '../../js/FirebaseAPI';
-import { appIDToName, convertFromMicroValue, getBestGraphHeight, toMicroValue, unitToIcon } from '../../js/utility';
+import { appIDToName, convertFromMicroValue, convertToMicroValue, getBestGraphHeight, toMicroValue, unitToIcon } from '../../js/utility';
 import { calculateYLDYRewardsFromDayPeriod } from '../../js/YLDYCalculation';
 
 class HistoricalRewards extends Component {
@@ -92,10 +92,6 @@ class HistoricalRewards extends Component {
                     let rewardValue = globalStateInfo[config.key];
                     // if key is stored and valid...
                     if (rewardValue) {
-                        
-                        if (config.decimals) {
-                            rewardValue = convertFromMicroValue(rewardValue, config.decimals);
-                        }
 
                         let claimableAmount = calculateYLDYRewardsFromDayPeriod(
                             0,
@@ -104,6 +100,11 @@ class HistoricalRewards extends Component {
                             globalStateInfo.GSS,
                             rewardValue
                         );
+
+                        if (config.decimals) {
+                            claimableAmount = convertToMicroValue(claimableAmount, config.decimals);
+                        }
+                        
                         claimableRewardsData[config.key].push({
                             x: dt.toISOString(),
                             y: claimableAmount,
