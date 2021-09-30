@@ -4,6 +4,7 @@ import { constants } from '../../../js/consts';
 import HistoricalRewards from '../../HistoricalRewards';
 import PoolStatistics from '../../PoolStatistics/PoolStatistics';
 import StakePoolCalculator from '../../StakePoolCalculator/StakePoolCalculator';
+import StakePoolJumbo from '../../StakePoolJumbo/StakePoolJumbo';
 
 class OpulStaking extends Component {
     constructor(props) {
@@ -30,13 +31,13 @@ class OpulStaking extends Component {
                     key: "GA",
                     unit: "YLDY",
                     type: "currency",
-                    title: "Total Staked (GA)",
+                    title: "Total YLDY Staked (GA)",
                 },
                 {
                     key: "TYUL",
                     type: "currency",
                     unit: "OPUL",
-                    title: "Total Available in Pool (TYL)",
+                    title: "Total Available in Pool (TYUL)",
                     decimals: 10,
                     isRewardKey: true,
                 },
@@ -51,24 +52,14 @@ class OpulStaking extends Component {
             <div
                 className="bg-dark py-5 text-white">
                 <Container>
-                    <h1
-                        className="display-4 font-weight-bold text-center my-4 opul-title-shadowed">
-                        YLDY/OPUL Staking
-                    </h1>
-                    <p className="small text-center">
-                        application address:{" "}
-                        <a
-                            href={
-                        "https://algoexplorer.io/application/" +
-                            this.state.opulStakingAppID
-                            }
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-opul font-weight-bold">
-                            { this.state.opulStakingAppID }
-                        </a>
-                    </p>
+                    <StakePoolJumbo
+                        appID={ this.state.opulStakingAppID }
+                        title="YLDY/OPUL Staking"
+                        unitVariant="opul"
+                        />
                 </Container>
+
+                
 
                 <Container>
                     <StakePoolCalculator
