@@ -3,7 +3,7 @@ import { Container } from 'react-bootstrap';
 import { constants } from '../../../js/consts';
 import HistoricalRewards from '../../HistoricalRewards';
 import PoolStatistics from '../../PoolStatistics/PoolStatistics';
-import StakePoolCalculator from '../../StakePoolCalculator/StakePoolCalculator';
+import StakePoolCalculator from '../../StakePoolCalculator';
 import StakePoolJumbo from '../../StakePoolJumbo/StakePoolJumbo';
 
 class OpulStaking extends Component {

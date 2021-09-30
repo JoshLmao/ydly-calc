@@ -11,12 +11,12 @@ class AllStakingPools extends Component {
             poolsConfig: [
                 {
                     title: "No Loss Lottery",
-                    to: "no-loss-lottery",
+                    to: "/#no-loss-lottery",
                     unit: "YLDY"
                 },
                 {
                     title: "YLDY/YLDY Staking Pool",
-                    to: "yldy-staking-pool",
+                    to: "/#yldy-staking",
                     unit: "YLDY"
                 },
                 {
@@ -78,7 +78,7 @@ class AllStakingPools extends Component {
                                         {
                                             config.soon && (
                                                 <div
-                                                    className="ml-5 my-auto lead">
+                                                    className="ml-auto mr-3 my-auto lead">
                                                     Coming soon...
                                                 </div>
                                             )
