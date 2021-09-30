@@ -47,7 +47,6 @@ class AllStakingPools extends Component {
                     <ListGroup>
                     {
                         this.state.poolsConfig.map((config, index) => {
-                            let unit = config.unit.toLowerCase();
                             return (
                                 <Link
                                     to={ !config.disabled ? config.to : "#" }
@@ -61,6 +60,7 @@ class AllStakingPools extends Component {
                                         className={ `text-dark rounded d-flex` }
                                         >
                                             <img
+                                                alt="Unit icon"
                                                 src={ unitToIcon(config.unit) }
                                                 height="30"
                                                 className="my-auto mr-3"
