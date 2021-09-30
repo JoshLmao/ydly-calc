@@ -13,6 +13,7 @@ class YLDYSMILEStakingPool extends Component {
 
         this.state = {
             appID: constants.OPUL_STAKING_APP_ID,
+            lineColor: "#21dbcc",
         };
     }
 
@@ -75,8 +76,8 @@ class YLDYSMILEStakingPool extends Component {
                             {
                                 key: "TYUL",
                                 unit: "SMILE",
-                                decimals: 10,
-                                lineColor: "#21dbcc",
+                                decimals: 6,
+                                lineColor: this.state.lineColor,
                             }
                         ]}
                         stakeToken="YLDY"
@@ -90,7 +91,7 @@ class YLDYSMILEStakingPool extends Component {
                     className="py-3">
                     <PoolStatistics
                         title="YLDY/SMILE Pool Statistics"
-                        appID={ this.state.opulStakingAppID }
+                        appID={ this.state.appID }
                         stakeConfig={
                             [
                                 {
@@ -104,8 +105,8 @@ class YLDYSMILEStakingPool extends Component {
                                 {
                                     unit: "SMILE",
                                     key: "TYUL",
-                                    decimals: 10,
-                                    lineColor: this.state.opulLineColor
+                                    decimals: 6,
+                                    lineColor: this.state.lineColor
                                 }
                             ]
                         }
