@@ -56,9 +56,9 @@ class Header extends Component {
                                         href: "/#yldy-staking",
                                     },
                                     {
-                                        text: "OPUL Staking",
+                                        text: "All Staking Pools",
                                         variant: "secondary",
-                                        to: "/yldy-opul-staking"
+                                        to: "/staking-pools"
                                     }
                                 ].map((info, index) => {
                                     if (info.href) {

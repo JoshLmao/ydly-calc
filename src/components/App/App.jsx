@@ -15,6 +15,7 @@ import YLDYAssetStats from '../YLDYAssetStats/YLDYAssetStats';
 import StakeClaimStats from '../StakeClaimStats/StakeClaimStats';
 import OpulStaking from '../StakingPools/OPULStaking';
 import YLDYSMILEStakingPool from '../StakingPools/YLDY-SMILE/YLDYSMILEStakingPool';
+import AllStakingPools from '../AllStakingPools/AllStakingPools';
 
 class App extends Component {
     constructor(props) {
@@ -32,6 +33,9 @@ class App extends Component {
                 <Switch>
                     {/* Homepage */}
                     <Route exact path="/" component={Home} />
+
+                    {/* List view, all staking pools */}
+                    <Route exact path="/staking-pools" component={ AllStakingPools } />
 
                     {/* YLDY/OPUL Staking pool */}
                     <Route exact path="/yldy-opul-staking" component={ OpulStaking } />

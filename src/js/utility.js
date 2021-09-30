@@ -4,6 +4,7 @@ import { constants } from "./consts";
 import YLDY_ICON from "../svg/yldy-icon.svg";
 import ALGO_ICON from "../svg/algo-icon.svg";
 import OPUL_LOGO from "../svg/opul-icon.svg";
+import SMILE_ICON from "../svg/smile-icon.svg";
 
 // Converts a microALGO to an ALGO
 export function microAlgoToAlgo (amount) {
@@ -250,6 +251,8 @@ export function unitToIcon (unit) {
             return ALGO_ICON;
         case "yldy":
             return YLDY_ICON;
+        case "smile":
+            return SMILE_ICON;
         default:
             return null;
     }
