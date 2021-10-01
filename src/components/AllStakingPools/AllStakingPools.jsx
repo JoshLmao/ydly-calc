@@ -28,8 +28,6 @@ class AllStakingPools extends Component {
                     title: "YLDY/SMILE Staking Pool",
                     to: "yldy-smile-staking",
                     unit: "SMILE",
-                    disabled: true,
-                    soon: true,
                 }
             ]
         };

@@ -12,7 +12,7 @@ class YLDYSMILEStakingPool extends Component {
         super(props);
 
         this.state = {
-            appID: constants.OPUL_STAKING_APP_ID,
+            appID: constants.YLDY_SMILE_POOL_APP_ID,
             lineColor: "#21dbcc",
         };
     }
@@ -23,7 +23,7 @@ class YLDYSMILEStakingPool extends Component {
                 className="bg-dark py-5 text-white">
                 <Container>
                     <StakePoolJumbo
-                        apID={ this.state.appID }
+                        appID={ this.state.appID }
                         title="YLDY/SMILE Staking"
                         unitVariant="smile"
                         />

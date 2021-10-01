@@ -237,6 +237,8 @@ export function appIDToName (appID) {
             return "YLDY Staking";
         case constants.OPUL_STAKING_APP_ID:
             return "OPUL Staking";
+        case constants.YLDY_SMILE_POOL_APP_ID:
+            return "YLDY/SMILE Staking";
         default:
             return "Unknown " + appID;
     }
