@@ -7,6 +7,8 @@ nllApplicationID = 233725844
 yldyStakingApplicationID = 233725850
 # OPUL Staking ID
 opulStakingAppID = 348079765
+# YLDY/SMILE app id
+yldySmileStakingAppID = 352116819
 
 # Dictionary of all application id's and their global state keys
 # to retrieve every X hours
@@ -21,6 +23,9 @@ APP_ID_STATE_KEYS_DICT = {
     ],
     # Opul state keys to track
     opulStakingAppID: [
+        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+    ],
+    yldySmileStakingAppID: [
         "TYUL", "TYL", "GA", "GSS", "SA", "RA"
     ],
 }
