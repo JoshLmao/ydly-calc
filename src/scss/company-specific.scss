@@ -1,0 +1,34 @@
+
+// Config to auto generate classes
+$companiesConfig: (
+    // YLDY
+    ("yldy", "#fed738", "#1c385a"),
+    // OPUL
+    ("opul" "#ff5400" "#313131"),
+    // SMILE
+    ("smile", "#21dbcc", "#ffffff")
+);
+
+// Generates all classes used from config
+@each $name, $primary, $secondary in $companiesConfig {
+    .border-#{$name} {
+        border-color: #{$primary} !important;
+    }
+    .glow-#{$name} {
+        box-shadow: 2px 2px 20px #{$primary};
+    }
+    .text-#{$name} {
+        color: #{$primary};
+    }
+    .#{$name}-title-shadowed {
+        color: #{$primary};
+        text-shadow: 2px 2px #{$secondary};
+    }
+    .#{$name}-primary {
+        background-color: #{$primary} !important;
+    }
+    .#{$name}-secondary {
+        background-color: #{$secondary} !important;
+    }
+}
+
