@@ -23,12 +23,25 @@ class Footer extends Component {
                         />
                         ALGO donations
                     </p>
-                    <p className="small d-inline" style={{ wordWrap: "break-word" }}>
-                        { CONFIG.algo_donations_address }
-                    </p>
-                    <Button variant="white" onClick={() => copyToClipboard(CONFIG.algo_donations_address)}>
-                        <FontAwesomeIcon icon={faCopy} />
-                    </Button>
+                    <div
+                        className="d-flex justify-content-center mx-auto">
+                            <p 
+                                lassName="small" style={{ wordWrap: "break-word" }}>
+                                { CONFIG.algo_donations_address }
+                            </p>
+                        <Button 
+                            variant="white" 
+                            onClick={() => copyToClipboard(CONFIG.algo_donations_address)}>
+                            <FontAwesomeIcon icon={faCopy} />
+                        </Button>
+                    
+                    </div>
+                    
+                    <img
+                        src={ process.env.PUBLIC_URL + "/images/donate-qr.png" }
+                        height="100rem"
+                        alt="donate address qr code"
+                        />
                 </Container>
 
                 <div className="py-5 text-center my-auto text-white bg-dark">
