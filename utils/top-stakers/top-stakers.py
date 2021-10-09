@@ -39,20 +39,20 @@ def get_local_state_value(state, key):
     return None
 
 # Gets stake information from an address by getting the UA key on an address' local state
-def get_stake_info(address, appIds):
-    stakeData = {}
-
+def get_local_state_info(address, appLocalStateMap):
+    localStatesData = {}
     # Iterate through total local state, if exists
     if 'apps-local-state' in address:
         for state in address['apps-local-state']:
-            # Iterate over target app ids
-            for targetAppId in appIds:
-                # If state app id matches target app id
-                if state['id'] == targetAppId:
-                    # Get UA key and store in data object
-                    stakeData[targetAppId] = get_local_state_value(state, "UA")
+            # If state app id matches target app id
+            if str(state['id']) == appLocalStateMap["appID"]:
+                localStatesData[appLocalStateMap["appID"]] = {}
+                # Get all local state keys for this app id
+                for targetKey in appLocalStateMap["local_state_keys"]:
+                    # data.appID.targetKey = value
+                    localStatesData[appLocalStateMap["appID"]][targetKey] = get_local_state_value(state, targetKey)
     
-    return validate_empty_dict(stakeData)
+    return validate_empty_dict(localStatesData)
 
 # 
 def get_asset_amounts(address, assetIds):
@@ -63,7 +63,7 @@ def get_asset_amounts(address, assetIds):
     if 'assets' in address:
         for asset in address['assets']:
             for id in assetIds:
-                if asset['asset-id'] == id:
+                if str(asset['asset-id']) == id:
                     assetData[id] = asset['amount']
 
     return validate_empty_dict(assetData)
@@ -77,6 +77,12 @@ def call_algoexplorer_api(endpoint):
         if response.text is not None:
             return json.loads(response.text)
     return None
+
+# Gets info about a single address. DEBUG
+def get_single_address(address):
+    endpoint = "v2/accounts/" + address
+    response  = call_algoexplorer_api(endpoint)
+    return response["account"]
 
 # Gets all addresses that have opted into YLDY asset
 def get_all_addresses(assetId, nextToken):
@@ -101,56 +107,51 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s.%(msecs)03d %(levelname)s | %(message)s', datefmt='%d-%m-%Y %H:%M:%S')
     logging.info("Starting...")
 
-    all_addresses = get_all_addresses(config.YLDY_ASSET_ID, None)
+    # Get all addresses that have opt'd in to a certain asset
+    # all_addresses = get_all_addresses(config.opt_in_asset, None)
+    # DEBUG, Use single address
+    all_addresses = [
+        get_single_address("PQZ46R4RKOST3NJQS6OHHRSUGC63LEISCQHKWO5OFHRPIC65JR4DK33AIY")
+    ]
+
     logging.info("Obtained '" + str(len(all_addresses)) + "' addresses")
-    logging.info("Parsing staking info...")
+    
+    logging.info("Parsing local state application data from addresses...")
 
     allInfo = []
     for addr in all_addresses:
-        # Get local state info
-        allAppIds =  [ config.NLL_APP_ID, config.YLDY_STAKING_APP_ID ]
-        stakeInfo = get_stake_info(addr, allAppIds)
+        # Get local state info from asset map
+        addressLocalAppStates = []
+        for appMap in config.user_app_values:
+            addressLocalAppStates.append( get_local_state_info(addr, appMap) )
 
-        # Get asset info, including ALGO
-        allAssetIds = [ config.YLDY_ASSET_ID ]
-        assetInfo = get_asset_amounts(addr, allAssetIds)
+        # Get asset info, how much a wallet holds of that asset
+        assetInfo = get_asset_amounts(addr, config.user_assets)
 
         # Check that stake info has data, ignore address if none
-        if stakeInfo is not None:
+        if addressLocalAppStates is not None:
             # Build single json object for one address
             jsonData = {}
             jsonData['address'] = addr['address']
 
-            stateData = {}
-            for id in allAppIds:
-                if id in stakeInfo:
-                    stateData[str(id)] = stakeInfo[id]
-
-            assetData = {}
-            assetData['ALGO'] = assetInfo['ALGO']
-            for id in allAssetIds:
-                if id in assetInfo:
-                    assetData[str(id)] = assetInfo[id]
-            
-            assetData = validate_empty_dict(assetData)
-            stateData = validate_empty_dict(stateData)
-
-            if assetData is not None:
-                jsonData['assets'] = validate_empty_dict(assetData)
-            if stateData is not None:
-                jsonData['stateData'] = validate_empty_dict(stateData)
+            # Insert local app state data
+            if addressLocalAppStates is not None:
+                jsonData['stateData'] = validate_empty_dict(addressLocalAppStates)
+            # Insert assets of wallet
+            if assetInfo is not None:
+                jsonData['assets'] = validate_empty_dict(assetInfo)
             
             allInfo.append(jsonData)
 
-    logging.info("Finished parsing stake info. Saving...")
+    logging.info("Finished parsing. Saving to file...")
 
     dateTime = datetime.utcnow()
     dateTime = dateTime.replace(microsecond=0)
 
     finalJSON = {}
-    finalJSON['yieldlyData'] = allInfo
     finalJSON['snapshotEpoch'] = dateTime.timestamp()
-
+    finalJSON['snapshotData'] = allInfo
+    
     dataStr = json.dumps(finalJSON)
     dateTimeStr = str(dateTime.date()) + "_" + str(dateTime.time()).replace(":", "-")
     fullFileName = config.SAVE_FOLDER + config.SAVE_FILENAME_PREFIX + "_" + dateTimeStr + ".json"
