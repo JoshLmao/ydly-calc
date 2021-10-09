@@ -26,7 +26,7 @@ class Footer extends Component {
                     <div
                         className="d-flex justify-content-center mx-auto">
                             <p 
-                                lassName="small" style={{ wordWrap: "break-word" }}>
+                                className="small" style={{ wordWrap: "break-word" }}>
                                 { CONFIG.algo_donations_address }
                             </p>
                         <Button 

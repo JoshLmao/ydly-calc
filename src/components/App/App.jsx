@@ -16,6 +16,7 @@ import StakeClaimStats from '../StakeClaimStats/StakeClaimStats';
 import OpulStaking from '../StakingPools/OPULStaking';
 import YLDYSMILEStakingPool from '../StakingPools/YLDY-SMILE/YLDYSMILEStakingPool';
 import AllStakingPools from '../AllStakingPools/AllStakingPools';
+import TopStakers from "../TopStakers";
 
 class App extends Component {
     constructor(props) {
@@ -46,6 +47,7 @@ class App extends Component {
                     <Redirect from="/opul-staking" to="/yldy-opul-staking" />
 
                     <Route exact path="/yldy-stats" component={YLDYAssetStats} />
+                    <Route exact path="/top-stakers" component={ TopStakers } />
                     <Route exact path="/stake-claim-stats" component={StakeClaimStats} />
                     
                     <Route component={FourOhFour} />

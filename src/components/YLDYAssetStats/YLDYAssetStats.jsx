@@ -8,7 +8,6 @@ import {
 import { constants } from "../../js/consts";
 import { getApplicationData } from '../../js/FirebaseAPI';
 
-import TopStakers from './TopStakers';
 import PoolStatistics from '../PoolStatistics/PoolStatistics';
 
 const DATA_ENTRIES_ONE_DAY = 6;
@@ -208,20 +207,6 @@ class YLDYAssetStats extends Component {
                         }
                         />
                 </ Container>
-
-                {/* Divider */}
-                <div 
-                    className="border-top border-primary my-3 pb-3"
-                    />
-
-                {/* <Container>
-                    <TopYLDYHolders
-                        />
-                </Container> */}
-                <Container>
-                    <TopStakers
-                        />
-                </Container>
             </div>
         );
     }
