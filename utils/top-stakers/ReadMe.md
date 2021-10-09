@@ -23,3 +23,46 @@ A list of Algorand asset id's that will obtain the amounts of, alongside the app
 #### `user_app_values`
 
 A map of Algorand Application ID's and their user values to obtain. The `appID` should specify an Algorand Application ID. The `local_state_keys` is an array and should contain any key's to obtain from the user's local app state.
+
+# Result
+
+The resulting file will look like this, depending on the config
+
+```
+{
+    "snapshotEpoch":1633771820.0,
+    "snapshotData":[
+        {
+            "address":"{REMOVED}",
+            "stateData":[
+                {
+                    "233725844":{
+                        "UA":3050000232
+                    }
+                },
+                {
+                    "233725850":{
+                        "UA":121554000172
+                    }
+                },
+                {
+                    "233725850":{
+                        "UA":121554000172
+                    }
+                },
+                {
+                    "352116819":{
+                        "UA":10700000000
+                    }
+                }
+            ],
+            "assets":{
+                "ALGO":16911123,
+                "226701642":258982379,
+                "300208676":67107921,
+                "287867876":114310175926
+            }
+        }
+    ]
+}
+```
