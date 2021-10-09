@@ -98,6 +98,7 @@ def get_all_addresses(assetId, nextToken):
     if response is not None:
         addr = response['accounts']
         if 'next-token' in response:
+            logging.info("Obtained '{length}' addresses from '{endpoint}', getting next...".format(length=len(response['accounts']), endpoint=endpoint))
             nextAddr = get_all_addresses(assetId, response["next-token"])
             return addr + nextAddr
         else:
@@ -126,7 +127,11 @@ if __name__ == '__main__':
         # Get local state info from asset map
         addressLocalAppStates = []
         for appMap in config.user_app_values:
-            addressLocalAppStates.append( get_local_state_info(addr, appMap) )
+            stateData = get_local_state_info(addr, appMap)
+            if stateData is not None:
+                addressLocalAppStates.append(stateData)
+        # Check if its empty/set to none if so
+        addressLocalAppStates = validate_empty_dict(addressLocalAppStates)
 
         # Get asset info, how much a wallet holds of that asset
         assetInfo = get_asset_amounts(addr, config.user_assets)
