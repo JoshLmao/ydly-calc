@@ -49,8 +49,10 @@ def get_local_state_info(address, appLocalStateMap):
                 localStatesData[appLocalStateMap["appID"]] = {}
                 # Get all local state keys for this app id
                 for targetKey in appLocalStateMap["local_state_keys"]:
-                    # data.appID.targetKey = value
-                    localStatesData[appLocalStateMap["appID"]][targetKey] = get_local_state_value(state, targetKey)
+                    value = get_local_state_value(state, targetKey)
+                    if value is not None:
+                        # data.appID.targetKey = value
+                        localStatesData[appLocalStateMap["appID"]][targetKey] = value
     
     return validate_empty_dict(localStatesData)
 
@@ -108,11 +110,12 @@ if __name__ == '__main__':
     logging.info("Starting...")
 
     # Get all addresses that have opt'd in to a certain asset
-    # all_addresses = get_all_addresses(config.opt_in_asset, None)
+    all_addresses = get_all_addresses(config.opt_in_asset, None)
+    
     # DEBUG, Use single address
-    all_addresses = [
-        get_single_address("PQZ46R4RKOST3NJQS6OHHRSUGC63LEISCQHKWO5OFHRPIC65JR4DK33AIY")
-    ]
+    # all_addresses = [
+    #     get_single_address("")
+    # ]
 
     logging.info("Obtained '" + str(len(all_addresses)) + "' addresses")
     
