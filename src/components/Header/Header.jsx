@@ -59,6 +59,11 @@ class Header extends Component {
                                         text: "All Staking Pools",
                                         variant: "secondary",
                                         to: "/staking-pools"
+                                    },
+                                    {
+                                        text: "Top Stakers",
+                                        variant: "outline-warning",
+                                        to: "/top-stakers"
                                     }
                                 ].map((info, index) => {
                                     if (info.href) {

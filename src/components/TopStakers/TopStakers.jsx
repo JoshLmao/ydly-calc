@@ -4,56 +4,116 @@ import React, { Component } from 'react';
 import { Pagination, Row, Col, Card, Button, Container } from 'react-bootstrap';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import filterFactory, { textFilter, numberFilter } from 'react-bootstrap-table2-filter';
 
-import { constants } from '../../js/consts';
 import { getAllStakingData } from '../../js/FirebaseAPI';
-import { shortenAddress, fromMicroFormatNumber, appIDToName } from '../../js/utility';
+import { shortenAddress, convertToMicroValue, appIDToName, formatNumber } from '../../js/utility';
 
-import NEW_STAKE_DATA from "../../new-stake-data-all.json";
+// import YLDY_ICON from "../../svg/yldy-icon.svg";
+// import ALGO_ICON from "../../svg/algo-icon.svg";
 
-import YLDY_ICON from "../../svg/yldy-icon.svg";
-import ALGO_ICON from "../../svg/algo-icon.svg";
+function arrayContains(originalArray, entry) {
+    if (originalArray.length <= 0)
+        return false;
 
-// Tries to get a value from the addrData.
-// First child key should be either "assets" or "stateData"
-// Second child key expected to be child key of firstChildKey
-function tryGetStateValue(addrData, firstChildKey, secondChildKey, defaultVal = 0) {
-    if (addrData) {
-        let firstChild = addrData[firstChildKey];
-        if (firstChild) {
-            let foundVal = firstChild[secondChildKey];
-            return isNaN(foundVal) ? defaultVal : foundVal;
-        }
-    }
-    return defaultVal;
+    return originalArray.filter((obj) => obj === entry ).length > 0;
 }
 
 // Analyse all staking data and get stats
-function analyseStakingData (columns, stakingData) {
+function analyseStakingData (originalData, tableData) {
+    if (!originalData || !tableData) {
+        return null;
+    }
 
-    let totalStakedALGO = 0;
-    let totalStakedYLDY = 0
-    for (let addrData of stakingData.snapshotData) {
-        totalStakedALGO += tryGetStateValue(addrData, "stateData", constants.NO_LOSS_LOTTERY_APP_ID);
-        totalStakedYLDY += tryGetStateValue(addrData, "stateData", constants.YLDY_STAKING_APP_ID);
+
+    // All staking pools as keys (strings)
+    let allStakingPoolsKeys = [];
+    // Amount of account data to check to parse all app id's
+    let safetyRange = 5;
+    for (let i = 0; i < safetyRange; i++) {
+        for (let app of originalData.snapshotData[i].stateData) {
+            let appIDs = Object.keys(app);
+
+            for (let appID of appIDs) {
+                if (!arrayContains(allStakingPoolsKeys, appID)) {
+                    allStakingPoolsKeys.push(appID);
+                }
+            }   
+        }
+    }
+    
+
+    let totalStakedMap = {};
+    let stakedCountMap = {};
+    for (let dataInfo of tableData) {
+        
+        for (let appID of allStakingPoolsKeys) {
+            // If current address (dataInfo) has an amount staked in appID pool
+            let amountStaked = dataInfo[appID];
+            if (amountStaked) {
+
+                // Add on amount person has staked
+                if (totalStakedMap[appID]) {
+                    totalStakedMap[appID] += amountStaked;
+                } else {
+                    totalStakedMap[appID] = amountStaked;
+                }
+
+                // increment counts of amount of stakers
+                if (stakedCountMap[appID]) {
+                    stakedCountMap[appID] += 1;
+                } else {
+                    stakedCountMap[appID] = 1;
+                }
+            }
+        }
+    }
+
+    let totalsInfos = [];
+    for (let appID of allStakingPoolsKeys) {
+
+        let fixed = convertToMicroValue(totalStakedMap[appID], 6).toFixed(0);
+        
+        totalsInfos.push({
+            key: `${appIDToName(parseInt(appID))} Staked`,
+            appID: appID,
+            value: fixed
+        });
+    }
+
+    let countInfos = [];
+    for (let totalInfo of totalsInfos) {
+        countInfos.push({
+            key: `${appIDToName(parseInt(totalInfo.appID))} Stakers`,
+            value: stakedCountMap[totalInfo.appID]
+        });
+    }
+
+    let averagesInfos = [];
+    for (let totalInfo of totalsInfos) {
+        averagesInfos.push({
+            key: totalInfo.key,
+            value: (totalInfo.value / stakedCountMap[totalInfo.appID]).toFixed(2),
+        });
     }
 
     return [
         {
             title: "Totals",
-            infos: [
-                { key: "ALGO Staked", value: fromMicroFormatNumber(totalStakedALGO, 3) },
-                { key: "YLDY Staked", value: fromMicroFormatNumber(totalStakedYLDY, 3) }
-            ]
+            desc: "Total amount staked in each pool",
+            infos: totalsInfos,
+        },
+        {
+            title: "Unique Stakers",
+            desc: "Amount of unique addresses in each staking pool",
+            infos: countInfos,
         },
         {
             title: "Averages",
-            infos: [
-                { key: "ALGO Staked", value: fromMicroFormatNumber(totalStakedALGO / stakingData.yieldlyData.length, 3) },
-                { key: "YLDY Staked", value: fromMicroFormatNumber(totalStakedYLDY / stakingData.yieldlyData.length, 3) },
-            ]
+            desc: "Total staked divided by the amount of unique stakers. The average in each staking pool",
+            infos: averagesInfos,
         }
-    ]
+    ];
 }
 
 class TopStakers extends Component {
@@ -69,6 +129,10 @@ class TopStakers extends Component {
             useFirebaseData: true,
             // Height of the column header images for ALGO and YLDY 
             headerImageHeight: 21,
+            // Default app id to sort
+            defaultAppIDSort: 233725850,
+            // Amount of items/entries to display per page in table pagination
+            entriesPerPage: 1000,
         };
 
         this.onGetStakingData = this.onGetStakingData.bind(this);
@@ -77,19 +141,15 @@ class TopStakers extends Component {
 
     onGetStakingData() {
         if (this.state.useFirebaseData) {
-            // this.setState({
-            //     loadingStakers: true,
-            // });
-            // getAllStakingData((stakingData) => {
-            //     this.setState({
-            //         stakingData: stakingData,
-            //         loadingStakers: false,
-            //     }, () => this.generateTableData() );
-            // });
             this.setState({
-                stakingData: NEW_STAKE_DATA,
-                loadingStakers: false,
-            }, () => this.generateTableData() );
+                loadingStakers: true,
+            });
+            getAllStakingData((stakingData) => {
+                this.setState({
+                    stakingData: stakingData,
+                    loadingStakers: false,
+                }, () => this.generateTableData() );
+            });
         }
     }
 
@@ -97,15 +157,39 @@ class TopStakers extends Component {
         if (this.state.stakingData) {
             let columns = [
                 {
+                    // Blank column for row index
+                    dataField: '',
+                    text: "Index",
+                    formatter: (cellData, row, rowIndex) => {
+                        return rowIndex + 1;
+                    },
+                    headerStyle: (colum, colIndex) => {
+                        return { 
+                            width: '100px'
+                        };
+                    }
+                },
+                {
                     dataField: 'address',
                     text: "Address",
+                    filter: textFilter(),
+                    formatter: (cellData) => {
+                        return (
+                            <a
+                                href={`https://algoexplorer.io/address/${cellData}`}
+                                target="noreferrer"
+                                >
+                                { shortenAddress(cellData, 4) }
+                            </a>
+                        )
+                    }
                 },
             ];
             let data = [];
 
             for (let dataInfo of this.state.stakingData.snapshotData) {
                 let tableDataInfo = {};
-                tableDataInfo.address = shortenAddress(dataInfo.address, 4);
+                tableDataInfo.address = dataInfo.address;
 
                 for (let stateData of dataInfo.stateData) {
                     let appIDs = Object.keys(stateData);
@@ -116,7 +200,16 @@ class TopStakers extends Component {
                             columns.push({
                                 dataField: appID,
                                 text: appIDToName(parseInt(appID)),
-                                sort: true
+                                sort: true,
+                                filter: numberFilter(),
+                                formatter: (cellData) => {
+                                    if (cellData) {
+                                        let fixed = convertToMicroValue(cellData, 6).toFixed(0);
+                                        return formatNumber(fixed);
+                                    } else {
+                                        return "None";
+                                    }
+                                }
                             });
                         }
     
@@ -161,12 +254,11 @@ class TopStakers extends Component {
             <div className="py-5 bg-dark text-white">
                 <Container>
                     <h2 className="yldy-title">
-                        Yieldly Staking Statistics
+                        Yieldly Top Stakers
                     </h2>
                     <p>
                         A snapshot of all wallets that have opted-in to the YLDY asset and have staked in a Yieldly application on the blockchain. 
-                        This data is not live and requires manually updating by myself, 
-                        which I aim to do every Friday.
+                        This data is not live and requires manually updating by myself, which I aim to do every Friday.
                         <br/>
                         <small className="text-muted">
                             If the data out of date by more than a week, please send me tweet to remind me! 
@@ -193,90 +285,99 @@ class TopStakers extends Component {
                             </Button>
                         )
                     }
-                {
-                    this.state.loadingStakers && (
-                        <div className="d-flex">
-                            <div className="mx-auto h-100 d-flex">
-                                <FontAwesomeIcon 
-                                        icon={faSpinner} 
-                                        size="2x" 
-                                        spin 
-                                    />
-                                <div className="mx-3 my-auto">
-                                    This may take some time...
+                    {
+                        this.state.loadingStakers && (
+                            <div className="d-flex">
+                                <div className="mx-auto h-100 d-flex">
+                                    <FontAwesomeIcon 
+                                            icon={faSpinner} 
+                                            size="2x" 
+                                            spin 
+                                        />
+                                    <div className="mx-3 my-auto">
+                                        This may take some time...
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    )
-                }
+                        )
+                    }
+                </Container>
+
+                <Container>
+                    {
+                        this.state.stakingData && this.state.tableData && (
+                            <Row className="py-3">
+                                {
+                                    analyseStakingData(this.state.stakingData, this.state.tableData)
+                                    .map((data, index) => {
+                                        return (
+                                            <Col
+                                                key={ "staking-data-" + index }>
+                                                <Card
+                                                    key={"staking-data-infos-" + index}
+                                                    border="primary"
+                                                    className="rounded bg-dark my-2">
+                                                    <Card.Body>
+                                                        <Card.Title 
+                                                            className="yldy-title">
+                                                            { data.title }
+                                                        </Card.Title>
+                                                        <p
+                                                            className="text-muted">
+                                                            { data.desc }
+                                                        </p>
+                                                        <div>
+                                                            {
+                                                                data.infos.map((info, index) => {
+                                                                    return (
+                                                                        <div
+                                                                            key={"data-infos" + index}>
+                                                                            <b>{ info.key + ": "}</b>
+                                                                            <span>{ info.value }</span>
+                                                                        </div>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </div>
+                                                    </Card.Body>
+                                                </Card>
+                                            </Col>
+                                        )
+                                    })
+                                }
+                            </Row>
+                        )
+                    }
                 </Container>
 
                 <Container
                     className="my-3" 
                     fluid
                     >
-                <div 
-                    className="yldy-scrollbar mx-5"
-                    style={{
-                        maxHeight: "20vm",
-                        overflowX: "hidden"
-                    }}
-                    >
-                    {
-                        this.state.tableData && this.state.tableColumns && (
-                            <BootstrapTable
-                                bootstrap4
-                                keyField="address"
-                                data={ this.state.tableData }
-                                columns={ this.state.tableColumns }
-                                pagination={ paginationFactory({
-                                    sizePerPage: 100,
-                                }) }
-                                />
-                        )
-                    }
-                </div>
-                {
-                    this.state.stakingData && (
-                        <Row className="py-3">
-                            {
-                                //analyseStakingData(this.state.stakingData)
-                                [ ]
-                                .map((data, index) => {
-                                    return (
-                                        <Col
-                                            key={ "staking-data-" + index }>
-                                            <Card
-                                                key={"staking-data-infos-" + index}
-                                                border="primary"
-                                                className="rounded bg-dark my-2">
-                                                <Card.Body>
-                                                    <Card.Title 
-                                                        className="yldy-title">
-                                                        { data.title }
-                                                    </Card.Title>
-                                                    <div>
-                                                        {
-                                                            data.infos.map((info, index) => {
-                                                                return (
-                                                                    <div
-                                                                        key={"data-infos" + index}>
-                                                                        <b>{ info.key + ": "}</b>
-                                                                        <span>{ info.value }</span>
-                                                                    </div>
-                                                                )
-                                                            })
-                                                        }
-                                                    </div>
-                                                </Card.Body>
-                                            </Card>
-                                        </Col>
-                                    )
-                                })
-                            }
-                        </Row>
-                    )
-                }
+                    <div 
+                        className="yldy-scrollbar mx-5 py-3"
+                        style={{
+                            maxHeight: "20vm",
+                        }}
+                        >
+                        {
+                            this.state.tableData && this.state.tableColumns && (
+                                <BootstrapTable
+                                    bootstrap4
+                                    keyField="address"
+                                    data={ this.state.tableData }
+                                    columns={ this.state.tableColumns }
+                                    sort={{ dataField: this.state.defaultAppIDSort.toString(), order: 'desc' }
+                                    }
+                                    pagination={ paginationFactory({
+                                            sizePerPage: this.state.entriesPerPage,
+                                        }) 
+                                    }
+                                    filter={ filterFactory() }
+                                    />
+                            )
+                        }
+                    </div>
                 </Container>
             </div>
         );
