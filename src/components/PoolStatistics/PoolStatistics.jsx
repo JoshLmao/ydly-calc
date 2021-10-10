@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { getApplicationData } from '../../js/FirebaseAPI';
-import { formatNumber, fromMicroFormatNumber, getBestGraphHeight, unitToIcon } from '../../js/utility';
+import { formatNumber, fromMicroFormatNumber, getBestGraphHeight } from '../../js/utility';
+import { unitToIcon } from "../../js/consts";
+
+
 import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
 function calcDifference (initial, final) {

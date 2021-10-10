@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { unitToIcon } from '../../js/utility';
+import { unitToIcon } from "../../js/consts";
 
 class AllStakingPools extends Component {
     constructor(props) {

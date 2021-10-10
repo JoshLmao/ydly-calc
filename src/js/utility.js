@@ -1,10 +1,4 @@
 import { isALGOTransaction, isASATransaction, YIELDLY_APP_ID_KEY } from "./AlgoExplorerHelper";
-import { constants } from "./consts";
-
-import YLDY_ICON from "../svg/yldy-icon.svg";
-import ALGO_ICON from "../svg/algo-icon.svg";
-import OPUL_LOGO from "../svg/opul-icon.svg";
-import SMILE_ICON from "../svg/smile-icon.svg";
 
 // Converts a microALGO to an ALGO
 export function microAlgoToAlgo (amount) {
@@ -225,37 +219,5 @@ export function getBootstrapWindowSize() {
     }
     else {
         return "xl";
-    }
-}
-
-// Converts an app id to it's display name
-export function appIDToName (appID) {
-    switch (appID) {
-        case constants.NO_LOSS_LOTTERY_APP_ID:
-            return "No Loss Lottery";
-        case constants.YLDY_STAKING_APP_ID:
-            return "YLDY Staking";
-        case constants.OPUL_STAKING_APP_ID:
-            return "OPUL Staking";
-        case constants.YLDY_SMILE_POOL_APP_ID:
-            return "YLDY/SMILE Staking";
-        default:
-            return "Unknown " + appID;
-    }
-}
-
-// Converts a unit/currency to it's svg icon
-export function unitToIcon (unit) {
-    switch(unit.toLowerCase()) {
-        case "opul":
-            return OPUL_LOGO;
-        case "algo":
-            return ALGO_ICON;
-        case "yldy":
-            return YLDY_ICON;
-        case "smile":
-            return SMILE_ICON;
-        default:
-            return null;
     }
 }

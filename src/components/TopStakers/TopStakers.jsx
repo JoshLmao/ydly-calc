@@ -7,10 +7,27 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { textFilter, numberFilter } from 'react-bootstrap-table2-filter';
 
 import { getAllStakingData } from '../../js/FirebaseAPI';
-import { shortenAddress, convertToMicroValue, appIDToName, formatNumber } from '../../js/utility';
+import { appIDToName, appIDToIcon, appIDToStakingUnit } from "../../js/consts";
+import { shortenAddress, convertToMicroValue, formatNumber } from '../../js/utility';
 
-// import YLDY_ICON from "../../svg/yldy-icon.svg";
-// import ALGO_ICON from "../../svg/algo-icon.svg";
+function priceFormatter (column, colIndex, sortElement, filterElement, appID) {
+    return (
+      <div>
+        <div
+            className="d-flex">
+            { column.text }
+            <img
+                alt="Primary Staking Currency"
+                className="ml-2"
+                src={ appIDToIcon(appID) }
+                width="25"
+                />
+        </div>
+        { sortElement }
+        { filterElement }
+      </div>
+    );
+}
 
 function arrayContains(originalArray, entry) {
     if (originalArray.length <= 0)
@@ -201,7 +218,9 @@ class TopStakers extends Component {
                                 dataField: appID,
                                 text: appIDToName(parseInt(appID)),
                                 sort: true,
+                                // Filter by number, original data value
                                 filter: numberFilter(),
+                                // Cell data formatter
                                 formatter: (cellData) => {
                                     if (cellData) {
                                         let fixed = convertToMicroValue(cellData, 6).toFixed(0);
@@ -209,6 +228,12 @@ class TopStakers extends Component {
                                     } else {
                                         return "None";
                                     }
+                                },
+                                // Style for column header
+                                headerFormatter: (column, colIndex, { sortElement, filterElement }) => priceFormatter(column, colIndex, sortElement, filterElement, parseInt(appID)),
+                                // Hover title formatting
+                                title: (cell, row, rowIndex, colIndex) => {
+                                    return `${cell ?  `${convertToMicroValue(cell, 6)} ${appIDToStakingUnit(parseInt(appID))}` : "No value | Address hasn't staked in pool"}`;
                                 }
                             });
                         }
