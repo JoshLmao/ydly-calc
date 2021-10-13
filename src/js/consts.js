@@ -12,6 +12,8 @@ export const constants = {
     OPUL_STAKING_APP_ID: 348079765,
     // YLDY SMILE staking pool app id
     YLDY_SMILE_POOL_APP_ID: 352116819,
+    // OPUL/OPUL app id
+    OPUL_OPUL_POOL_APP_ID: 367431051,
 
     // Algorand asset id for YLDY
     YLDY_ASSET_ID: 226701642,
@@ -28,6 +30,8 @@ export function appIDToName (appID) {
             return "YLDY/OPUL Staking";
         case constants.YLDY_SMILE_POOL_APP_ID:
             return "YLDY/SMILE Staking";
+        case constants.OPUL_OPUL_POOL_APP_ID:
+            return "OPUL/OPUL Staking";
         default:
             return "Unknown " + appID;
     }
@@ -43,6 +47,8 @@ export function appIDToIcon(appID) {
             return unitToIcon("YLDY");
         case constants.YLDY_SMILE_POOL_APP_ID:
             return unitToIcon("YLDY");
+        case constants.OPUL_OPUL_POOL_APP_ID:
+            return unitToIcon("OPUL");
         default:
             return null;
     }
@@ -59,6 +65,8 @@ export function appIDToStakingUnit (appID) {
             return "YLDY";
         case constants.YLDY_SMILE_POOL_APP_ID:
             return "YLDY";
+        case constants.OPUL_OPUL_POOL_APP_ID:
+            return "OPUL";
         default:
             return null;
     }
