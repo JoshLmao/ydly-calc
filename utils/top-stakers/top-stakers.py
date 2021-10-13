@@ -124,10 +124,6 @@ if __name__ == '__main__':
 
     allInfo = []
     for addr in all_addresses:
-
-        if addr['address'] == "AAG5TXAOZM5BFTUY7QTSDBGD624WZ7XRLRIOBHQGIWOVILTAAGAS72JKT4":
-            logging.info("NOW")
-
         # Get local state info from asset map
         addressLocalAppStates = []
         for appMap in config.user_app_values:
