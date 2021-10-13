@@ -111,12 +111,12 @@ if __name__ == '__main__':
     logging.info("Starting...")
 
     # Get all addresses that have opt'd in to a certain asset
-    # all_addresses = get_all_addresses(config.opt_in_asset, None)
+    all_addresses = get_all_addresses(config.opt_in_asset, None)
     
     # DEBUG, Use single address
-    all_addresses = [
-        get_single_address("AAG5TXAOZM5BFTUY7QTSDBGD624WZ7XRLRIOBHQGIWOVILTAAGAS72JKT4")
-    ]
+    # all_addresses = [
+    #     get_single_address("")
+    # ]
 
     logging.info("Obtained '" + str(len(all_addresses)) + "' addresses")
     
