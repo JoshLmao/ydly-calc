@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { getApplicationData } from '../../js/FirebaseAPI';
-import { formatNumber, fromMicroFormatNumber, getBestGraphHeight } from '../../js/utility';
+import { convertToMicroFormatNumber, formatNumber, getBestGraphHeight } from '../../js/utility';
 import { unitToIcon } from "../../js/consts";
-
 
 import AppStateHistoryGraph from '../AppStateHistoryGraph/AppStateHistoryGraph';
 
@@ -136,7 +135,7 @@ class PoolStatistics extends Component {
                                             value={ 
                                                 this.state.periodDifference
                                                 ?
-                                                fromMicroFormatNumber(this.state.periodDifference?.amount, 0) 
+                                                convertToMicroFormatNumber(this.state.periodDifference?.amount, config.decimals, 0)
                                                 :
                                                 "0"
                                             }
@@ -155,7 +154,7 @@ class PoolStatistics extends Component {
                                             footerText={ 
                                                 this.state.periodDifference
                                                 ?
-                                                `${ fromMicroFormatNumber( this.state.periodDifference?.first, 0 ) } ${config.unit} -> ${ fromMicroFormatNumber( this.state.periodDifference?.last, 0 ) } ${config.unit}` 
+                                                `${ convertToMicroFormatNumber( this.state.periodDifference?.first, config.decimals, 0 ) } ${config.unit} -> ${ convertToMicroFormatNumber( this.state.periodDifference?.last, config.decimals, 0 ) } ${config.unit}` 
                                                 :
                                                 ""
                                             }
@@ -174,6 +173,7 @@ class PoolStatistics extends Component {
                                             graphHeight={ getBestGraphHeight() }
                                             allowCustomTimePeriods={ true }
                                             dataLimit={ this.state.dbWeekLimit }
+                                            decimals={ config.decimals }
                                             />
                                     </Col>
                                 </Row>

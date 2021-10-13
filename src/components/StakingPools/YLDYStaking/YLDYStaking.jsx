@@ -29,6 +29,7 @@ class YLDYStaking extends Component {
                     unit: "YLDY",
                     type: "currency",
                     title: "Total Staked (GA)",
+                    decimals: 6,
                 },
                 {
                     // Reward YLDY

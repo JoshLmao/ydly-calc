@@ -57,8 +57,12 @@ export function formatNumber(num) {
 
 // Runs the value through fromMicroValue, toFixed() with the value and formats the value
 export function fromMicroFormatNumber(value, toFixed = -1) {
+    return convertToMicroFormatNumber(value, 6, toFixed);
+}
+
+export function convertToMicroFormatNumber(value, decimals, toFixed = -1) {
     if (value) {
-        let micro =  fromMicroValue(value);
+        let micro =  convertToMicroValue(value, decimals);
         if (toFixed >= 0)
             micro = micro.toFixed(toFixed);
         
