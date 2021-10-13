@@ -9,6 +9,7 @@ import config as config
 
 # all addresses obtained from AlgoExplorer
 all_addresses = []
+pages = 0
 
 def validate_empty_dict(dict):
     if bool(dict):
@@ -46,12 +47,11 @@ def get_local_state_info(address, appLocalStateMap):
         for state in address['apps-local-state']:
             # If state app id matches target app id
             if str(state['id']) == appLocalStateMap["appID"]:
-                localStatesData[appLocalStateMap["appID"]] = {}
                 # Get all local state keys for this app id
                 for targetKey in appLocalStateMap["local_state_keys"]:
                     value = get_local_state_value(state, targetKey)
                     if value is not None:
-                        # data.appID.targetKey = value
+                        localStatesData[appLocalStateMap["appID"]] = {}
                         localStatesData[appLocalStateMap["appID"]][targetKey] = value
     
     return validate_empty_dict(localStatesData)
@@ -111,12 +111,12 @@ if __name__ == '__main__':
     logging.info("Starting...")
 
     # Get all addresses that have opt'd in to a certain asset
-    all_addresses = get_all_addresses(config.opt_in_asset, None)
+    # all_addresses = get_all_addresses(config.opt_in_asset, None)
     
     # DEBUG, Use single address
-    # all_addresses = [
-    #     get_single_address("")
-    # ]
+    all_addresses = [
+        get_single_address("AAG5TXAOZM5BFTUY7QTSDBGD624WZ7XRLRIOBHQGIWOVILTAAGAS72JKT4")
+    ]
 
     logging.info("Obtained '" + str(len(all_addresses)) + "' addresses")
     
@@ -124,6 +124,10 @@ if __name__ == '__main__':
 
     allInfo = []
     for addr in all_addresses:
+
+        if addr['address'] == "AAG5TXAOZM5BFTUY7QTSDBGD624WZ7XRLRIOBHQGIWOVILTAAGAS72JKT4":
+            logging.info("NOW")
+
         # Get local state info from asset map
         addressLocalAppStates = []
         for appMap in config.user_app_values:
@@ -153,7 +157,7 @@ if __name__ == '__main__':
 
     logging.info("Finished parsing. Saving to file...")
 
-    dateTime = datetime.utcnow()
+    dateTime = datetime.now()
     dateTime = dateTime.replace(microsecond=0)
 
     finalJSON = {}
