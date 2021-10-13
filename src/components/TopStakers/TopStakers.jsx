@@ -46,7 +46,7 @@ function analyseStakingData (originalData, tableData) {
     // All staking pools as keys (strings)
     let allStakingPoolsKeys = [];
     // Amount of account data to check to parse all app id's
-    let safetyRange = 5;
+    let safetyRange = 50;
     for (let i = 0; i < safetyRange; i++) {
         for (let app of originalData.snapshotData[i].stateData) {
             let appIDs = Object.keys(app);
@@ -89,11 +89,13 @@ function analyseStakingData (originalData, tableData) {
     let totalsInfos = [];
     for (let appID of allStakingPoolsKeys) {
 
-        let unitDecimals = unitToDecimals(appIDToStakingUnit(parseInt(appID)));
+        let intAppID = parseInt(appID);
+
+        let unitDecimals = unitToDecimals(appIDToStakingUnit(intAppID));
         let fixed = convertToMicroValue(totalStakedMap[appID], unitDecimals).toFixed(0);
         
         totalsInfos.push({
-            key: `${appIDToName(parseInt(appID))} Staked`,
+            key: `${appIDToName(intAppID)} Staked`,
             appID: appID,
             value: fixed
         });
