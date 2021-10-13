@@ -48,5 +48,11 @@ user_app_values = [
         "local_state_keys": [
             "UA"
         ]
+    },
+    {
+        "appID": "367431051",   # OPUL/OPUL
+        "local_state_keys": [
+            "UA"
+        ]
     }
 ]
