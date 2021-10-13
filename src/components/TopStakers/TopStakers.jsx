@@ -7,7 +7,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import filterFactory, { textFilter, numberFilter } from 'react-bootstrap-table2-filter';
 
 import { getAllStakingData } from '../../js/FirebaseAPI';
-import { appIDToName, appIDToIcon, appIDToStakingUnit } from "../../js/consts";
+import { appIDToName, appIDToIcon, appIDToStakingUnit, unitToDecimals } from "../../js/consts";
 import { shortenAddress, convertToMicroValue, formatNumber } from '../../js/utility';
 
 function priceFormatter (column, colIndex, sortElement, filterElement, appID) {
@@ -89,7 +89,8 @@ function analyseStakingData (originalData, tableData) {
     let totalsInfos = [];
     for (let appID of allStakingPoolsKeys) {
 
-        let fixed = convertToMicroValue(totalStakedMap[appID], 6).toFixed(0);
+        let unitDecimals = unitToDecimals(appIDToStakingUnit(parseInt(appID)));
+        let fixed = convertToMicroValue(totalStakedMap[appID], unitDecimals).toFixed(0);
         
         totalsInfos.push({
             key: `${appIDToName(parseInt(appID))} Staked`,
@@ -223,7 +224,8 @@ class TopStakers extends Component {
                                 // Cell data formatter
                                 formatter: (cellData) => {
                                     if (cellData) {
-                                        let fixed = convertToMicroValue(cellData, 6).toFixed(0);
+                                        let unitDecimals = unitToDecimals(appIDToStakingUnit(parseInt(appID)));
+                                        let fixed = convertToMicroValue(cellData, unitDecimals).toFixed(0);
                                         return formatNumber(fixed);
                                     } else {
                                         return "None";
@@ -358,7 +360,7 @@ class TopStakers extends Component {
                                                                         <div
                                                                             key={"data-infos" + index}>
                                                                             <b>{ info.key + ": "}</b>
-                                                                            <span>{ info.value }</span>
+                                                                            <span>{ formatNumber(info.value) }</span>
                                                                         </div>
                                                                     )
                                                                 })

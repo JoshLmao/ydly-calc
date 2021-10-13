@@ -87,3 +87,18 @@ export function unitToIcon (unit) {
             return null;
     }
 }
+
+export function unitToDecimals (unit) {
+    switch(unit.toLowerCase()) {
+        case "opul":
+            return 10;
+        case "algo":
+            return 6;
+        case "yldy":
+            return 6;
+        case "smile":
+            return 6;
+        default:
+            return null;
+    }
+}
