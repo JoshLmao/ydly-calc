@@ -1,6 +1,6 @@
 # Top Stakers
 
-The main purpose of the script is for obtaining local app state data from Algorand addresses. The script only looks for addresses that are opt'd in to a certain asset (the value of `opt_in_asset` declared in the `config.py`).
+The main purpose of the script is for obtaining local app state data from Algorand addresses. The script only looks for addresses that are opt'd in to a certain asset (the value of `opt_in_asset` declared in the `config.py`). The script will only store addresses that have one or more values in the their local app state. If someone is opted in but has no local app states, then the address will not be stored in the final JSON data file.
 
 ## Running the script
 

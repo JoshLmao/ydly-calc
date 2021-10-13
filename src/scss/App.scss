@@ -50,6 +50,14 @@ body {
     overflow-x: auto !important;
     overflow-y: auto !important;
 }
+.yldy-scrollbar-x {
+    @include scrollbars(.65em, $primary, $dark);
+    overflow-x: auto !important;
+}
+.yldy-scrollbar-y {
+    @include scrollbars(.65em, $primary, $dark);
+    overflow-y: auto !important;
+}
 
 .all-text-white {
     color: white;

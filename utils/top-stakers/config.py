@@ -38,13 +38,19 @@ user_app_values = [
         ]
     },
     {
-        "appID": "233725850",   # YLDY/OPUL Staking
+        "appID": "348079765",   # YLDY/OPUL Staking
         "local_state_keys": [
             "UA"
         ]
     },
     {
         "appID": "352116819",   # YLDY/SMILE Staking
+        "local_state_keys": [
+            "UA"
+        ]
+    },
+    {
+        "appID": "367431051",   # OPUL/OPUL
         "local_state_keys": [
             "UA"
         ]

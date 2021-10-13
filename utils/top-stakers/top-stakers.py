@@ -9,6 +9,7 @@ import config as config
 
 # all addresses obtained from AlgoExplorer
 all_addresses = []
+pages = 0
 
 def validate_empty_dict(dict):
     if bool(dict):
@@ -46,12 +47,11 @@ def get_local_state_info(address, appLocalStateMap):
         for state in address['apps-local-state']:
             # If state app id matches target app id
             if str(state['id']) == appLocalStateMap["appID"]:
-                localStatesData[appLocalStateMap["appID"]] = {}
                 # Get all local state keys for this app id
                 for targetKey in appLocalStateMap["local_state_keys"]:
                     value = get_local_state_value(state, targetKey)
                     if value is not None:
-                        # data.appID.targetKey = value
+                        localStatesData[appLocalStateMap["appID"]] = {}
                         localStatesData[appLocalStateMap["appID"]][targetKey] = value
     
     return validate_empty_dict(localStatesData)
@@ -98,6 +98,7 @@ def get_all_addresses(assetId, nextToken):
     if response is not None:
         addr = response['accounts']
         if 'next-token' in response:
+            logging.info("Obtained '{length}' addresses from '{endpoint}', getting next...".format(length=len(response['accounts']), endpoint=endpoint))
             nextAddr = get_all_addresses(assetId, response["next-token"])
             return addr + nextAddr
         else:
@@ -126,7 +127,11 @@ if __name__ == '__main__':
         # Get local state info from asset map
         addressLocalAppStates = []
         for appMap in config.user_app_values:
-            addressLocalAppStates.append( get_local_state_info(addr, appMap) )
+            stateData = get_local_state_info(addr, appMap)
+            if stateData is not None:
+                addressLocalAppStates.append(stateData)
+        # Check if its empty/set to none if so
+        addressLocalAppStates = validate_empty_dict(addressLocalAppStates)
 
         # Get asset info, how much a wallet holds of that asset
         assetInfo = get_asset_amounts(addr, config.user_assets)
@@ -148,7 +153,7 @@ if __name__ == '__main__':
 
     logging.info("Finished parsing. Saving to file...")
 
-    dateTime = datetime.utcnow()
+    dateTime = datetime.now()
     dateTime = dateTime.replace(microsecond=0)
 
     finalJSON = {}

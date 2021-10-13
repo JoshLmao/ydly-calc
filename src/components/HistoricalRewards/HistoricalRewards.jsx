@@ -6,7 +6,8 @@ import { Line } from "react-chartjs-2";
 
 import { constants } from "../../js/consts";
 import { getApplicationData } from '../../js/FirebaseAPI';
-import { appIDToName, convertToMicroValue, getBestGraphHeight, toMicroValue, unitToIcon } from '../../js/utility';
+import { appIDToName, unitToIcon } from "../../js/consts";
+import { convertToMicroValue, getBestGraphHeight, toMicroValue } from '../../js/utility';
 import { calculateYLDYRewardsFromDayPeriod } from '../../js/YLDYCalculation';
 
 class HistoricalRewards extends Component {
