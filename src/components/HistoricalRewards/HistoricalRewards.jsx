@@ -7,7 +7,7 @@ import { Line } from "react-chartjs-2";
 import { constants } from "../../js/consts";
 import { getApplicationData } from '../../js/FirebaseAPI';
 import { appIDToName, unitToIcon } from "../../js/consts";
-import { convertToMicroValue, getBestGraphHeight, toMicroValue } from '../../js/utility';
+import { convertFromMicroValue, convertToMicroValue, getBestGraphHeight } from '../../js/utility';
 import { calculateYLDYRewardsFromDayPeriod } from '../../js/YLDYCalculation';
 
 class HistoricalRewards extends Component {
@@ -17,7 +17,7 @@ class HistoricalRewards extends Component {
         this.state = {
             appID: props.appID ?? constants.YLDY_STAKING_APP_ID,     // main app id to use as data
             rewardKeysConfig: props.rewardKeysConfig ?? [],
-            stakedYLDY: 1000, // Amount of YLDY staked
+            stakedYLDY: props.defaultStakedAmount ?? 1000, // Amount of staked primary currency
             fbDataDayLimit: 7,  // Amount of days to display firebase data
 
             stakeToken: props.stakeToken ?? "?",
@@ -86,10 +86,10 @@ class HistoricalRewards extends Component {
                 let dt = new Date(parseInt(epochTimeKey));
                 let globalStateInfo = this.state.firebaseData[epochTimeKey];
 
-                let stakedAmount = toMicroValue(this.state.stakedYLDY);
-
                 // iterate through keys config
                 for (let config of this.state.rewardKeysConfig) {
+                    let stakedAmount = convertFromMicroValue(this.state.stakedYLDY, config.decimals);
+
                     let rewardValue = globalStateInfo[config.key];
                     // if key is stored and valid...
                     if (rewardValue) {
