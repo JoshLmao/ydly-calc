@@ -152,7 +152,8 @@ class YLDYAssetStats extends Component {
 
                 <div className="bg-dark border-top border-info py-3" />
 
-                <Container>
+                <Container
+                    className="mb-5">
                     <PoolStatistics
                         appID={ constants.NO_LOSS_LOTTERY_APP_ID }
                         stakeConfig={
@@ -161,6 +162,7 @@ class YLDYAssetStats extends Component {
                                     unit: "ALGO",
                                     key: "GA",
                                     lineColor: this.state.algoLineColor,
+                                    decimals: 6,
                                 }
                             ]
                         }
@@ -170,6 +172,7 @@ class YLDYAssetStats extends Component {
                                     unit: "YLDY",
                                     key: "TYUL",
                                     lineColor: this.state.yldyLineColor,
+                                    decimals: 6,
                                 }
                             ]
                         }
@@ -197,11 +200,13 @@ class YLDYAssetStats extends Component {
                                     unit: "ALGO",
                                     key: "TAP",
                                     lineColor: this.state.algoLineColor,
+                                    decimals: 6,
                                 },
                                 {
                                     unit: "YLDY",
                                     key: "TYUL",
                                     lineColor: this.state.yldyLineColor,
+                                    decimals: 6,
                                 }
                             ]
                         }
