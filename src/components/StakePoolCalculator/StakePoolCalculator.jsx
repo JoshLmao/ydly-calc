@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
 import { DateTime } from "luxon";
 
-import { convertToMicroValue, formatNumber, fromMicroValue, getDayDifference, isStringBlank, toMicroValue } from '../../js/utility';
+import { convertToMicroValue, formatNumber, fromMicroValue, getDayDifference, isStringBlank, convertFromMicroValue } from '../../js/utility';
 import { unitToIcon } from "../../js/consts";
 import { calculateRewardsPoolPercentageShare, calculateYLDYRewardsFromDayPeriod } from '../../js/YLDYCalculation';
 import {
@@ -10,6 +10,17 @@ import {
     getCurrentBlockTimestamp,
     getUserStateValues,
 } from "../../js/AlgoExplorerAPI";
+
+function getKeyDecimals (keyConfigs, key) {
+    if (keyConfigs) {
+        for (let keyConf of keyConfigs) {
+            if (keyConf.key === key) {
+                return keyConf.decimals;
+            }
+        }
+    }
+    return 0;
+}
 
 class StakePoolCalculator extends Component {
     constructor(props) {
@@ -199,7 +210,8 @@ class StakePoolCalculator extends Component {
             // Get USS if available, convert amount to microValue
             let uss = this.state.user?.stakingShares ?? 0;
             let stakedAmount = this.state.stakedAmount;
-            stakedAmount = toMicroValue(stakedAmount);
+            let decimals = getKeyDecimals(this.state.applicationKeysConfig, "GA");
+            stakedAmount = convertFromMicroValue(stakedAmount, decimals);
 
             let allClaimableRewards = [];
             for (let rewardInfo of this.state.stakingPoolRewardKeys) {

@@ -85,6 +85,7 @@ class OPULOPULStakingPool extends Component {
                         ]}
                         stakeToken="OPUL"
                         claimTokens={ [ "OPUL" ] }
+                        defaultStakedAmount={ 100 }
                         />
                 </Container>
 
