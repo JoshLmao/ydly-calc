@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import {
     BrowserRouter,
     Route,
-    Switch,
-    Redirect
+    Switch
 } from 'react-router-dom';
 import { initFirebase } from '../../js/FirebaseAPI';
 
@@ -13,11 +12,12 @@ import Footer from "../Footer";
 import FourOhFour from "../FourOhFour";
 import YLDYAssetStats from '../YLDYAssetStats/YLDYAssetStats';
 import StakeClaimStats from '../StakeClaimStats/StakeClaimStats';
-import OpulStaking from '../StakingPools/OPULStaking';
+import YLDYOPULStaking from '../StakingPools/YLDY-OPUL/';
 import YLDYSMILEStakingPool from '../StakingPools/YLDY-SMILE/YLDYSMILEStakingPool';
 import AllStakingPools from '../AllStakingPools/AllStakingPools';
 import TopStakers from "../TopStakers";
 import OPULOPULStakingPool from '../StakingPools/OPUL-OPUL/OPULOPULStakingPool';
+import YLDYYLDYStaking from "../StakingPools/YLDY-YLDY/YLDYYLDYStaking";
 
 class App extends Component {
     constructor(props) {
@@ -39,14 +39,15 @@ class App extends Component {
                     {/* List view, all staking pools */}
                     <Route exact path="/staking-pools" component={ AllStakingPools } />
 
+                    {/* YLDY/YLDY Staking Pool */}
+                    <Route exact path="/yldy-yldy-staking" component={ YLDYYLDYStaking } />
                     {/* YLDY/OPUL Staking pool */}
-                    <Route exact path="/yldy-opul-staking" component={ OpulStaking } />
+                    <Route exact path="/yldy-opul-staking" component={ YLDYOPULStaking } />
                     {/* YLDY/SMILE Staking Pool */}
                     <Route exact path="/yldy-smile-staking" component={ YLDYSMILEStakingPool } />
+                    {/* OPUL/OPUL staking */}
                     <Route exact path="/opul-opul-staking" component={ OPULOPULStakingPool } />
-                    
-                    {/* Redirect route from old url */}
-                    <Redirect from="/opul-staking" to="/yldy-opul-staking" />
+
 
                     <Route exact path="/yldy-stats" component={YLDYAssetStats} />
                     <Route exact path="/top-stakers" component={ TopStakers } />

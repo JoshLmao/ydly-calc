@@ -30,15 +30,7 @@ class YLDYAssetStats extends Component {
             dbWeekLimit: 6 * 7,
             // NLL db data for the week
             nllWeekData: null,
-            // YLDY Staking db data for week
-            yldyWeekData: null,
-
             nllDifference: null,
-            yldyDifference: null,
-
-
-            algoLineColor: "#6cdef9",
-            yldyLineColor: "rgba(254, 215, 56, 1)",
         };
 
         this.refreshNLLData = this.refreshNLLData.bind(this);
@@ -46,7 +38,6 @@ class YLDYAssetStats extends Component {
 
     componentDidMount() {
         this.refreshNLLData();
-        this.refreshYLDYStakingData();
     }
 
     refreshNLLData() {
@@ -67,30 +58,6 @@ class YLDYAssetStats extends Component {
                             amount: ticketDifference,
                             percent: percentIncrease,
                         }
-                    });
-                });
-            }
-        });
-    }
-
-    refreshYLDYStakingData() {
-        getApplicationData(constants.YLDY_STAKING_APP_ID, this.state.dbWeekLimit, (data) => {
-            if (data) {
-                this.setState({
-                    yldyWeekData: data,
-                }, () => {
-                    let allKeys = Object.keys(this.state.yldyWeekData);
-                    let first = this.state.yldyWeekData[allKeys[0]];
-                    let last = this.state.yldyWeekData[allKeys[allKeys.length - 1]];
-                    let ticketDifference = calcDifference(first.GA, last.GA);
-                    let percentIncrease = calcPercentDiff(first.GA, last.GA);
-                    this.setState({
-                        yldyDifference: {
-                            amount: ticketDifference,
-                            first: first.GA,
-                            last: last.GA,
-                            percent: percentIncrease,
-                        },
                     });
                 });
             }
@@ -156,6 +123,7 @@ class YLDYAssetStats extends Component {
                     className="mb-5">
                     <PoolStatistics
                         appID={ constants.NO_LOSS_LOTTERY_APP_ID }
+                        poolName="No Loss Lottery"
                         stakeConfig={
                             [
                                 {
@@ -178,40 +146,6 @@ class YLDYAssetStats extends Component {
                         }
                         />
                 </Container>
-
-                <div className="border-top border-primary" />
-
-                <Container className="py-5">
-                    <PoolStatistics
-                        appID={ constants.YLDY_STAKING_APP_ID }
-                        stakeConfig={
-                            [
-                                {
-                                    unit: "YLDY",
-                                    key: "GA",
-                                    lineColor: this.state.yldyLineColor,
-                                    decimals: 6,
-                                }
-                            ]
-                        }
-                        rewardsConfig={
-                            [
-                                {
-                                    unit: "ALGO",
-                                    key: "TAP",
-                                    lineColor: this.state.algoLineColor,
-                                    decimals: 6,
-                                },
-                                {
-                                    unit: "YLDY",
-                                    key: "TYUL",
-                                    lineColor: this.state.yldyLineColor,
-                                    decimals: 6,
-                                }
-                            ]
-                        }
-                        />
-                </ Container>
             </div>
         );
     }

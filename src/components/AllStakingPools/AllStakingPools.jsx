@@ -16,7 +16,7 @@ class AllStakingPools extends Component {
                 },
                 {
                     title: "YLDY/YLDY Staking Pool",
-                    to: "/#yldy-staking",
+                    to: "/yldy-yldy-staking",
                     unit: "YLDY"
                 },
                 {

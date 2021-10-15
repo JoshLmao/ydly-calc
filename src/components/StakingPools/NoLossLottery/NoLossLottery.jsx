@@ -1,19 +1,22 @@
 import React, { Component } from 'react';
 import { Container } from 'react-bootstrap';
 import { constants } from '../../../js/consts';
+
 import HistoricalRewards from '../../HistoricalRewards';
 import PoolStatistics from '../../PoolStatistics/PoolStatistics';
 import StakePoolCalculator from '../../StakePoolCalculator';
-import StakePoolJumbo from '../../StakePoolJumbo/StakePoolJumbo';
+import StakePoolJumbo from '../../StakePoolJumbo';
 
-class YLDYSMILEStakingPool extends Component {
-
+class NoLossLottery extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            appID: constants.YLDY_SMILE_POOL_APP_ID,
-            lineColor: "#21dbcc",
+            appID: constants.NO_LOSS_LOTTERY_APP_ID,
+            poolName: "No Loss Lottery",
+            lineColor: "#6cdef9",
+            yldyLineColor: "rgba(254, 215, 56, 1)",
+            borderVariant: "info",
         };
     }
 
@@ -24,8 +27,8 @@ class YLDYSMILEStakingPool extends Component {
                 <Container>
                     <StakePoolJumbo
                         appID={ this.state.appID }
-                        title="YLDY/SMILE Staking"
-                        unitVariant="smile"
+                        title={ this.state.poolName }
+                        unitVariant="ALGO"
                         />
                 </Container>
 
@@ -46,29 +49,28 @@ class YLDYSMILEStakingPool extends Component {
                                 },
                                 {
                                     key: "GA",
-                                    unit: "YLDY",
+                                    unit: "ALGO",
                                     type: "currency",
-                                    title: "Total YLDY Staked (GA)",
+                                    title: "Total Staked (GA)",
                                     decimals: 6,
                                 },
                                 {
-                                    // Total SMILE in tool
                                     key: "TYUL",
                                     type: "currency",
-                                    unit: "SMILE",
+                                    unit: "YLDY",
                                     title: "Total Available in Pool (TYUL)",
                                     decimals: 6,
                                     isRewardKey: true,
                                 }
                             ]
                         }
-                        primaryValueUnit="YLDY"
-                        rewardValueUnit="SMILE"
-                        variant="smile"
+                        primaryValueUnit="ALGO"
+                        rewardValueUnit="YLDY"
+                        variant="algo"
                         />
                 </Container>
 
-                <div className="border-smile border-top mt-5 pb-5" />
+                <div className={`border-${this.state.borderVariant} border-top mt-5 pb-5`} />
 
                 <Container>
                     <HistoricalRewards
@@ -76,46 +78,50 @@ class YLDYSMILEStakingPool extends Component {
                         rewardKeysConfig={[ 
                             {
                                 key: "TYUL",
-                                unit: "SMILE",
+                                unit: "YLDY",
                                 decimals: 6,
-                                lineColor: this.state.lineColor,
+                                lineColor: this.state.yldyLineColor,
                             }
                         ]}
-                        stakeToken="YLDY"
-                        claimTokens={ [ "SMILE" ] }
+                        stakeToken="ALGO"
+                        claimTokens={ [ "YLDY" ] }
+                        defaultStakedAmount={ 1000 }
                         />
                 </Container>
 
-                <div className="border-smile border-top mt-5 pb-5" />
+                <div className={`border-${this.state.borderVariant} border-top mt-5 pb-5`} />
 
                 <Container
                     className="py-3">
                     <PoolStatistics
-                        title="YLDY/SMILE Pool Statistics"
+                        title={ this.state.poolName + " Pool Statistics" }
                         appID={ this.state.appID }
                         stakeConfig={
                             [
                                 {
-                                    unit: "YLDY",
-                                    key: "GA"
+                                    unit: "ALGO",
+                                    key: "GA",
+                                    decimals: 6,
+                                    lineColor: this.state.lineColor
                                 }
                             ]
                         }
                         rewardsConfig={
                             [
                                 {
-                                    unit: "SMILE",
+                                    unit: "YLDY",
                                     key: "TYUL",
                                     decimals: 6,
-                                    lineColor: this.state.lineColor
+                                    lineColor: this.state.yldyLineColor
                                 }
                             ]
                         }
                         />
                 </Container>
             </div>
-        );
+        )
     }
+
 }
 
-export default YLDYSMILEStakingPool;
+export default NoLossLottery;

@@ -3,16 +3,19 @@ import { Container } from 'react-bootstrap';
 
 import { constants } from '../../../js/consts';
 import HistoricalRewards from '../../HistoricalRewards';
+import PoolStatistics from '../../PoolStatistics/';
 import StakePoolCalculator from '../../StakePoolCalculator';
+import StakePoolJumbo from '../../StakePoolJumbo/StakePoolJumbo';
 
-class YLDYStaking extends Component {
+class YLDYYLDYStaking extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             userAlgoAddress: props.userAlgoAddress ?? "",
 
-            yldyStakingAppID: constants.YLDY_STAKING_APP_ID,
+            appID: constants.YLDY_STAKING_APP_ID,
+            poolName: "YLDY/YLDY",
             applicationKeysConfig: [
                 {
                     key: "GT",
@@ -85,28 +88,16 @@ class YLDYStaking extends Component {
             <div
                 className="bg-dark py-5 text-white">
                 <Container>
-                    <h1
-                        className="display-4 font-weight-bold text-center my-4 info-title-shadowed">
-                        YLDY Staking
-                    </h1>
-                    <p className="small text-center">
-                        contract address:{" "}
-                        <a
-                            href={
-                            "https://algoexplorer.io/application/" +
-                            this.state.yldyStakingAppID
-                            }
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-info font-weight-bold">
-                            { this.state.yldyStakingAppID }
-                        </a>
-                    </p>
+                    <StakePoolJumbo
+                        appID={ this.state.appID }
+                        title="YLDY/YLDY Staking"
+                        unitVariant="yldy"
+                        />
                 </Container>
 
                 <Container>
                     <StakePoolCalculator
-                        stakePoolID={ this.state.yldyStakingAppID }
+                        stakePoolID={ this.state.appID }
                         applicationKeysConfig={ this.state.applicationKeysConfig }
                         userAddress={ this.state.userAlgoAddress }
                         userKeysConfig={ this.state.userKeysConfig }
@@ -116,9 +107,11 @@ class YLDYStaking extends Component {
                         />
                 </Container>
 
+                <div className="border-yldy border-top mt-5 pb-5" />
+
                 <Container>
                     <HistoricalRewards
-                        appID={ this.state.yldyStakingAppID }
+                        appID={ this.state.appID }
                         rewardKeysConfig={[ 
                             {
                                 key: "TYUL",
@@ -138,9 +131,44 @@ class YLDYStaking extends Component {
                         claimTokens={[ "YLDY", "ALGO" ]}
                         />
                 </Container>
+
+                <div className="border-yldy border-top mt-5 pb-5" />
+
+                <Container>
+                    <PoolStatistics
+                        title={ this.state.poolName + " Pool Statistics" }
+                        appID={ this.state.appID }
+                        stakeConfig={
+                            [
+                                {
+                                    unit: "YLDY",
+                                    key: "GA",
+                                    lineColor: this.state.yldyLineColor,
+                                    decimals: 6,
+                                }
+                            ]
+                        }
+                        rewardsConfig={
+                            [
+                                {
+                                    unit: "ALGO",
+                                    key: "TAP",
+                                    lineColor: "#6cdef9",
+                                    decimals: 6,
+                                },
+                                {
+                                    unit: "YLDY",
+                                    key: "TYUL",
+                                    lineColor: "rgba(254, 215, 56, 1)",
+                                    decimals: 6,
+                                }
+                            ]
+                        }
+                        />
+                </Container>
             </div>
         );
     }
 }
 
-export default YLDYStaking;
+export default YLDYYLDYStaking;
