@@ -7,7 +7,7 @@ class StakePoolJumbo extends Component {
         this.state = {
             appID: props.appID ?? -1,
             title: props.title ?? "Staking Pool",
-            unitVariant: props.unitVariant ?? "light",
+            unitVariant: props.unitVariant?.toLowerCase() ?? "light",
         };
     }
 

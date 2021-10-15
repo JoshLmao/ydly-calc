@@ -1,13 +1,8 @@
 import React, { Component } from 'react';
 import { Container, Form, Row, Col, Jumbotron, Alert } from "react-bootstrap";
 
-import {
-    constants
-} from "../../js/consts";
-
-import NoLossLottery from "../NoLossLottery/NoLossLottery";
+import NoLossLottery from "../StakingPools/NoLossLottery";
 import ScrollToTopButton from '../ScrollToTopButton';
-import HistoricalRewards from '../HistoricalRewards';
 
 import ALGO_LOGO from "../../svg/algo-icon.svg"
 
@@ -16,11 +11,7 @@ class Home extends Component {
         super(props);
 
         this.state = {
-            userAlgoAddress: null,
-            
-            nllAppID: constants.NO_LOSS_LOTTERY_APP_ID,
-            yldyStakingAppID: constants.YLDY_STAKING_APP_ID,
-
+            userAlgoAddress: "",
             showAdvert: true,
         };
     }
@@ -112,29 +103,7 @@ class Home extends Component {
                 <div
                     className="bg-dark border-top border-primary py-3"
                     id="no-loss-lottery">
-                    <Container>
-                        <NoLossLottery
-                            userAlgoAddress={this.state.userAlgoAddress}
-                            firebase={this.state.firebase}
-                        />
-                        <Row>
-                            <Col>
-                                <HistoricalRewards
-                                    appID={constants.NO_LOSS_LOTTERY_APP_ID}
-                                    rewardKeysConfig={[ 
-                                        {
-                                            key: "TYUL",
-                                            unit: "YLDY",
-                                            lineColor: "orange",
-                                            decimals: 6,
-                                        }
-                                    ]}
-                                    stakeToken="ALGO"
-                                    claimTokens={[ "YLDY" ]}
-                                    />
-                            </Col>
-                        </Row>
-                    </Container>
+                    <NoLossLottery />
                 </div>
         </div>
         );

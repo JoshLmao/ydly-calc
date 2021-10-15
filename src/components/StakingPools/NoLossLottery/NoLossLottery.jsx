@@ -5,18 +5,18 @@ import { constants } from '../../../js/consts';
 import HistoricalRewards from '../../HistoricalRewards';
 import PoolStatistics from '../../PoolStatistics/PoolStatistics';
 import StakePoolCalculator from '../../StakePoolCalculator';
-import StakePoolJumbo from '../../StakePoolJumbo/StakePoolJumbo';
+import StakePoolJumbo from '../../StakePoolJumbo';
 
-class OPULOPULStakingPool extends Component {
-
+class NoLossLottery extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            appID: constants.OPUL_OPUL_POOL_APP_ID,
-            lineColor: "#ff5400",
-
-            poolName: "OPUL/OPUL"
+            appID: constants.NO_LOSS_LOTTERY_APP_ID,
+            poolName: "No Loss Lottery",
+            lineColor: "#6cdef9",
+            yldyLineColor: "rgba(254, 215, 56, 1)",
+            borderVariant: "info",
         };
     }
 
@@ -28,7 +28,7 @@ class OPULOPULStakingPool extends Component {
                     <StakePoolJumbo
                         appID={ this.state.appID }
                         title={ this.state.poolName + " Staking" }
-                        unitVariant="opul"
+                        unitVariant="ALGO"
                         />
                 </Container>
 
@@ -49,29 +49,28 @@ class OPULOPULStakingPool extends Component {
                                 },
                                 {
                                     key: "GA",
-                                    unit: "OPUL",
+                                    unit: "ALGO",
                                     type: "currency",
-                                    title: "Total OPUL Staked (GA)",
-                                    decimals: 10,
+                                    title: "Total Staked (GA)",
+                                    decimals: 6,
                                 },
                                 {
-                                    // Total SMILE in tool
                                     key: "TYUL",
                                     type: "currency",
-                                    unit: "OPUL",
+                                    unit: "YLDY",
                                     title: "Total Available in Pool (TYUL)",
-                                    decimals: 10,
+                                    decimals: 6,
                                     isRewardKey: true,
                                 }
                             ]
                         }
-                        primaryValueUnit="OPUL"
-                        rewardValueUnit="OPUL"
-                        variant="opul"
+                        primaryValueUnit="ALGO"
+                        rewardValueUnit="YLDY"
+                        variant="algo"
                         />
                 </Container>
 
-                <div className="border-smile border-top mt-5 pb-5" />
+                <div className={`border-${this.state.borderVariant} border-top mt-5 pb-5`} />
 
                 <Container>
                     <HistoricalRewards
@@ -79,18 +78,18 @@ class OPULOPULStakingPool extends Component {
                         rewardKeysConfig={[ 
                             {
                                 key: "TYUL",
-                                unit: "OPUL",
-                                decimals: 10,
-                                lineColor: this.state.lineColor,
+                                unit: "YLDY",
+                                decimals: 6,
+                                lineColor: this.state.yldyLineColor,
                             }
                         ]}
-                        stakeToken="OPUL"
-                        claimTokens={ [ "OPUL" ] }
-                        defaultStakedAmount={ 100 }
+                        stakeToken="ALGO"
+                        claimTokens={ [ "YLDY" ] }
+                        defaultStakedAmount={ 1000 }
                         />
                 </Container>
 
-                <div className="border-smile border-top mt-5 pb-5" />
+                <div className={`border-${this.state.borderVariant} border-top mt-5 pb-5`} />
 
                 <Container
                     className="py-3">
@@ -100,9 +99,9 @@ class OPULOPULStakingPool extends Component {
                         stakeConfig={
                             [
                                 {
-                                    unit: "OPUL",
+                                    unit: "ALGO",
                                     key: "GA",
-                                    decimals: 10,
+                                    decimals: 6,
                                     lineColor: this.state.lineColor
                                 }
                             ]
@@ -110,18 +109,19 @@ class OPULOPULStakingPool extends Component {
                         rewardsConfig={
                             [
                                 {
-                                    unit: "OPUL",
+                                    unit: "YLDY",
                                     key: "TYUL",
-                                    decimals: 10,
-                                    lineColor: this.state.lineColor
+                                    decimals: 6,
+                                    lineColor: this.state.yldyLineColor
                                 }
                             ]
                         }
                         />
                 </Container>
             </div>
-        );
+        )
     }
+
 }
 
-export default OPULOPULStakingPool;
+export default NoLossLottery;
