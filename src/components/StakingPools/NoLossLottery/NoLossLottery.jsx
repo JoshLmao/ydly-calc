@@ -27,7 +27,7 @@ class NoLossLottery extends Component {
                 <Container>
                     <StakePoolJumbo
                         appID={ this.state.appID }
-                        title={ this.state.poolName + " Staking" }
+                        title={ this.state.poolName }
                         unitVariant="ALGO"
                         />
                 </Container>

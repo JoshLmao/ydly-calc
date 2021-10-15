@@ -50,7 +50,7 @@ class StakePoolCalculator extends Component {
             rewardValueUnit: props.rewardValueUnit ?? "YLDY",
 
             // value staked
-            stakedAmount: 0,
+            stakedAmount: props.defaultStakedAmount ?? 1000,
             // Amount of days to display period
             daysPeriod: 1,
             // Amount determined to be claimable for user
@@ -210,7 +210,13 @@ class StakePoolCalculator extends Component {
             // Get USS if available, convert amount to microValue
             let uss = this.state.user?.stakingShares ?? 0;
             let stakedAmount = this.state.stakedAmount;
-            let decimals = getKeyDecimals(this.state.applicationKeysConfig, "GA");
+
+            let key = "GA";
+            let decimals = getKeyDecimals(this.state.applicationKeysConfig, key);
+            if (!decimals) {
+                console.error(`No decimals provided on '${key}' in '${this.state.stakePoolID}'`);
+            }
+            
             stakedAmount = convertFromMicroValue(stakedAmount, decimals);
 
             let allClaimableRewards = [];

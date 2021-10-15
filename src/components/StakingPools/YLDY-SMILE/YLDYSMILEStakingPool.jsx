@@ -49,6 +49,7 @@ class YLDYSMILEStakingPool extends Component {
                                     unit: "YLDY",
                                     type: "currency",
                                     title: "Total YLDY Staked (GA)",
+                                    decimals: 6,
                                 },
                                 {
                                     // Total SMILE in tool

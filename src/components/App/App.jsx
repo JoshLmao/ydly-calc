@@ -12,7 +12,7 @@ import Footer from "../Footer";
 import FourOhFour from "../FourOhFour";
 import YLDYAssetStats from '../YLDYAssetStats/YLDYAssetStats';
 import StakeClaimStats from '../StakeClaimStats/StakeClaimStats';
-import OpulStaking from '../StakingPools/OPULStaking';
+import YLDYOPULStaking from '../StakingPools/YLDY-OPUL/';
 import YLDYSMILEStakingPool from '../StakingPools/YLDY-SMILE/YLDYSMILEStakingPool';
 import AllStakingPools from '../AllStakingPools/AllStakingPools';
 import TopStakers from "../TopStakers";
@@ -42,7 +42,7 @@ class App extends Component {
                     {/* YLDY/YLDY Staking Pool */}
                     <Route exact path="/yldy-yldy-staking" component={ YLDYYLDYStaking } />
                     {/* YLDY/OPUL Staking pool */}
-                    <Route exact path="/yldy-opul-staking" component={ OpulStaking } />
+                    <Route exact path="/yldy-opul-staking" component={ YLDYOPULStaking } />
                     {/* YLDY/SMILE Staking Pool */}
                     <Route exact path="/yldy-smile-staking" component={ YLDYSMILEStakingPool } />
                     {/* OPUL/OPUL staking */}

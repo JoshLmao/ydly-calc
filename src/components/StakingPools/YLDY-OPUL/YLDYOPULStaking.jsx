@@ -6,42 +6,13 @@ import PoolStatistics from '../../PoolStatistics/PoolStatistics';
 import StakePoolCalculator from '../../StakePoolCalculator';
 import StakePoolJumbo from '../../StakePoolJumbo/StakePoolJumbo';
 
-class OpulStaking extends Component {
+class YLDYOPULStaking extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             // Application ID on Algorand blockchain
             opulStakingAppID: constants.OPUL_STAKING_APP_ID,
-            
-            // Keys to get data values of from application
-            opulAppKeysConfig: [
-                {
-                    key: "GT",
-                    type: "time",
-                    title: "Global Time (GT)"
-                },
-                {
-                    key: "GSS",
-                    type: "number",
-                    title: "Global Staking Shares (GSS)"
-                },
-                {
-                    // Total amount staked
-                    key: "GA",
-                    unit: "YLDY",
-                    type: "currency",
-                    title: "Total YLDY Staked (GA)",
-                },
-                {
-                    key: "TYUL",
-                    type: "currency",
-                    unit: "OPUL",
-                    title: "Total Available in Pool (TYUL)",
-                    decimals: 10,
-                    isRewardKey: true,
-                },
-            ],
 
             opulLineColor: "#ff5400",
         };
@@ -64,7 +35,35 @@ class OpulStaking extends Component {
                 <Container>
                     <StakePoolCalculator
                         stakePoolID={ this.state.opulStakingAppID }
-                        applicationKeysConfig={ this.state.opulAppKeysConfig }
+                        applicationKeysConfig={ [
+                                {
+                                    key: "GT",
+                                    type: "time",
+                                    title: "Global Time (GT)"
+                                },
+                                {
+                                    key: "GSS",
+                                    type: "number",
+                                    title: "Global Staking Shares (GSS)"
+                                },
+                                {
+                                    // Total amount staked
+                                    key: "GA",
+                                    unit: "YLDY",
+                                    type: "currency",
+                                    title: "Total YLDY Staked (GA)",
+                                    decimals: 6,
+                                },
+                                {
+                                    key: "TYUL",
+                                    type: "currency",
+                                    unit: "OPUL",
+                                    title: "Total Available in Pool (TYUL)",
+                                    decimals: 10,
+                                    isRewardKey: true,
+                                },
+                            ]
+                        }
                         primaryValueUnit="YLDY"
                         rewardValueUnit="OPUL"
                         variant="opul"
@@ -100,7 +99,8 @@ class OpulStaking extends Component {
                             [
                                 {
                                     unit: "YLDY",
-                                    key: "GA"
+                                    key: "GA",
+                                    decimals: 6
                                 }
                             ]
                         }
@@ -121,4 +121,4 @@ class OpulStaking extends Component {
     }
 }
 
-export default OpulStaking;
+export default YLDYOPULStaking;
