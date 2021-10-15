@@ -51,13 +51,8 @@ class Header extends Component {
                                         href: "/#no-loss-lottery",
                                     },
                                     {
-                                        text: "YLDY Staking",
-                                        variant: "info",
-                                        href: "/#yldy-staking",
-                                    },
-                                    {
                                         text: "All Staking Pools",
-                                        variant: "secondary",
+                                        variant: "info",
                                         to: "/staking-pools"
                                     },
                                     {

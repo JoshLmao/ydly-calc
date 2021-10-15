@@ -10,7 +10,6 @@ import ScrollToTopButton from '../ScrollToTopButton';
 import HistoricalRewards from '../HistoricalRewards';
 
 import ALGO_LOGO from "../../svg/algo-icon.svg"
-import YLDYStaking from '../StakingPools/YLDYStaking';
 
 class Home extends Component {
     constructor(props) {
@@ -137,12 +136,6 @@ class Home extends Component {
                         </Row>
                     </Container>
                 </div>
-
-                <div className="bg-dark border-top border-info py-3" id="yldy-staking">
-                    <YLDYStaking 
-                        userAlgoAddress={ this.state.userAlgoAddress }
-                        />
-            </div>
         </div>
         );
     }
