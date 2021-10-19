@@ -135,7 +135,7 @@ class PoolStatistics extends Component {
                                             value={ 
                                                 this.state.periodDifference
                                                 ?
-                                                convertToMicroFormatNumber(this.state.periodDifference?.amount, config.decimals, 0)
+                                                convertToMicroFormatNumber(this.state.periodDifference?.amount, config.decimals ?? 6, 0)
                                                 :
                                                 "0"
                                             }

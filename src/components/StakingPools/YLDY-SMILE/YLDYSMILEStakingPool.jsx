@@ -97,7 +97,8 @@ class YLDYSMILEStakingPool extends Component {
                             [
                                 {
                                     unit: "YLDY",
-                                    key: "GA"
+                                    key: "GA",
+                                    decimals: 6,
                                 }
                             ]
                         }
