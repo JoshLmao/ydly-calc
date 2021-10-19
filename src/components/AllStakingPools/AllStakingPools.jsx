@@ -33,6 +33,11 @@ class AllStakingPools extends Component {
                     title: "OPUL/OPUL Staking Pool",
                     to: "opul-opul-staking",
                     unit: "OPUL"
+                },
+                {
+                    title: "SMILE/SMILE Staking Pool",
+                    to: "smile-smile-staking",
+                    unit: "SMILE"
                 }
             ]
         };
