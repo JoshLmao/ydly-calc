@@ -13,10 +13,11 @@ class SMILESMILEStakingPool extends Component {
         super(props);
 
         this.state = {
-            appID: constants.OPUL_OPUL_POOL_APP_ID,
+            appID: constants.SMILE_SMILE_POOL_APP_ID,
             lineColor: "#21dbcc",
 
             poolName: "SMILE/SMILE",
+            smileDecimals: 6,
         };
     }
 
@@ -52,7 +53,7 @@ class SMILESMILEStakingPool extends Component {
                                     unit: "SMILE",
                                     type: "currency",
                                     title: "Total Staked (GA)",
-                                    decimals: 6,
+                                    decimals: this.state.smileDecimals,
                                 },
                                 {
                                     // Total SMILE in tool
@@ -60,7 +61,7 @@ class SMILESMILEStakingPool extends Component {
                                     type: "currency",
                                     unit: "SMILE",
                                     title: "Total Available in Pool (TYUL)",
-                                    decimals: 6,
+                                    decimals: this.state.smileDecimals,
                                     isRewardKey: true,
                                 }
                             ]
@@ -80,7 +81,7 @@ class SMILESMILEStakingPool extends Component {
                             {
                                 key: "TYUL",
                                 unit: "SMILE",
-                                decimals: 6,
+                                decimals: this.state.smileDecimals,
                                 lineColor: this.state.lineColor,
                             }
                         ]}
@@ -102,7 +103,7 @@ class SMILESMILEStakingPool extends Component {
                                 {
                                     unit: "SMILE",
                                     key: "GA",
-                                    decimals: 10,
+                                    decimals: this.state.smileDecimals,
                                     lineColor: this.state.lineColor
                                 }
                             ]
@@ -112,7 +113,7 @@ class SMILESMILEStakingPool extends Component {
                                 {
                                     unit: "SMILE",
                                     key: "TYUL",
-                                    decimals: 10,
+                                    decimals: this.state.smileDecimals,
                                     lineColor: this.state.lineColor
                                 }
                             ]
