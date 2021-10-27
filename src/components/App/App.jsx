@@ -19,6 +19,7 @@ import TopStakers from "../TopStakers";
 import OPULOPULStakingPool from '../StakingPools/OPUL-OPUL/OPULOPULStakingPool';
 import YLDYYLDYStaking from "../StakingPools/YLDY-YLDY/YLDYYLDYStaking";
 import SMILESMILEStakingPool from '../StakingPools/SMILE-SMILE/SMILESMILEStakingPool';
+import YLDYARCCStakingPool from '../StakingPools/YLDY-ARCC/YLDYARCCStakingPool';
 
 class App extends Component {
     constructor(props) {
@@ -50,6 +51,8 @@ class App extends Component {
                     <Route exact path="/opul-opul-staking" component={ OPULOPULStakingPool } />
                     {/* SMILE/SMILE */}
                     <Route exact path="/smile-smile-staking" component={ SMILESMILEStakingPool } />
+                    {/* YLDY/ARCC */}
+                    <Route exact path="/yldy-arcc-staking" component={ YLDYARCCStakingPool } />
 
                     <Route exact path="/yldy-stats" component={YLDYAssetStats} />
                     <Route exact path="/top-stakers" component={ TopStakers } />

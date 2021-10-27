@@ -1,3 +1,5 @@
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
 import { Container, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -12,32 +14,44 @@ class AllStakingPools extends Component {
                 {
                     title: "No Loss Lottery",
                     to: "/#no-loss-lottery",
-                    unit: "YLDY"
+                    stakingUnits: [ "ALGO" ],
+                    rewardUnits: [ "YLDY" ],
                 },
                 {
                     title: "YLDY/YLDY Staking Pool",
                     to: "/yldy-yldy-staking",
-                    unit: "YLDY"
+                    stakingUnits: [ "YLDY" ],
+                    rewardUnits: [ "YLDY", "ALGO" ],
                 },
                 {
                     title: "YLDY/OPUL Staking Pool",
                     to: "yldy-opul-staking",
-                    unit: "OPUL"
+                    stakingUnits: [ "YLDY" ],
+                    rewardUnits: [ "OPUL" ],
                 },
                 {
                     title: "YLDY/SMILE Staking Pool",
                     to: "yldy-smile-staking",
-                    unit: "SMILE",
+                    stakingUnits: [ "YLDY" ],
+                    rewardUnits: [ "SMILE" ],
                 },
                 {
                     title: "OPUL/OPUL Staking Pool",
                     to: "opul-opul-staking",
-                    unit: "OPUL"
+                    stakingUnits: [ "OPUL" ],
+                    rewardUnits: [ "OPUL" ],
                 },
                 {
                     title: "SMILE/SMILE Staking Pool",
                     to: "smile-smile-staking",
-                    unit: "SMILE"
+                    stakingUnits: [ "SMILE" ],
+                    rewardUnits: [ "SMILE" ],
+                },
+                {
+                    title: "YLDY/ARCC Staking Pool",
+                    to: `yldy-arcc-staking`,
+                    stakingUnits: [ "YLDY" ],
+                    rewardUnits: [ "ARCC" ],
                 }
             ]
         };
@@ -67,15 +81,48 @@ class AllStakingPools extends Component {
                                         variant={ `${config.disabled ? "dark" : "info" }` }
                                         className={ `text-dark rounded d-flex` }
                                         >
-                                            <img
-                                                alt="Unit icon"
-                                                src={ unitToIcon(config.unit) }
-                                                height="30"
-                                                className="my-auto mr-3"
-                                                style={{
-                                                    filter: "drop-shadow(0px 0px 1px black)"
-                                                }}
+                                        <div
+                                            className="my-auto"
+                                            >
+                                            {
+                                                config.stakingUnits && config.stakingUnits.map((unit) => {
+                                                    return (
+                                                        <img
+                                                            alt={ `${unit} icon` }
+                                                            src={ unitToIcon(unit) }
+                                                            height="30"
+                                                            className="my-auto"
+                                                            style={{
+                                                                filter: "drop-shadow(0px 0px 1px black)"
+                                                            }}
+                                                            />
+                                                    )
+                                                })
+                                            }
+                                        </div>
+                                            <FontAwesomeIcon
+                                                className="my-auto mx-2"
+                                                icon={ faArrowRight }
                                                 />
+                                        <div
+                                            className="mr-2 my-auto">
+                                            {
+                                                config.rewardUnits && config.rewardUnits.map((unit) => {
+                                                    return (
+                                                        <img
+                                                            alt={ `${unit} icon` }
+                                                            src={ unitToIcon(unit) }
+                                                            height="30"
+                                                            className="my-auto mr-1"
+                                                            style={{
+                                                                filter: "drop-shadow(0px 0px 1px black)"
+                                                            }}
+                                                            />
+                                                    )
+                                                })
+                                            }
+                                        </div>
+
                                         <h3
                                             className={`mb-0`}
                                             >

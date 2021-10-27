@@ -54,5 +54,17 @@ user_app_values = [
         "local_state_keys": [
             "UA"
         ]
+    },
+    {
+        "appID": "373819681",    # SMILE/SMILE
+        "local_state_keys": [
+            "UA"
+        ]
+    },
+    {
+        "appID": "385089192",
+        "local_state_keys": [
+            "UA"
+        ]
     }
 ]
