@@ -81,9 +81,9 @@ class YLDYGEMSStakingPool extends Component {
                         rewardKeysConfig={[ 
                             {
                                 key: "TYUL",
-                                unit: "YLDY",
-                                decimals: unitToDecimals("YLDY"),
-                                lineColor: this.state.yldyLineColor,
+                                unit: "GEMS",
+                                decimals: unitToDecimals("GEMS"),
+                                lineColor: this.state.rewardLineColor,
                             }
                         ]}
                         stakeToken="YLDY"
