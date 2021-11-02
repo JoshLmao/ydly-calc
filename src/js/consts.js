@@ -3,6 +3,7 @@ import ALGO_ICON from "../svg/algo-icon.svg";
 import OPUL_LOGO from "../svg/opul-icon.svg";
 import SMILE_ICON from "../svg/smile-icon.svg";
 import ARCC_ICON from "../svg/arcc-icon.svg";
+import ALGO_GEMS_ICON from "../svg/algo-gems-icon.svg";
 
 export const constants = {
     // Algorand application id for the No Loss Lottery
@@ -19,6 +20,8 @@ export const constants = {
     SMILE_SMILE_POOL_APP_ID: 373819681,
     // YLDY/ARCC
     YLDY_ARCC_APP_ID: 385089192,
+    // YLDY/GEMS
+    YLDY_GEMS_APP_ID: 393388133,
 
     // Algorand asset id for YLDY
     YLDY_ASSET_ID: 226701642,
@@ -41,6 +44,8 @@ export function appIDToName (appID) {
             return "SMILE/SMILE";
         case constants.YLDY_ARCC_APP_ID:
             return `YLDY/ARCC`;
+        case constants.YLDY_GEMS_APP_ID:
+            return 'YLDY/GEMS';
         default:
             return "Unknown " + appID;
     }
@@ -62,6 +67,8 @@ export function appIDToIcon(appID) {
             return unitToIcon("SMILE");
         case constants.YLDY_ARCC_APP_ID:
             return unitToIcon("ARCC");
+        case constants.YLDY_GEMS_APP_ID:
+            return unitToIcon("GEMS");
         default:
             return null;
     }
@@ -84,6 +91,8 @@ export function appIDToStakingUnit (appID) {
             return "SMILE";
         case constants.YLDY_ARCC_APP_ID:
             return "YLDY";
+        case constants.YLDY_GEMS_APP_ID:
+            return "YLDY";
         default:
             return null;
     }
@@ -102,6 +111,8 @@ export function unitToIcon (unit) {
             return SMILE_ICON;
         case "arcc":
             return ARCC_ICON;
+        case "gems":
+            return ALGO_GEMS_ICON;
         default:
             return null;
     }
@@ -118,6 +129,7 @@ export function unitToDecimals (unit) {
         case "smile":
             return 6;
         case "arcc":
+        case "gems":
             return 6;
         default:
             return null;

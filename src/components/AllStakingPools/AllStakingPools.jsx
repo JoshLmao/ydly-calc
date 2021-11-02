@@ -52,6 +52,12 @@ class AllStakingPools extends Component {
                     to: `yldy-arcc-staking`,
                     stakingUnits: [ "YLDY" ],
                     rewardUnits: [ "ARCC" ],
+                },
+                {
+                    title: "YLDY/GEMS Staking Pool",
+                    to: 'yldy-gems-staking',
+                    stakingUnits: [ "YLDY" ],
+                    rewardUnits: [ "GEMS" ]
                 }
             ]
         };
