@@ -20,6 +20,7 @@ import OPULOPULStakingPool from '../StakingPools/OPUL-OPUL/OPULOPULStakingPool';
 import YLDYYLDYStaking from "../StakingPools/YLDY-YLDY/YLDYYLDYStaking";
 import SMILESMILEStakingPool from '../StakingPools/SMILE-SMILE/SMILESMILEStakingPool';
 import YLDYARCCStakingPool from '../StakingPools/YLDY-ARCC/YLDYARCCStakingPool';
+import YLDYGEMSStakingPool from '../StakingPools/YLDY-GEMS/YLDYGEMSStakingPool';
 
 class App extends Component {
     constructor(props) {
@@ -53,6 +54,9 @@ class App extends Component {
                     <Route exact path="/smile-smile-staking" component={ SMILESMILEStakingPool } />
                     {/* YLDY/ARCC */}
                     <Route exact path="/yldy-arcc-staking" component={ YLDYARCCStakingPool } />
+                    {/* YLDY/GEMS */}
+                    <Route exact path="/yldy-gems-staking" component={ YLDYGEMSStakingPool } />
+
 
                     <Route exact path="/yldy-stats" component={YLDYAssetStats} />
                     <Route exact path="/top-stakers" component={ TopStakers } />
