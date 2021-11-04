@@ -10,13 +10,13 @@ opulStakingAppID = 348079765
 # YLDY/SMILE app id
 yldySmileStakingAppID = 352116819
 # OPUL/OPUL app id
-opulOpulAppID: 367431051
+opulOpulAppID = 367431051
 # SMILE/SMILE
-smileSmileAppID: 373819681
+smileSmileAppID = 373819681
 # YLDY/ARCC
-yldyArccAppID: 385089192
+yldyArccAppID = 385089192
 # YLDY/GEMS
-yldyGemsAppID: 393388133
+yldyGemsAppID = 393388133
 
 # Dictionary of all application id's and their global state keys
 # to retrieve every X hours
