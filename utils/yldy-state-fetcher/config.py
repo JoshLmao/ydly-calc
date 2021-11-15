@@ -17,6 +17,8 @@ smileSmileAppID = 373819681
 yldyArccAppID = 385089192
 # YLDY/GEMS
 yldyGemsAppID = 393388133
+# GEMS/GEMS
+gemsGemsAppID = 419301793
 
 # Dictionary of all application id's and their global state keys
 # to retrieve every X hours
@@ -46,6 +48,9 @@ APP_ID_STATE_KEYS_DICT = {
         "TYUL", "TYL", "GA", "GSS", "SA", "RA"
     ],
     yldyGemsAppID: [
+        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+    ],
+    gemsGemsAppID: [
         "TYUL", "TYL", "GA", "GSS", "SA", "RA"
     ],
 }
