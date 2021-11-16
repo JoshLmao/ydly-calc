@@ -22,6 +22,10 @@ export const constants = {
     YLDY_ARCC_APP_ID: 385089192,
     // YLDY/GEMS
     YLDY_GEMS_APP_ID: 393388133,
+    // GEMS/GEMS
+    GEMS_GEMS_APP_ID: 419301793,
+    // YLDY/XET
+    YLDY_XET_APP_ID: 9999999,
 
     // Algorand asset id for YLDY
     YLDY_ASSET_ID: 226701642,
@@ -46,6 +50,10 @@ export function appIDToName (appID) {
             return `YLDY/ARCC`;
         case constants.YLDY_GEMS_APP_ID:
             return 'YLDY/GEMS';
+        case constants.GEMS_GEMS_APP_ID:
+            return "GEMS/GEMS";
+        case constants.YLDY_XET_APP_ID:
+            return "YLDY/XET";
         default:
             return "Unknown " + appID;
     }
@@ -68,7 +76,10 @@ export function appIDToIcon(appID) {
         case constants.YLDY_ARCC_APP_ID:
             return unitToIcon("ARCC");
         case constants.YLDY_GEMS_APP_ID:
+        case constants.GEMS_GEMS_APP_ID:
             return unitToIcon("GEMS");
+        case constants.YLDY_XET_APP_ID:
+            return unitToIcon("YLDY/XET");
         default:
             return null;
     }
@@ -80,19 +91,18 @@ export function appIDToStakingUnit (appID) {
         case constants.NO_LOSS_LOTTERY_APP_ID:
             return "ALGO";
         case constants.YLDY_STAKING_APP_ID:
-            return "YLDY";
         case constants.OPUL_STAKING_APP_ID:
-            return "YLDY";
         case constants.YLDY_SMILE_POOL_APP_ID:
+        case constants.YLDY_ARCC_APP_ID:
+        case constants.YLDY_GEMS_APP_ID:
+        case constants.YLDY_XET_APP_ID:
             return "YLDY";
         case constants.OPUL_OPUL_POOL_APP_ID:
             return "OPUL";
         case constants.SMILE_SMILE_POOL_APP_ID:
             return "SMILE";
-        case constants.YLDY_ARCC_APP_ID:
-            return "YLDY";
-        case constants.YLDY_GEMS_APP_ID:
-            return "YLDY";
+        case constants.GEMS_GEMS_APP_ID:
+            return "GEMS";        
         default:
             return null;
     }
@@ -118,6 +128,7 @@ export function unitToIcon (unit) {
     }
 }
 
+// Converts a unit to the amount of decimals in it's currency
 export function unitToDecimals (unit) {
     switch(unit.toLowerCase()) {
         case "opul":
@@ -131,6 +142,8 @@ export function unitToDecimals (unit) {
         case "arcc":
         case "gems":
             return 6;
+        case "xet":
+            return 9;
         default:
             return null;
     }

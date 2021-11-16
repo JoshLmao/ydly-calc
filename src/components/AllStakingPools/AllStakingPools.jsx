@@ -58,7 +58,19 @@ class AllStakingPools extends Component {
                     to: 'yldy-gems-staking',
                     stakingUnits: [ "YLDY" ],
                     rewardUnits: [ "GEMS" ]
-                }
+                },
+                {
+                    title: "GEMS/GEMS Staking Pool",
+                    to: "gems-gems-staking",
+                    stakingUnits: [ "GEMS" ],
+                    rewardUnits: [ "GEMS" ]
+                },
+                // {
+                //     title: "YLDY/XET Staking Pool",
+                //     to: "yldy-xet-staking",
+                //     stakingUnits: [ "YLDY" ],
+                //     rewardUnits: [ "XET" ]
+                // },
             ]
         };
     }
