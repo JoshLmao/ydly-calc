@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Form, Row, Col, Jumbotron, Alert } from "react-bootstrap";
+import { Container, Row, Col, Jumbotron, Alert } from "react-bootstrap";
 
 import NoLossLottery from "../StakingPools/NoLossLottery";
 import ScrollToTopButton from '../ScrollToTopButton';
@@ -41,37 +41,12 @@ class Home extends Component {
                                     <h1 className="text-white font-weight-bold pb-3">
                                         Estimate your Yieldly rewards in seconds!
                                     </h1>
-                                    <Form.Control
-                                        type="text"
-                                        placeholder="Your Algorand Address"
-                                        value={this.state.userAlgoAddress ?? ""}
-                                        size="lg"
-                                        onChange={(e) =>
-                                            this.setState({ userAlgoAddress: e.target.value })
-                                        }
-                                        />
-                                    <p className="small pt-2 font-weight-bold text-muted">
-                                        If you are having issues, try removing the address and
-                                        trying again.
-                                    </p>
+                                    
                                     <p className="lead">
-                                        Enter your Algorand address to get your account information
-                                        from the
-                                        {" "}
-                                        <a
-                                            href="https://algoexplorer.io"
-                                            className="text-primary font-weight-bold"
-                                            target="_blank"
-                                            rel="noreferrer"
-                                        >
-                                            algoexplorer.io
-                                        </a>
-                                        {" "}
-                                        API.
+                                        Explore all the current Yieldly staking pool to determine how much you could make!
                                     </p>
-                                    <p className="small">
-                                    This will update custom tickets or staked YLDY values
-                                    entered below.
+                                    <p className="small text-muted">
+                                        The feature to enter your address will return in the future
                                     </p>
 
                                     <Row className="rounded bg-secondary float-left py-3 px-1 mx-1">

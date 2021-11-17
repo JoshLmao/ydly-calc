@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container } from 'react-bootstrap';
-import { constants } from '../../../js/consts';
+import { constants, unitToDecimals } from '../../../js/consts';
 import HistoricalRewards from '../../HistoricalRewards';
 import PoolStatistics from '../../PoolStatistics/PoolStatistics';
 import StakePoolCalculator from '../../StakePoolCalculator';
@@ -52,14 +52,14 @@ class YLDYOPULStaking extends Component {
                                     unit: "YLDY",
                                     type: "currency",
                                     title: "Total YLDY Staked (GA)",
-                                    decimals: 6,
+                                    decimals: unitToDecimals("YLDY"),
                                 },
                                 {
                                     key: "TYUL",
                                     type: "currency",
                                     unit: "OPUL",
                                     title: "Total Available in Pool (TYUL)",
-                                    decimals: 10,
+                                    decimals: unitToDecimals("OPUL"),
                                     isRewardKey: true,
                                 },
                             ]
@@ -79,12 +79,14 @@ class YLDYOPULStaking extends Component {
                             {
                                 key: "TYUL",
                                 unit: "OPUL",
-                                decimals: 10,
-                                lineColor: "#ff5400",
+                                decimals: unitToDecimals("OPUL"),
+                                lineColor: this.state.opulLineColor,
                             }
                         ]}
                         stakeToken="YLDY"
                         claimTokens={ [ "OPUL" ] }
+                        defaultStakedAmount={ 1000 }
+                        defaultStakedAmtDecimals={ unitToDecimals("YLDY") }
                         />
                 </Container>
 
@@ -100,7 +102,7 @@ class YLDYOPULStaking extends Component {
                                 {
                                     unit: "YLDY",
                                     key: "GA",
-                                    decimals: 6
+                                    decimals: unitToDecimals("YLDY")
                                 }
                             ]
                         }
@@ -109,7 +111,7 @@ class YLDYOPULStaking extends Component {
                                 {
                                     unit: "OPUL",
                                     key: "TYUL",
-                                    decimals: 10,
+                                    decimals: unitToDecimals("OPUL"),
                                     lineColor: this.state.opulLineColor
                                 }
                             ]
