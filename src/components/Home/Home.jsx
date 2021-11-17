@@ -43,7 +43,7 @@ class Home extends Component {
                                     </h1>
                                     
                                     <p className="lead">
-                                        Explore all the current Yieldly staking pool to determine how much you could make!
+                                        Explore all the current Yieldly staking pools to estimate your rewards, as well as view when best to claim!
                                     </p>
                                     <p className="small text-muted">
                                         The feature to enter your address will return in the future
