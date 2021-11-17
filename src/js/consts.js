@@ -4,6 +4,7 @@ import OPUL_LOGO from "../svg/opul-icon.svg";
 import SMILE_ICON from "../svg/smile-icon.svg";
 import ARCC_ICON from "../svg/arcc-icon.svg";
 import ALGO_GEMS_ICON from "../svg/algo-gems-icon.svg";
+import XET_ICON from "../svg/xet-icon.svg";
 
 export const constants = {
     // Algorand application id for the No Loss Lottery
@@ -25,7 +26,7 @@ export const constants = {
     // GEMS/GEMS
     GEMS_GEMS_APP_ID: 419301793,
     // YLDY/XET
-    YLDY_XET_APP_ID: 9999999,
+    YLDY_XET_APP_ID: 424101057,
 
     // Algorand asset id for YLDY
     YLDY_ASSET_ID: 226701642,
@@ -123,6 +124,8 @@ export function unitToIcon (unit) {
             return ARCC_ICON;
         case "gems":
             return ALGO_GEMS_ICON;
+        case "xet":
+            return XET_ICON;
         default:
             return null;
     }

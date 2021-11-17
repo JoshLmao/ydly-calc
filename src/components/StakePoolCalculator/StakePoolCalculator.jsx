@@ -275,7 +275,7 @@ class StakePoolCalculator extends Component {
                                                     src={ unitToIcon(claimableInfo.unit) }
                                                     width={25}
                                                     height={25}
-                                                    alt="Yieldly icon"
+                                                    alt="Staking reward icon"
                                                 />
                                                 { claimableInfo.unit } Claimable Rewards
                                             </p>
@@ -283,7 +283,7 @@ class StakePoolCalculator extends Component {
                                                 className="display-4"
                                                 title={`${claimableInfo.claimable} ${claimableInfo.unit}` ?? ""}>
                                                 {
-                                                    claimableInfo.claimable.toFixed(2)
+                                                    claimableInfo.claimable.toFixed(6)
                                                 }
                                             </p>
                                         </div>
