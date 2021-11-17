@@ -62,7 +62,19 @@ user_app_values = [
         ]
     },
     {
-        "appID": "385089192",
+        "appID": "385089192",   # YLDY/ARCC
+        "local_state_keys": [
+            "UA"
+        ]
+    },
+    {
+        "appID": "393388133",   # YLDY/GEMS
+        "local_state_keys": [
+            "UA"
+        ]
+    },
+    {
+        "appID": "419301793",   # GEMS/GEMS
         "local_state_keys": [
             "UA"
         ]
