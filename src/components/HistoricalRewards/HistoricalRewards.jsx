@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Container, Form, InputGroup, Row, Col } from 'react-bootstrap';
 import { Line } from "react-chartjs-2";
 
-import { constants } from "../../js/consts";
+import { constants, unitToDecimals } from "../../js/consts";
 import { getApplicationData } from '../../js/FirebaseAPI';
 import { appIDToName, unitToIcon } from "../../js/consts";
 import { convertFromMicroValue, convertToMicroValue, getBestGraphHeight } from '../../js/utility';
@@ -14,13 +14,16 @@ class HistoricalRewards extends Component {
     constructor(props) {
         super(props);
 
+        let stakeUnit = props.stakeToken ?? "";
         this.state = {
             appID: props.appID ?? constants.YLDY_STAKING_APP_ID,     // main app id to use as data
             rewardKeysConfig: props.rewardKeysConfig ?? [],
-            stakedYLDY: props.defaultStakedAmount ?? 1000, // Amount of staked primary currency
+            stakedAmount: props.defaultStakedAmount ?? 1000, // Amount of staked primary currency
+            defaultStakedAmtDecimals: props.defaultStakedAmtDecimals ?? 6,
             fbDataDayLimit: 7,  // Amount of days to display firebase data
 
-            stakeToken: props.stakeToken ?? "?",
+            stakeToken: stakeUnit,
+            stakeTokenDecimals: stakeUnit ? unitToDecimals(stakeUnit) : 6,
 
             // What unit is given to the user when claimed? YLDY, ALGO, OPUL
             claimTokens: props.claimTokens,
@@ -44,7 +47,7 @@ class HistoricalRewards extends Component {
             newVal = 1;
 
         this.setState({ 
-            stakedYLDY: newVal,
+            stakedAmount: newVal,
         }, () => this.updateGraphData());
     }
 
@@ -88,7 +91,7 @@ class HistoricalRewards extends Component {
 
                 // iterate through keys config
                 for (let config of this.state.rewardKeysConfig) {
-                    let stakedAmount = convertFromMicroValue(this.state.stakedYLDY, config.decimals);
+                    let stakedAmount = convertFromMicroValue(this.state.stakedAmount, this.state.stakeTokenDecimals);
 
                     let rewardValue = globalStateInfo[config.key];
                     // if key is stored and valid...
@@ -225,7 +228,8 @@ class HistoricalRewards extends Component {
                     </p>
                     <Row>
                         <Col md={6}>
-                            <Form.Group controlId="stakedYLDY">
+                            <Form.Group 
+                                controlId="stakedAmount">
                                 <Form.Label className="lead font-weight-bold">
                                     Staked { this.state.stakeToken }
                                 </Form.Label>
@@ -245,7 +249,7 @@ class HistoricalRewards extends Component {
                                         size="lg"
                                         type="number"
                                         placeholder={`Amount of staked ${this.state.stakeToken}`}
-                                        value={this.state.stakedYLDY}
+                                        value={this.state.stakedAmount}
                                         onChange={this.onStakedAmountChanged}
                                         />
                                 </InputGroup>
