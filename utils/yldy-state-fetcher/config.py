@@ -21,6 +21,8 @@ yldyGemsAppID = 393388133
 gemsGemsAppID = 419301793
 # YLDY/XET
 yldyXetAppId = 424101057
+# YLDY/CHOICE
+yldyChoiceAppID = 447336112
 
 # Dictionary of all application id's and their global state keys
 # to retrieve every X hours
@@ -56,6 +58,9 @@ APP_ID_STATE_KEYS_DICT = {
         "TYUL", "TYL", "GA", "GSS", "SA", "RA"
     ],
     yldyXetAppId: [
+        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+    ],
+    yldyChoiceAppID: [
         "TYUL", "TYL", "GA", "GSS", "SA", "RA"
     ],
 }
