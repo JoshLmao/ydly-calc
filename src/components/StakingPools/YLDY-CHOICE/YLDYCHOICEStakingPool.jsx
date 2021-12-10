@@ -7,18 +7,18 @@ import PoolStatistics from '../../PoolStatistics/PoolStatistics';
 import StakePoolCalculator from '../../StakePoolCalculator';
 import StakePoolJumbo from '../../StakePoolJumbo/StakePoolJumbo';
 
-class YLDYXETStakingPool extends Component {
+class YLDYCHOICEStakingPool extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            appID: constants.YLDY_XET_APP_ID,
+            appID: constants.YLDY_CHOICE_APP_ID,
             stakeLineColor: "rgba(254, 215, 56, 1)",
             rewardLineColor: "#3281F7",
 
-            poolName: appIDToName(constants.YLDY_XET_APP_ID),
-            borderSuffix: "xet",
+            poolName: appIDToName(constants.YLDY_CHOICE_APP_ID),
+            borderSuffix: "choice",
         };
     }
 
@@ -30,7 +30,7 @@ class YLDYXETStakingPool extends Component {
                     <StakePoolJumbo
                         appID={ this.state.appID }
                         title={ this.state.poolName + " Staking" }
-                        unitVariant="XET"
+                        unitVariant="choice"
                         />
                 </Container>
 
@@ -57,19 +57,18 @@ class YLDYXETStakingPool extends Component {
                                     decimals: unitToDecimals("YLDY"),
                                 },
                                 {
-                                    // Total SMILE in tool
                                     key: "TYUL",
                                     type: "currency",
-                                    unit: "XET",
+                                    unit: "CHOICE",
                                     title: "Total Available in Pool (TYUL)",
-                                    decimals: unitToDecimals("XET"),
+                                    decimals: unitToDecimals("CHOICE"),
                                     isRewardKey: true,
                                 }
                             ]
                         }
                         primaryValueUnit="YLDY"
-                        rewardValueUnit="XET"
-                        variant="xet"
+                        rewardValueUnit="CHOICE"
+                        variant="choice"
                         />
                 </Container>
 
@@ -81,13 +80,13 @@ class YLDYXETStakingPool extends Component {
                         rewardKeysConfig={[ 
                             {
                                 key: "TYUL",
-                                unit: "XET",
-                                decimals: unitToDecimals("XET"),
+                                unit: "CHOICE",
+                                decimals: unitToDecimals("CHOICE"),
                                 lineColor: this.state.rewardLineColor,
                             }
                         ]}
                         stakeToken="YLDY"
-                        claimTokens={ [ "XET" ] }
+                        claimTokens={ [ "CHOICE" ] }
                         defaultStakedAmount={ 1000 }
                         />
                 </Container>
@@ -112,9 +111,9 @@ class YLDYXETStakingPool extends Component {
                         rewardsConfig={
                             [
                                 {
-                                    unit: "XET",
+                                    unit: "CHOICE",
                                     key: "TYUL",
-                                    decimals: unitToDecimals("XET"),
+                                    decimals: unitToDecimals("CHOICE"),
                                     lineColor: this.state.rewardLineColor
                                 }
                             ]
@@ -126,4 +125,4 @@ class YLDYXETStakingPool extends Component {
     }
 }
 
-export default YLDYXETStakingPool;
+export default YLDYCHOICEStakingPool;

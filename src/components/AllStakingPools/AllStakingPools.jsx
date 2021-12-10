@@ -71,6 +71,12 @@ class AllStakingPools extends Component {
                     stakingUnits: [ "YLDY" ],
                     rewardUnits: [ "XET" ]
                 },
+                {
+                    title: "YLDY/CHOICE Staking Pool",
+                    to: "yldy-choice-staking",
+                    stakingUnits: [ "YLDY" ],
+                    rewardUnits: [ "CHOICE" ]
+                }
             ]
         };
     }

@@ -49,12 +49,13 @@ user_app_values = [
             "UA"
         ]
     },
-    {
-        "appID": "367431051",   # OPUL/OPUL
-        "local_state_keys": [
-            "UA"
-        ]
-    },
+    ## Expired
+    # {
+    #     "appID": "367431051",   # OPUL/OPUL
+    #     "local_state_keys": [
+    #         "UA"
+    #     ]
+    # },
     {
         "appID": "373819681",    # SMILE/SMILE
         "local_state_keys": [
@@ -75,6 +76,18 @@ user_app_values = [
     },
     {
         "appID": "419301793",   # GEMS/GEMS
+        "local_state_keys": [
+            "UA"
+        ]
+    },
+    {
+        "appID": "424101057",   # YLDY/XET
+        "local_state_keys": [
+            "UA"
+        ]
+    },
+    {
+        "appID": "447336112",   # YLDY/CHOICE
         "local_state_keys": [
             "UA"
         ]

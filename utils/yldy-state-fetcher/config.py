@@ -42,9 +42,10 @@ APP_ID_STATE_KEYS_DICT = {
     yldySmileStakingAppID: [
         "TYUL", "TYL", "GA", "GSS", "SA", "RA"
     ],
-    opulOpulAppID: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
-    ],
+    ## Expired
+    # opulOpulAppID: [
+    #     "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+    # ],
     smileSmileAppID: [
         "TYUL", "TYL", "GA", "GSS", "SA", "RA"
     ],
