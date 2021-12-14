@@ -5,6 +5,7 @@ import SMILE_ICON from "../svg/smile-icon.svg";
 import ARCC_ICON from "../svg/arcc-icon.svg";
 import ALGO_GEMS_ICON from "../svg/algo-gems-icon.svg";
 import XET_ICON from "../svg/xet-icon.svg";
+import CHOICE_ICON from "../svg/choice-icon.svg";
 
 export const constants = {
     // Algorand application id for the No Loss Lottery
@@ -27,6 +28,7 @@ export const constants = {
     GEMS_GEMS_APP_ID: 419301793,
     // YLDY/XET
     YLDY_XET_APP_ID: 424101057,
+    YLDY_CHOICE_APP_ID: 447336112,
 
     // Algorand asset id for YLDY
     YLDY_ASSET_ID: 226701642,
@@ -55,6 +57,8 @@ export function appIDToName (appID) {
             return "GEMS/GEMS";
         case constants.YLDY_XET_APP_ID:
             return "YLDY/XET";
+        case constants.YLDY_CHOICE_APP_ID:
+            return "YLDY/CHOICE"
         default:
             return "Unknown " + appID;
     }
@@ -80,7 +84,9 @@ export function appIDToIcon(appID) {
         case constants.GEMS_GEMS_APP_ID:
             return unitToIcon("GEMS");
         case constants.YLDY_XET_APP_ID:
-            return unitToIcon("YLDY/XET");
+            return unitToIcon("XET");
+        case constants.YLDY_CHOICE_APP_ID:
+            return unitToIcon("CHOICE");
         default:
             return null;
     }
@@ -97,13 +103,15 @@ export function appIDToStakingUnit (appID) {
         case constants.YLDY_ARCC_APP_ID:
         case constants.YLDY_GEMS_APP_ID:
         case constants.YLDY_XET_APP_ID:
+        case constants.YLDY_CHOICE_APP_ID:
             return "YLDY";
         case constants.OPUL_OPUL_POOL_APP_ID:
             return "OPUL";
         case constants.SMILE_SMILE_POOL_APP_ID:
             return "SMILE";
         case constants.GEMS_GEMS_APP_ID:
-            return "GEMS";        
+            return "GEMS";       
+             
         default:
             return null;
     }
@@ -126,6 +134,8 @@ export function unitToIcon (unit) {
             return ALGO_GEMS_ICON;
         case "xet":
             return XET_ICON;
+        case "choice":
+            return CHOICE_ICON;
         default:
             return null;
     }
@@ -147,7 +157,9 @@ export function unitToDecimals (unit) {
             return 6;
         case "xet":
             return 9;
+        case "choice":
+            return 2;
         default:
-            return null;
+            return 0;
     }
 }

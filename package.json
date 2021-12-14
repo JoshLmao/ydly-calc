@@ -1,6 +1,6 @@
 {
   "name": "ydly-calc",
-  "version": "1.7.7",
+  "version": "1.7.8",
   "homepage": "https://yldy-estimator.joshlmao.com",
   "description": "Web app for estimating your YLDY reward stake from the current global rewards from the No Loss Lottery and YLDY Staking pool",
   "private": true,
@@ -37,7 +37,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "update-top-stakers": "python.exe ./utils/top-stakers/top-stakers.py"
   },
   "eslintConfig": {
     "extends": [

@@ -23,6 +23,7 @@ import YLDYARCCStakingPool from '../StakingPools/YLDY-ARCC/YLDYARCCStakingPool';
 import YLDYGEMSStakingPool from '../StakingPools/YLDY-GEMS/YLDYGEMSStakingPool';
 import GEMSGEMSStakingPool from '../StakingPools/GEMS-GEMS';
 import YLDYXETStakingPool from '../StakingPools/YLDY-XET';
+import YLDYCHOICEStakingPool from '../StakingPools/YLDY-CHOICE';
 
 class App extends Component {
     constructor(props) {
@@ -62,7 +63,8 @@ class App extends Component {
                     <Route exact path="/gems-gems-staking" component={ GEMSGEMSStakingPool } />
                     {/* YLDY/XET */}
                     <Route exact path="/yldy-xet-staking" component={ YLDYXETStakingPool } />
-                    
+                    {/* YLDY/CHOICE */}
+                    <Route exact path="/yldy-choice-staking" component={ YLDYCHOICEStakingPool } />
 
                     <Route exact path="/yldy-stats" component={YLDYAssetStats} />
                     <Route exact path="/top-stakers" component={ TopStakers } />
