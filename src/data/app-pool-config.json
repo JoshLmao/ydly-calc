@@ -1,0 +1,48 @@
+{
+    "yldy-choice": {
+        "title": "YLDY/CHOICE Staking Pool",
+        "name": "YLDY/CHOICE",
+        "borderSuffix": "choice",
+        "appID": 447336112,
+        "stakeLineColor": "rgba(254, 215, 56, 1)",
+        "rewardLineColor": "#3281F7",
+        "unitVariant": "CHOICE",
+        "stakingUnits": [
+            "YLDY"
+        ],
+        "rewardUnits": [
+            "CHOICE"
+        ]
+    },
+    "yldy-xet": {
+        "title": "YLDY/XET Staking Pool",
+        "name": "YLDY/XET",
+        "borderSuffix": "xet",
+        "appID": 424101057,
+        "stakeLineColor": "rgba(254, 215, 56, 1)",
+        "rewardLineColor": "#3281F7",
+        "unitVariant": "XET",
+        "stakingUnits": [
+            "YLDY"
+        ],
+        "rewardUnits": [
+            "XET"
+        ]
+    },
+    "xet-xet": {
+        "title": "XET/XET Staking Pool",
+        "name": "XET/XET",
+        "borderSuffix": "xet",
+        "appID": 470390215,
+        "stakeLineColor": "#3281F7",
+        "rewardLineColor": "#3281F7",
+        "unitVariant": "xet",
+        "stakingUnits": [
+            "XET"
+        ],
+        "rewardUnits": [
+            "XET"
+        ],
+        "defaultStakeAmount": 100
+    }
+}

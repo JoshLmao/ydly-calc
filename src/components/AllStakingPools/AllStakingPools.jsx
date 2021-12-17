@@ -5,79 +5,85 @@ import { Container, ListGroup } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { unitToIcon } from "../../js/consts";
 
+import POOL_CONFIG from "../../data/app-pool-config.json";
+
 class AllStakingPools extends Component {
     constructor(props) {
         super(props);
 
+        // Hardcoded, using pages
+        let allPools = [
+            {
+                title: "No Loss Lottery",
+                to: "/#no-loss-lottery",
+                stakingUnits: [ "ALGO" ],
+                rewardUnits: [ "YLDY" ],
+            },
+            {
+                title: "YLDY/YLDY Staking Pool",
+                to: "/yldy-yldy-staking",
+                stakingUnits: [ "YLDY" ],
+                rewardUnits: [ "YLDY", "ALGO" ],
+            },
+            {
+                title: "YLDY/OPUL Staking Pool",
+                to: "yldy-opul-staking",
+                stakingUnits: [ "YLDY" ],
+                rewardUnits: [ "OPUL" ],
+            },
+            {
+                title: "YLDY/SMILE Staking Pool",
+                to: "yldy-smile-staking",
+                stakingUnits: [ "YLDY" ],
+                rewardUnits: [ "SMILE" ],
+            },
+            {
+                title: "OPUL/OPUL Staking Pool",
+                to: "opul-opul-staking",
+                stakingUnits: [ "OPUL" ],
+                rewardUnits: [ "OPUL" ],
+            },
+            {
+                title: "SMILE/SMILE Staking Pool",
+                to: "smile-smile-staking",
+                stakingUnits: [ "SMILE" ],
+                rewardUnits: [ "SMILE" ],
+            },
+            {
+                title: "YLDY/ARCC Staking Pool",
+                to: `yldy-arcc-staking`,
+                stakingUnits: [ "YLDY" ],
+                rewardUnits: [ "ARCC" ],
+            },
+            {
+                title: "YLDY/GEMS Staking Pool",
+                to: 'yldy-gems-staking',
+                stakingUnits: [ "YLDY" ],
+                rewardUnits: [ "GEMS" ]
+            },
+            {
+                title: "GEMS/GEMS Staking Pool",
+                to: "gems-gems-staking",
+                stakingUnits: [ "GEMS" ],
+                rewardUnits: [ "GEMS" ]
+            },
+        ];
+        // Append data generated ones
+        let allToKeys = Object.keys(POOL_CONFIG);
+        let dataPools = allToKeys.map((configKey, index) => {
+            let poolConfig = POOL_CONFIG[configKey];
+            return {
+                title: poolConfig.title,
+                to: configKey,
+                stakingUnits: poolConfig.stakingUnits,
+                rewardUnits: poolConfig.rewardUnits
+            };
+        });
+
+        allPools = allPools.concat(dataPools);
+
         this.state = {
-            poolsConfig: [
-                {
-                    title: "No Loss Lottery",
-                    to: "/#no-loss-lottery",
-                    stakingUnits: [ "ALGO" ],
-                    rewardUnits: [ "YLDY" ],
-                },
-                {
-                    title: "YLDY/YLDY Staking Pool",
-                    to: "/yldy-yldy-staking",
-                    stakingUnits: [ "YLDY" ],
-                    rewardUnits: [ "YLDY", "ALGO" ],
-                },
-                {
-                    title: "YLDY/OPUL Staking Pool",
-                    to: "yldy-opul-staking",
-                    stakingUnits: [ "YLDY" ],
-                    rewardUnits: [ "OPUL" ],
-                },
-                {
-                    title: "YLDY/SMILE Staking Pool",
-                    to: "yldy-smile-staking",
-                    stakingUnits: [ "YLDY" ],
-                    rewardUnits: [ "SMILE" ],
-                },
-                {
-                    title: "OPUL/OPUL Staking Pool",
-                    to: "opul-opul-staking",
-                    stakingUnits: [ "OPUL" ],
-                    rewardUnits: [ "OPUL" ],
-                },
-                {
-                    title: "SMILE/SMILE Staking Pool",
-                    to: "smile-smile-staking",
-                    stakingUnits: [ "SMILE" ],
-                    rewardUnits: [ "SMILE" ],
-                },
-                {
-                    title: "YLDY/ARCC Staking Pool",
-                    to: `yldy-arcc-staking`,
-                    stakingUnits: [ "YLDY" ],
-                    rewardUnits: [ "ARCC" ],
-                },
-                {
-                    title: "YLDY/GEMS Staking Pool",
-                    to: 'yldy-gems-staking',
-                    stakingUnits: [ "YLDY" ],
-                    rewardUnits: [ "GEMS" ]
-                },
-                {
-                    title: "GEMS/GEMS Staking Pool",
-                    to: "gems-gems-staking",
-                    stakingUnits: [ "GEMS" ],
-                    rewardUnits: [ "GEMS" ]
-                },
-                {
-                    title: "YLDY/XET Staking Pool",
-                    to: "yldy-xet-staking",
-                    stakingUnits: [ "YLDY" ],
-                    rewardUnits: [ "XET" ]
-                },
-                {
-                    title: "YLDY/CHOICE Staking Pool",
-                    to: "yldy-choice-staking",
-                    stakingUnits: [ "YLDY" ],
-                    rewardUnits: [ "CHOICE" ]
-                }
-            ]
+            poolsConfig: allPools
         };
     }
     render() {
