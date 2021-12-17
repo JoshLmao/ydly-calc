@@ -25,6 +25,8 @@ yldyXetAppId = 424101057
 yldyChoiceAppID = 447336112
 # CHOICE/CHOICE
 choiceChoiceAppID = 464365150
+# XET/XET
+xetXetAppID = 470390215
 
 # Dictionary of all application id's and their global state keys
 # to retrieve every X hours
@@ -68,7 +70,10 @@ APP_ID_STATE_KEYS_DICT = {
     ],
     choiceChoiceAppID: [
         "TYUL", "TYL", "GA", "GSS", "SA", "RA"
-    ]
+    ],
+    xetXetAppID: [
+        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+    ],
 }
 
 # Pyrebase config
