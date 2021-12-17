@@ -14,6 +14,21 @@
             "CHOICE"
         ]
     },
+    "choice-choice": {
+        "title": "CHOICE/CHOICE Staking Pool",
+        "name": "CHOICE/CHOICE",
+        "borderSuffix": "choice",
+        "appID": 464365150,
+        "stakeLineColor": "#3281F7",
+        "rewardLineColor": "#3281F7",
+        "unitVariant": "CHOICE",
+        "stakingUnits": [
+            "CHOICE"
+        ],
+        "rewardUnits": [
+            "CHOICE"
+        ]
+    },
     "yldy-xet": {
         "title": "YLDY/XET Staking Pool",
         "name": "YLDY/XET",
