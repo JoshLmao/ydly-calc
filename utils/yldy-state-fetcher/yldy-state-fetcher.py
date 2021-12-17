@@ -140,6 +140,12 @@ if __name__ == '__main__':
 
     logging.info("Starting YLDY Firebase fetching program")
 
+    logging.info("Planning to obtain state for '{count}' applications".format(count = len(config.APP_ID_STATE_KEYS_DICT)))
+    count = 0
+    for idKey in config.APP_ID_STATE_KEYS_DICT:
+        count += 1
+        logging.info("{index}: {appID}".format(index=count, appID=idKey) )
+
     # Init firebase & assign user
     FIREBASE = pyrebase.initialize_app(config.PYREBASE_CONFIG)
 
