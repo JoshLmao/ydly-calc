@@ -91,5 +91,17 @@ user_app_values = [
         "local_state_keys": [
             "UA"
         ]
+    },
+    {
+        "appID": "464365150",   # CHOICE/CHOICE
+        "local_state_keys": [
+            "UA"
+        ]
+    },
+    {
+        "appID": "470390215",   # XET/XET
+        "local_state_keys": [
+            "UA"
+        ]
     }
 ]
