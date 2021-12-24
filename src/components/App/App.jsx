@@ -44,6 +44,10 @@ class App extends Component {
                     {/* List view, all staking pools */}
                     <Route exact path="/staking-pools" component={ AllStakingPools } />
 
+                    <Route exact path="/yldy-stats" component={YLDYAssetStats} />
+                    <Route exact path="/top-stakers" component={ TopStakers } />
+                    <Route exact path="/stake-claim-stats" component={StakeClaimStats} />
+
                     {/* YLDY/YLDY Staking Pool */}
                     <Route exact path="/yldy-yldy-staking" component={ YLDYYLDYStaking } />
                     {/* YLDY/OPUL Staking pool */}
@@ -62,10 +66,6 @@ class App extends Component {
                     <Route exact path="/gems-gems-staking" component={ GEMSGEMSStakingPool } />
                     { /* Generic staking pool page, generated using data */ }
                     <Route exact path="/:primary-:secondary" component={ StakingPoolConfigurable } />
-
-                    <Route exact path="/yldy-stats" component={YLDYAssetStats} />
-                    <Route exact path="/top-stakers" component={ TopStakers } />
-                    <Route exact path="/stake-claim-stats" component={StakeClaimStats} />
                     
                     <Route component={FourOhFour} />
                 </Switch>
