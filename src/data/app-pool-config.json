@@ -59,5 +59,20 @@
             "XET"
         ],
         "defaultStakeAmount": 100
+    },
+    "arcc-arcc": {
+        "title": "ARCC/ARCC Staking Pool",
+        "name": "ARCC/ARCC",
+        "borderSuffix": "arcc",
+        "appID": 498747685,
+        "stakeLineColor": "#0135af",
+        "rewardLineColor": "#0135af",
+        "unitVariant": "arcc",
+        "stakingUnits": [
+            "ARCC"
+        ],
+        "rewardUnits": [
+            "ARCC"
+        ]
     }
 }
