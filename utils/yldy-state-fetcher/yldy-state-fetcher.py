@@ -12,6 +12,7 @@ Edit the configuration variables below the import statements before running.
 
 import time
 from datetime import datetime, timedelta
+from types import ClassMethodDescriptorType
 from dateutil import tz
 import requests
 import json
@@ -59,22 +60,34 @@ def algo_api_request(endpoint):
     # Log error and return
     logging.error("Unable to get text from endpoint " + endpoint)
 
+# Gets an individual app value fro AlgoExplorer values and performs safety checks
+def get_app_value(values, keyConfig):
+    appVal = None
+    # Encode key as base64
+    encoded = base64.b64encode(keyConfig['key'].encode("utf-8"))
+    # Compare from API with encded
+    if compare(values["key"], encoded):
+        try:
+            appVal = values["value"][keyConfig['type']]
+            # if compare(keyConfig['type'], "bytes"):
+            #     appVal =  base64.b64encode(values["value"][keyConfig['type']].encode("utf-8"))
+        except KeyError:
+            logging.error("Unable to find type '{targetType}' for key '{targetKey}'".format(targetKey=keyConfig['key'], targetType=keyConfig['type']))
+    return appVal
+
 # Gets the given appStateKeys from the given app id's global state by
 # making API request to AlgoExplorer to retrieve the values
-def get_application_vals(applicationID, appStateKeys):
+def get_application_vals(applicationID, appStateKeysConfig):
     endpoint = "v2/applications/" + str(applicationID) + "?"
     data = algo_api_request(endpoint)
     if data is not None:
         applicationValues = { }
         # Iterate through global state to parse values
         for val in data["params"]["global-state"]:
-            for targetKey in appStateKeys:
-                # Encode key as base64
-                encoded = base64.b64encode(targetKey.encode("utf-8"))
-                # Compare from API with encded
-                if compare(val["key"], encoded):
-                    # Add to dictionary if the same key
-                    applicationValues[targetKey] = val["value"]["uint"]
+            for keyConfig in appStateKeysConfig:
+                retrievedValue = get_app_value(val, keyConfig)
+                if retrievedValue is not None:
+                    applicationValues[keyConfig['key']] = retrievedValue
         return applicationValues
     else:
         logging.error("Error: No data at application id", applicationID)
@@ -164,9 +177,9 @@ if __name__ == '__main__':
         # Loop over Dictionary with key value pairs
         for idKey in config.APP_ID_STATE_KEYS_DICT:
             logging.info("Beginning saving of '{id}' global values".format(id = idKey))
-            appStateKeys = config.APP_ID_STATE_KEYS_DICT[idKey]
+            appStateKeysConfig = config.APP_ID_STATE_KEYS_DICT[idKey]
             # Get global state values for app
-            appValues = get_application_vals(idKey, appStateKeys)
+            appValues = get_application_vals(idKey, appStateKeysConfig)
             # Check if valid or not
             if appValues is not None:
                 # Save to Firebase DB
