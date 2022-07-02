@@ -63,7 +63,7 @@ export function getUserStateValues (algoAddress, contractID, appKeys, callback) 
 // Queries the AlgoExplorer API with the given endpoint and uses the response callback if data is found
 export function queryAlgoExplorerAPI (endpointPrefix, endpointUrl, response) {
     // Use base URL of API, with the given prefix and url
-    let baseUrl = `https://algoexplorerapi.io/${endpointPrefix}/${endpointUrl}`;
+    let baseUrl = `https://node.algoexplorerapi.io/${endpointPrefix}/${endpointUrl}`;
     // Send off request
     axios({
         url: `${baseUrl}`,
