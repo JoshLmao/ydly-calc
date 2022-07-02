@@ -29,55 +29,121 @@ choiceChoiceAppID = 464365150
 xetXetAppID = 470390215
 # ARCC/ARCC
 arccArccAppID = 498747685
+# YLDY/AKITA
+yldyAkitaAppID = 511597182
+# AKITA/ALGO LP
+akitaAlgoLPAppID = 511593477
 
 # Dictionary of all application id's and their global state keys
 # to retrieve every X hours
 APP_ID_STATE_KEYS_DICT = {
     # No Loss Lottery (NLL) Global State keys to track. Refer to yieldly-app-states.md for more info
     nllApplicationID: [ 
-        "TYUL", "TYL", "GA", "GSS" 
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
     ],
     # YLDY Staking global state keys to track. Refer to yieldly-app-states.md for more info
     yldyStakingApplicationID: [
-        "TYUL", "TAP", "GA", "GSS"
-    ],
-    # Opul state keys to track
-    opulStakingAppID: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
     ],
     yldySmileStakingAppID: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
+        { "key": "SA", "type": "uint" },
+        { "key": "RA", "type": "uint" },
     ],
-    ## Expired
-    # opulOpulAppID: [
-    #     "TYUL", "TYL", "GA", "GSS", "SA", "RA"
-    # ],
     smileSmileAppID: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
+        { "key": "SA", "type": "uint" },
+        { "key": "RA", "type": "uint" },
     ],
     yldyArccAppID: [ 
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
+        { "key": "SA", "type": "uint" },
+        { "key": "RA", "type": "uint" },
     ],
     yldyGemsAppID: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
+        { "key": "SA", "type": "uint" },
+        { "key": "RA", "type": "uint" },
     ],
     gemsGemsAppID: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
+        { "key": "SA", "type": "uint" },
+        { "key": "RA", "type": "uint" },
     ],
     yldyXetAppId: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
+        { "key": "SA", "type": "uint" },
+        { "key": "RA", "type": "uint" },
     ],
     yldyChoiceAppID: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
+        { "key": "SA", "type": "uint" },
+        { "key": "RA", "type": "uint" },
     ],
     choiceChoiceAppID: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
+        { "key": "SA", "type": "uint" },
+        { "key": "RA", "type": "uint" },
     ],
     xetXetAppID: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
+        { "key": "SA", "type": "uint" },
+        { "key": "RA", "type": "uint" },
     ],
     arccArccAppID: [
-        "TYUL", "TYL", "GA", "GSS", "SA", "RA"
+        { "key": "TYUL", "type": "uint" },
+        { "key": "TYL", "type": "uint" },
+        { "key": "GA", "type": "uint" },
+        { "key": "GSS", "type": "uint" },
+        { "key": "SA", "type": "uint" },
+        { "key": "RA", "type": "uint" },
+    ],
+    yldyAkitaAppID: [
+        { "key": "Global_Stake", "type": "bytes" },
+        { "key": "Staking_Token", "type": "uint" },
+        { "key": "Rewards_Unlocked_1", "type": "bytes" },
+        { "key": "Reward_Token_1", "type": "uint" },
+        { "key": "Token_Per_Share_1", "type": "bytes" },
+    ],
+    akitaAlgoLPAppID: [
+        { "key": "Global_Stake", "type": "bytes" },
+        { "key": "Staking_Token", "type": "uint" },
+        { "key": "Rewards_Unlocked_1", "type": "bytes" },
+        { "key": "Reward_Token_1", "type": "uint" },
+        { "key": "Token_Per_Share_1", "type": "bytes" },
     ]
 }
 

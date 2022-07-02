@@ -45,9 +45,6 @@ class Home extends Component {
                                     <p className="lead">
                                         Explore all the current Yieldly staking pools to estimate your rewards, as well as view when best to claim!
                                     </p>
-                                    <p className="small text-muted">
-                                        The feature to enter your address will return in the future
-                                    </p>
 
                                     <Row className="rounded bg-secondary float-left py-3 px-1 mx-1">
                                         <Col md="auto">
