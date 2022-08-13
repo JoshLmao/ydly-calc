@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
+import { Row, Col, Card, Form, InputGroup, Container, Button } from "react-bootstrap";
 import { DateTime } from "luxon";
 
 import { convertToMicroValue, formatNumber, fromMicroValue, getDayDifference, isStringBlank, convertFromMicroValue } from '../../js/utility';
@@ -258,6 +258,34 @@ class StakePoolCalculator extends Component {
                         </p>
                     )
                 }
+
+                <Container>
+                    <div    
+                        className="d-flex"
+                        >
+                        <div
+                            >
+                            Algorand Address:
+                        </div>
+                        <Form.Control
+                            className="mx-2 my-auto"
+                            value={ this.state.userAddress }
+                            onChange={ (e) => {
+                                let value =  e.target.value;
+                                this.setState({ userAddress: value })
+                            }}
+                            />
+                        <Button
+                            variant="outline-primary"
+                            className="py-0"
+                            onClick={ async () => {
+                                this.fetchUserVariables();
+                            }}
+                            >
+                            Obtain
+                        </Button>
+                    </div>
+                </Container>
 
                 <Row className="py-5">
                     <Col md="6">
