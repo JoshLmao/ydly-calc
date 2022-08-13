@@ -2,6 +2,9 @@ import axios from "axios";
 
 import CONFIG from "../config.json";
 
+const NODE_BASE_URL = "https://node.algoexplorerapi.io/";
+const INDEXER_BASE_URL = "https://algoindexer.algoexplorerapi.io/";
+
 /// Gets the global contract values from  the 
 export function getContractValues(contractId, keys, callback) {
     // Query endpoint with id
@@ -63,7 +66,7 @@ export function getUserStateValues (algoAddress, contractID, appKeys, callback) 
 // Queries the AlgoExplorer API with the given endpoint and uses the response callback if data is found
 export function queryAlgoExplorerAPI (endpointPrefix, endpointUrl, response) {
     // Use base URL of API, with the given prefix and url
-    let baseUrl = `https://node.algoexplorerapi.io/${endpointPrefix}/${endpointUrl}`;
+    let baseUrl = `${NODE_BASE_URL}${endpointPrefix}/${endpointUrl}`;
     // Send off request
     axios({
         url: `${baseUrl}`,
@@ -161,7 +164,7 @@ export async function getAddressTransactionsAsync(address, nextToken) {
     }
 
     // Build URL and await request
-    let fullUrl = `https://algoexplorerapi.io/idx2/${endpoint}`;
+    let fullUrl = `${INDEXER_BASE_URL}${endpoint}`;
     let result = null;
     try {
         result = await axios.get(fullUrl);

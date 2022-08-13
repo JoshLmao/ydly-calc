@@ -17,6 +17,26 @@ class NoLossLottery extends Component {
             lineColor: "#6cdef9",
             yldyLineColor: "rgba(254, 215, 56, 1)",
             borderVariant: "info",
+            customAddr: "",
+            // Config for application keys to get from user's app info
+            userKeysConfig: [
+                {
+                    key: "USS",
+                    title: "User Staking Shares (USS)",
+                    type: "number",
+                },
+                {
+                    key: "UT",
+                    title: "User Time (UT)",
+                    type: "time"
+                },
+                {
+                    key: "UA",
+                    title: "User Amount (UA)",
+                    type: "number",
+                    hidden: true,
+                }
+            ],
         };
     }
 
@@ -67,6 +87,7 @@ class NoLossLottery extends Component {
                         primaryValueUnit="ALGO"
                         rewardValueUnit="YLDY"
                         variant="algo"
+                        userKeysConfig={ this.state.userKeysConfig }
                         />
                 </Container>
 
