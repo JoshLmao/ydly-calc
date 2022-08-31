@@ -3,6 +3,7 @@ import { Container } from 'react-bootstrap';
 import { constants } from '../../../js/consts';
 
 import HistoricalRewards from '../../HistoricalRewards';
+import NLLClaim from '../../NLLClaim/NLLClaim';
 import PoolStatistics from '../../PoolStatistics/PoolStatistics';
 import StakePoolCalculator from '../../StakePoolCalculator';
 import StakePoolJumbo from '../../StakePoolJumbo';
@@ -53,6 +54,8 @@ class NoLossLottery extends Component {
                 </Container>
 
                 <Container>
+                    <NLLClaim
+                        />
                     <StakePoolCalculator
                         stakePoolID={ this.state.appID }
                         applicationKeysConfig={ 
