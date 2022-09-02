@@ -12,6 +12,11 @@ const NLL_APP_ID = 233725844;
 const ESCROW_ADDR = "FMBXOFAQCSAD4UWU4Q7IX5AV4FRV6AKURJQYGXLW3CTPTQ7XBX6MALMSPY";
 const YLDY_ASA_ID = 226701642;
 const ESCROW_PROGRAM_STR = "AiAGAgaYv7lvAAUBMgQiDzIEIw4QQQAuMwAYJBJAAANCACMzABAjEjMAGSUSIQQzABkSERAzASAyAxIQMwAgMgMSEEAAAiVDIQVD";
+const FEE_ADDR = "IM6CZ4KUPWT23PKA23MW5S4ZQVF4376GWELLAL5QA5NCMB635JTRUGIDPY";
+
+const stringToBytes = (arg) => {
+    return new Uint8Array(Buffer.from(arg));
+}
 
 export default class NLLClaim extends React.Component {
 
@@ -19,8 +24,9 @@ export default class NLLClaim extends React.Component {
         super(props);
 
         this.state = {
-            amount: 0.001,
+            claimAmount: 0.001,
             connectedWallet: "",// undefined,
+            stakeAmount: 0,
         };
     }
 
@@ -42,21 +48,63 @@ export default class NLLClaim extends React.Component {
         }
     }
 
+    async StakeAmount() {
+        if (this.state.stakeAmount && this.state.stakeAmount > 0) {
+            const suggestedParamTxn = await _algodClient.getTransactionParams().do();
+            if (!suggestedParamTxn) {
+                return;
+            }
+
+            const ualgoStake = this.state.stakeAmount * 1000000;
+
+            // call proxy contract
+            const checkAppArg = stringToBytes("check");
+            const checkTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_PROXY_APP_ID, [ checkAppArg ]);
+
+            // Call NLL contract
+            const wAppArg = stringToBytes("D");
+            const stakingCall = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_APP_ID, [ wAppArg ], [ ESCROW_ADDR ]);
+
+            // Send Algo to the escrow
+            const algoToContract = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, ualgoStake, undefined, undefined, suggestedParamTxn);
+
+            // fee txn
+            const feeTxn = this.MakeFeeTxn(this.state.stakeAmount, suggestedParamTxn);
+
+            const groupedTxns = algosdk.assignGroupID([
+                checkTxn,
+                stakingCall,
+                algoToContract,
+                feeTxn,
+            ]);
+
+            const txnsBytes = groupedTxns.map(x => x.toByte());
+            const userSignedTxns = await this.SignTxns(txnsBytes);
+            if (userSignedTxns) {
+                const allBlobs = userSignedTxns.map(x => x.blob);
+                const result = this.PublishTxns(allBlobs);
+                if (result) {
+                    console.log("Staked Algo ok!");
+                }
+                else {
+                    console.error("Error publishing algo stake txns");
+                }
+            }
+        }
+    }
+
     async ClaimAmount() {
-        if (this.state.amount && this.state.amount > 0) {
-            console.log(`Claiming ${this.state.amount}`);
+        if (this.state.claimAmount && this.state.claimAmount > 0) {
+            console.log(`Claiming ${this.state.claimAmount}`);
 
             const suggestedParamTxn = await _algodClient.getTransactionParams().do();
             if (!suggestedParamTxn) {
                 return;
             }
 
-            // Amount in uAlgo to claim
-            const ualgoClaimAmt = this.state.amount * 1000000;
-
-            const stringToBytes = (arg) => {
-                return new Uint8Array(Buffer.from(arg));
-            }
+            // Amount in YLDY to claim, convert to decimal amount. YLDY has 6 decimals
+            const yldyClaimAmt = this.state.claimAmount * 1000000;
+            console.log("Claimining", this.state.claimAmount, "YLDY (", yldyClaimAmt, ")");
 
             const flavourNote = stringToBytes("NLL Claim on yldy-calculator by JoshLmao <3");
 
@@ -73,7 +121,7 @@ export default class NLLClaim extends React.Component {
             const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, 1000, undefined, flavourNote, suggestedParamTxn);
 
             // Tranfer YLDY from escrow to claimer
-            const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, ualgoClaimAmt, flavourNote, YLDY_ASA_ID, suggestedParamTxn);
+            const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, yldyClaimAmt, flavourNote, YLDY_ASA_ID, suggestedParamTxn);
 
             console.log(ESCROW_PROGRAM_STR);
             const program = new Uint8Array(Buffer.from(ESCROW_PROGRAM_STR, "base64"));
@@ -88,25 +136,24 @@ export default class NLLClaim extends React.Component {
                 checkTxn,
                 appWithdrawTxn,
                 withdrawFeeTxn,
-                //signedLogicSig,
             ]);
 
-            let signed = null;
-            try {
-                signed = await _myAlgoWallet.signTransaction(groupedTxns.map(x => x.toByte()));
-            }   
-            catch (e) {
-                console.error("Sign txn error", e);
+            let userSignedTxns = await this.SignTxns(groupedTxns.map(x => x.toByte()));
+            if (userSignedTxns === null) {
+                return;
             }
 
-            console.log("signed all");
-            console.log(signed);
-            if (signed) {
+            console.log("user signed all txns");
+            console.log(userSignedTxns);
+            if (userSignedTxns) {
                 console.log("Sending txns");
-                const allBlobs = signed.map(x => x.blob);
-                const published = await _algodClient.sendRawTransaction(allBlobs).do().catch(x => console.error("Error publishing txns", x));
-                if (published) {
-                    console.log("Published good!", published);
+                const allBlobs = userSignedTxns.map(x => x.blob);
+                allBlobs.push(signedLogicSig.blob);
+                console.log("all blobs", allBlobs);
+                
+                const result = await this.PublishTxns(allBlobs);
+                if (result) {
+                    console.log("Published good!");
                 }
                 else {
                     console.error("Not published!");
@@ -114,6 +161,38 @@ export default class NLLClaim extends React.Component {
             }
 
         }
+    }
+
+    async MakeFeeTxn(totalAmount, suggestedParams, optionalNote = undefined) {
+        const feePercent = 5 / 100;
+        const fivePercentOfStake = totalAmount * feePercent;
+        const feeUalgos = fivePercentOfStake * 1000000;
+        return algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, FEE_ADDR, feeUalgos, undefined, optionalNote, suggestedParams);
+    }
+
+    async SignTxns(txns) {
+        let userSigned = null;
+        try {
+            userSigned = await _myAlgoWallet.signTransaction(txns);
+        }   
+        catch (e) {
+            console.error("Sign txn error", e);
+        }
+        return userSigned;
+    }
+
+    async PublishTxns(allTxnBlobs) {
+        try {
+            const published = await _algodClient.sendRawTransaction(allTxnBlobs).do().catch(x => console.error("Error publishing txns", x));
+            if (published) {
+                return true;
+            }
+
+        }
+        catch (e) {
+            console.error("Error submitting", e);
+        }
+        return false;
     }
 
     render() {
@@ -143,32 +222,62 @@ export default class NLLClaim extends React.Component {
                         )
                     }
                 </div>
-                <div
-                    className="d-flex"
-                    >
-                    <div
-                        className="me-3"
-                        >
-                        Amount in Algos:
-                    </div>
-                    <Form.Control
-                        value={ this.state.amount }
-                        onChange={ (e) => {
-                            this.setState({ amount: e.target.value });
-                        }}
-                        type="number"
-                        className="mx-3"
-                        />
-                    <Button
-                        className="ms-3"
-                        variant="outline-primary"
-                        onClick={ async () => {
-                            await this.ClaimAmount();
-                        }}
-                        >
-                        Claim!
-                    </Button>
-                </div>
+                
+                {
+                    [
+                        {
+                            title: "Algos to Stake",
+                            value: this.state.stakeAmount,
+                            onChange: (e) => {
+                                this.setState({
+                                    stakeAmount: e.target.value,
+                                });
+                            },
+                            btnText: "Stake",
+                            onClick: async () => {
+                                await this.StakeAmount();
+                            }
+                        },
+                        {
+                            title: "YLDY to Claim",
+                            value: this.state.claimAmount,
+                            onChange: (e) => {
+                                this.setState({
+                                    claimAmount: e.target.value,
+                                });
+                            },
+                            btnText: "Claim",
+                            onClick: async () => {
+                                await this.ClaimAmount();
+                            }
+                        }
+                    ].map((x) => {
+                        return (
+                            <div
+                                className="d-flex my-2"
+                                >
+                                <div
+                                    className="me-3"
+                                    >
+                                    { x.title }
+                                </div>
+                                <Form.Control
+                                    value={ x.value }
+                                    onChange={ x.onChange }
+                                    type="number"
+                                    className="mx-3"
+                                    />
+                                <Button
+                                    className="ms-3"
+                                    variant="outline-primary"
+                                    onClick={ x.onClick }
+                                    >
+                                    { x.btnText }
+                                </Button>
+                            </div>
+                        )
+                    })
+                }
             </Container>
         )
     }
