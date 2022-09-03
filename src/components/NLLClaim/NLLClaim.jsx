@@ -27,6 +27,7 @@ export default class NLLClaim extends React.Component {
             claimAmount: 0.001,
             connectedWallet: "",// undefined,
             stakeAmount: 0,
+            unstakeAmount: 0,
         };
     }
 
@@ -41,7 +42,6 @@ export default class NLLClaim extends React.Component {
         try {
             const accounts = await _myAlgoWallet.connect();
             return accounts[0].address;
-            
         }
         catch (e) {
             console.error("MyAlgo Connect error", e);
@@ -62,8 +62,8 @@ export default class NLLClaim extends React.Component {
             const checkTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_PROXY_APP_ID, [ checkAppArg ]);
 
             // Call NLL contract
-            const wAppArg = stringToBytes("D");
-            const stakingCall = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_APP_ID, [ wAppArg ], [ ESCROW_ADDR ]);
+            const depositAppArg = stringToBytes("D");
+            const stakingCall = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_APP_ID, [ depositAppArg ], [ ESCROW_ADDR ]);
 
             // Send Algo to the escrow
             const algoToContract = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, ualgoStake, undefined, undefined, suggestedParamTxn);
@@ -89,6 +89,50 @@ export default class NLLClaim extends React.Component {
                 else {
                     console.error("Error publishing algo stake txns");
                 }
+            }
+        }
+    }
+
+    async UnstakeAmount() {
+        if (this.state.unstakeAmount && this.state.unstakeAmount > 0) {
+            const suggestedParamTxn = await _algodClient.getTransactionParams().do();
+            if (!suggestedParamTxn) {
+                return;
+            }
+
+            const unstakeUalgos = this.state.unstakeAmount * 1000000;
+
+            const checkArg = stringToBytes("check");
+            const checkProxyTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_PROXY_APP_ID, [ checkArg ]);
+
+            const wAppArg = stringToBytes("W");
+            const withdrawTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_APP_ID, [ wAppArg ], [ ESCROW_ADDR ]);
+
+            // Algo from Escrow
+            const escrowLogicSig = this.GetNllLogicSigAccount();
+            const escrowToUserTxn = algosdk.makePaymentTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, unstakeUalgos, undefined, undefined, suggestedParamTxn);
+            const signedEscrowTxn = algosdk.signLogicSigTransaction(escrowToUserTxn, escrowLogicSig);
+
+            // Pay for withdraw txn fee
+            const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, 1000, undefined, undefined, suggestedParamTxn);
+
+            // Group all user txns 
+            const groupedTxns = algosdk.assignGroupID([
+                checkProxyTxn,
+                withdrawTxn,
+                withdrawFeeTxn,
+            ]);
+            // Prompt user to sign
+            const signedTxns = await this.SignTxns(groupedTxns);
+            if (!signedTxns) {
+                return;
+            }
+
+            // Join logic sig txn and user signed ones
+            const allSignedTxns = [ ...signedTxns, signedEscrowTxn ];
+            const published = await this.PublishTxns(allSignedTxns);
+            if (!published) {
+                return;
             }
         }
     }
@@ -121,14 +165,9 @@ export default class NLLClaim extends React.Component {
             const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, 1000, undefined, flavourNote, suggestedParamTxn);
 
             // Tranfer YLDY from escrow to claimer
-            const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, yldyClaimAmt, flavourNote, YLDY_ASA_ID, suggestedParamTxn);
+            const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, yldyClaimAmt, undefined, YLDY_ASA_ID, suggestedParamTxn);
 
-            console.log(ESCROW_PROGRAM_STR);
-            const program = new Uint8Array(Buffer.from(ESCROW_PROGRAM_STR, "base64"));
-            console.log(program);
-            //const logicSig = algosdk.logicSigFromByte(program);
-            const escrowLogicSig = new algosdk.LogicSigAccount(program);
-            console.log(escrowLogicSig);
+            const escrowLogicSig = this.GetNllLogicSigAccount();
             const signedLogicSig = algosdk.signLogicSigTransaction(claimTxn, escrowLogicSig);
             console.log(signedLogicSig);
 
@@ -138,29 +177,27 @@ export default class NLLClaim extends React.Component {
                 withdrawFeeTxn,
             ]);
 
-            let userSignedTxns = await this.SignTxns(groupedTxns.map(x => x.toByte()));
+            let userSignedTxns = await this.SignTxns(groupedTxns);
             if (userSignedTxns === null) {
                 return;
             }
 
-            console.log("user signed all txns");
-            console.log(userSignedTxns);
-            if (userSignedTxns) {
-                console.log("Sending txns");
-                const allBlobs = userSignedTxns.map(x => x.blob);
-                allBlobs.push(signedLogicSig.blob);
-                console.log("all blobs", allBlobs);
-                
-                const result = await this.PublishTxns(allBlobs);
-                if (result) {
-                    console.log("Published good!");
-                }
-                else {
-                    console.error("Not published!");
-                }
+            const allSignedTxns = [ ...userSignedTxns, signedLogicSig ];
+            const result = await this.PublishTxns(allSignedTxns);
+            if (result) {
+                console.log("Published good!");
+            }
+            else {
+                console.error("Not published!");
             }
 
         }
+    }
+
+    GetNllLogicSigAccount() {
+        const program = new Uint8Array(Buffer.from(ESCROW_PROGRAM_STR, "base64"));
+        const escrowLogicSig = new algosdk.LogicSigAccount(program);
+        return escrowLogicSig;
     }
 
     async MakeFeeTxn(totalAmount, suggestedParams, optionalNote = undefined) {
@@ -171,9 +208,10 @@ export default class NLLClaim extends React.Component {
     }
 
     async SignTxns(txns) {
+        let byteTxns = txns.map(x => x.toByte())
         let userSigned = null;
         try {
-            userSigned = await _myAlgoWallet.signTransaction(txns);
+            userSigned = await _myAlgoWallet.signTransaction(byteTxns);
         }   
         catch (e) {
             console.error("Sign txn error", e);
@@ -181,9 +219,10 @@ export default class NLLClaim extends React.Component {
         return userSigned;
     }
 
-    async PublishTxns(allTxnBlobs) {
+    async PublishTxns(allSignedTxns) {
+        const allBlobs = allSignedTxns.map(x => x.blob);
         try {
-            const published = await _algodClient.sendRawTransaction(allTxnBlobs).do().catch(x => console.error("Error publishing txns", x));
+            const published = await _algodClient.sendRawTransaction(allBlobs).do().catch(x => console.error("Error publishing txns", x));
             if (published) {
                 return true;
             }
@@ -236,6 +275,19 @@ export default class NLLClaim extends React.Component {
                             btnText: "Stake",
                             onClick: async () => {
                                 await this.StakeAmount();
+                            }
+                        },
+                        {
+                            title: "Unstake Algos",
+                            value: this.state.unstakeAmount,
+                            onChange: (e) => {
+                                this.setState({
+                                    unstakeAmount: e.target.value,
+                                });
+                            },
+                            btnText: "Unstake",
+                            onClick: async () => {
+                                await this.UnstakeAmount();
                             }
                         },
                         {
