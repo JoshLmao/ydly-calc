@@ -49,13 +49,14 @@ export default class NLLClaim extends React.Component {
     }
 
     async StakeAmount() {
-        if (this.state.stakeAmount && this.state.stakeAmount > 0) {
+        if (this.state.stakeAmount && this.state.stakeAmount > 0 && this.state.connectedWallet) {
             const suggestedParamTxn = await _algodClient.getTransactionParams().do();
             if (!suggestedParamTxn) {
                 return;
             }
 
             const ualgoStake = this.state.stakeAmount * 1000000;
+            console.log(`Staking`, this.state.stakeAmount, `(${ualgoStake}) algos`);
 
             // call proxy contract
             const checkAppArg = stringToBytes("check");
@@ -78,11 +79,9 @@ export default class NLLClaim extends React.Component {
                 feeTxn,
             ]);
 
-            const txnsBytes = groupedTxns.map(x => x.toByte());
-            const userSignedTxns = await this.SignTxns(txnsBytes);
+            const userSignedTxns = await this.SignTxns(groupedTxns);
             if (userSignedTxns) {
-                const allBlobs = userSignedTxns.map(x => x.blob);
-                const result = this.PublishTxns(allBlobs);
+                const result = await this.PublishTxns(userSignedTxns);
                 if (result) {
                     console.log("Staked Algo ok!");
                 }
@@ -100,7 +99,9 @@ export default class NLLClaim extends React.Component {
                 return;
             }
 
+
             const unstakeUalgos = this.state.unstakeAmount * 1000000;
+            console.log("Unstaking", this.state.unstakeAmount, `(${unstakeUalgos}) algos`);
 
             const checkArg = stringToBytes("check");
             const checkProxyTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_PROXY_APP_ID, [ checkArg ]);
@@ -139,7 +140,6 @@ export default class NLLClaim extends React.Component {
 
     async ClaimAmount() {
         if (this.state.claimAmount && this.state.claimAmount > 0) {
-            console.log(`Claiming ${this.state.claimAmount}`);
 
             const suggestedParamTxn = await _algodClient.getTransactionParams().do();
             if (!suggestedParamTxn) {
@@ -194,19 +194,22 @@ export default class NLLClaim extends React.Component {
         }
     }
 
+    // Creates the LogicSig Account for the NLL escrow
     GetNllLogicSigAccount() {
         const program = new Uint8Array(Buffer.from(ESCROW_PROGRAM_STR, "base64"));
         const escrowLogicSig = new algosdk.LogicSigAccount(program);
         return escrowLogicSig;
     }
 
-    async MakeFeeTxn(totalAmount, suggestedParams, optionalNote = undefined) {
+    // Creates a fee txn to the set fee address
+    MakeFeeTxn(totalAmount, suggestedParams, optionalNote = undefined) {
         const feePercent = 5 / 100;
         const fivePercentOfStake = totalAmount * feePercent;
         const feeUalgos = fivePercentOfStake * 1000000;
         return algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, FEE_ADDR, feeUalgos, undefined, optionalNote, suggestedParams);
     }
 
+    // Signs the given txns
     async SignTxns(txns) {
         let byteTxns = txns.map(x => x.toByte())
         let userSigned = null;
@@ -214,11 +217,12 @@ export default class NLLClaim extends React.Component {
             userSigned = await _myAlgoWallet.signTransaction(byteTxns);
         }   
         catch (e) {
-            console.error("Sign txn error", e);
+            console.warn("Sign txn error, user cancelled?", e);
         }
         return userSigned;
     }
 
+    // Publishes the given signed txns
     async PublishTxns(allSignedTxns) {
         const allBlobs = allSignedTxns.map(x => x.blob);
         try {
