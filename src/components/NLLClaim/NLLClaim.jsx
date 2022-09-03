@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
 
@@ -73,10 +73,10 @@ export default class NLLClaim extends React.Component {
             const feeTxn = this.MakeFeeTxn(this.state.stakeAmount, suggestedParamTxn);
 
             const groupedTxns = algosdk.assignGroupID([
+                feeTxn, // place first
                 checkTxn,
                 stakingCall,
                 algoToContract,
-                feeTxn,
             ]);
 
             const userSignedTxns = await this.SignTxns(groupedTxns);
@@ -103,9 +103,11 @@ export default class NLLClaim extends React.Component {
             const unstakeUalgos = this.state.unstakeAmount * 1000000;
             console.log("Unstaking", this.state.unstakeAmount, `(${unstakeUalgos}) algos`);
 
+            // proxy contract
             const checkArg = stringToBytes("check");
             const checkProxyTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_PROXY_APP_ID, [ checkArg ]);
 
+            // Withdraw algos from NLL contract
             const wAppArg = stringToBytes("W");
             const withdrawTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_APP_ID, [ wAppArg ], [ ESCROW_ADDR ]);
 
@@ -157,6 +159,7 @@ export default class NLLClaim extends React.Component {
             console.log(checkAppArg);
             const checkTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_PROXY_APP_ID, [ checkAppArg ]);
 
+            // Claim YLDY from NLL
             const caAppArg =  stringToBytes("CA");
             const appAccounts = [ ESCROW_ADDR ];
             const appWithdrawTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_APP_ID, [ caAppArg ], appAccounts, undefined, undefined, flavourNote);
@@ -164,12 +167,10 @@ export default class NLLClaim extends React.Component {
             // Pay for txn transfer fee
             const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, 1000, undefined, flavourNote, suggestedParamTxn);
 
-            // Tranfer YLDY from escrow to claimer
-            const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, yldyClaimAmt, undefined, YLDY_ASA_ID, suggestedParamTxn);
-
+            // Tranfer YLDY from escrow to claimer, sign with logic sig
             const escrowLogicSig = this.GetNllLogicSigAccount();
+            const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, yldyClaimAmt, undefined, YLDY_ASA_ID, suggestedParamTxn);
             const signedLogicSig = algosdk.signLogicSigTransaction(claimTxn, escrowLogicSig);
-            console.log(signedLogicSig);
 
             const groupedTxns = algosdk.assignGroupID([
                 checkTxn,
@@ -310,26 +311,47 @@ export default class NLLClaim extends React.Component {
                     ].map((x) => {
                         return (
                             <div
-                                className="d-flex my-2"
+                                className="my-2"
                                 >
-                                <div
-                                    className="me-3"
+                                <Row
+                                    className=""
                                     >
-                                    { x.title }
-                                </div>
-                                <Form.Control
-                                    value={ x.value }
-                                    onChange={ x.onChange }
-                                    type="number"
-                                    className="mx-3"
-                                    />
-                                <Button
-                                    className="ms-3"
-                                    variant="outline-primary"
-                                    onClick={ x.onClick }
-                                    >
-                                    { x.btnText }
-                                </Button>
+                                    <Col
+                                        md={ 4 }
+                                        className="text-right"
+                                        >
+                                        <div
+                                            className="me-3"
+                                            >
+                                            { x.title }
+                                        </div>
+                                    </Col>
+                                    <Col
+                                        md={ 4 }
+                                        >
+                                        <Form.Control
+                                            value={ x.value }
+                                            onChange={ x.onChange }
+                                            type="number"
+                                            className="mx-3"
+                                            />
+                                    </Col>
+                                    <Col
+                                        md={ 4 }
+                                        className="text-left"
+                                        >
+                                        <Button
+                                            className="ms-3"
+                                            variant="outline-primary"
+                                            onClick={ x.onClick }
+                                            style={{
+                                                minWidth: "150px"
+                                            }}
+                                            >
+                                            { x.btnText }
+                                        </Button>
+                                    </Col>
+                                </Row>
                             </div>
                         )
                     })
