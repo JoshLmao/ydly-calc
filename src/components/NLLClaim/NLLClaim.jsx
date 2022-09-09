@@ -72,21 +72,39 @@ export default class NLLClaim extends React.Component {
             // fee txn
             const feeTxn = this.MakeFeeTxn(this.state.stakeAmount, suggestedParamTxn);
 
+            // Create specific txn group and order for deposit
             const groupedTxns = algosdk.assignGroupID([
-                feeTxn, // place first
                 checkTxn,
                 stakingCall,
                 algoToContract,
             ]);
 
+            // Sign all user txns
             const userSignedTxns = await this.SignTxns(groupedTxns);
+
+            // Make user sign fee, return if denied
+            const signedFeeTxn = await this.SignTxns([ feeTxn ]);
+            if (!signedFeeTxn) {
+                console.error("User denied fee txn, not publishing");
+                return;
+            }
+
+            // Publish user txns
             if (userSignedTxns) {
                 const result = await this.PublishTxns(userSignedTxns);
+                const feeResult = await this.PublishTxns(signedFeeTxn);
                 if (result) {
                     console.log("Staked Algo ok!");
                 }
                 else {
                     console.error("Error publishing algo stake txns");
+                }
+
+                if (feeResult) {
+                    console.log("Paid fee ok!");
+                }
+                else {
+                    console.error("Didn't pay fee!");
                 }
             }
         }
@@ -98,7 +116,6 @@ export default class NLLClaim extends React.Component {
             if (!suggestedParamTxn) {
                 return;
             }
-
 
             const unstakeUalgos = this.state.unstakeAmount * 1000000;
             console.log("Unstaking", this.state.unstakeAmount, `(${unstakeUalgos}) algos`);
@@ -112,9 +129,8 @@ export default class NLLClaim extends React.Component {
             const withdrawTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_APP_ID, [ wAppArg ], [ ESCROW_ADDR ]);
 
             // Algo from Escrow
-            const escrowLogicSig = this.GetNllLogicSigAccount();
+            const escrowLogicSigAccount = this.GetNllLogicSigAccount();
             const escrowToUserTxn = algosdk.makePaymentTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, unstakeUalgos, undefined, undefined, suggestedParamTxn);
-            const signedEscrowTxn = algosdk.signLogicSigTransaction(escrowToUserTxn, escrowLogicSig);
 
             // Pay for withdraw txn fee
             const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, 1000, undefined, undefined, suggestedParamTxn);
@@ -123,16 +139,21 @@ export default class NLLClaim extends React.Component {
             const groupedTxns = algosdk.assignGroupID([
                 checkProxyTxn,
                 withdrawTxn,
+                escrowToUserTxn,
                 withdrawFeeTxn,
             ]);
+
+            // Sign after assigning group
+            const signedEscrowTxn = algosdk.signLogicSigTransactionObject(groupedTxns[2], escrowLogicSigAccount);
+
             // Prompt user to sign
-            const signedTxns = await this.SignTxns(groupedTxns);
-            if (!signedTxns) {
+            const signedUserTxns = await this.SignTxns([ groupedTxns[0], groupedTxns[1], groupedTxns[3] ]);
+            if (!signedUserTxns) {
                 return;
             }
 
-            // Join logic sig txn and user signed ones
-            const allSignedTxns = [ ...signedTxns, signedEscrowTxn ];
+            // Join logic sig txn and user signed ones *in specific order*
+            const allSignedTxns = [ signedUserTxns[0], signedUserTxns[1], signedEscrowTxn, signedUserTxns[2] ];
             const published = await this.PublishTxns(allSignedTxns);
             if (!published) {
                 return;
@@ -142,7 +163,6 @@ export default class NLLClaim extends React.Component {
 
     async ClaimAmount() {
         if (this.state.claimAmount && this.state.claimAmount > 0) {
-
             const suggestedParamTxn = await _algodClient.getTransactionParams().do();
             if (!suggestedParamTxn) {
                 return;
@@ -170,20 +190,26 @@ export default class NLLClaim extends React.Component {
             // Tranfer YLDY from escrow to claimer, sign with logic sig
             const escrowLogicSig = this.GetNllLogicSigAccount();
             const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, yldyClaimAmt, undefined, YLDY_ASA_ID, suggestedParamTxn);
-            const signedLogicSig = algosdk.signLogicSigTransaction(claimTxn, escrowLogicSig);
-
+    
+            // Create group in specific orderr
             const groupedTxns = algosdk.assignGroupID([
                 checkTxn,
                 appWithdrawTxn,
+                claimTxn,
                 withdrawFeeTxn,
             ]);
 
-            let userSignedTxns = await this.SignTxns(groupedTxns);
-            if (userSignedTxns === null) {
+            // Sign logic sig
+            const signedEscrowTxn = algosdk.signLogicSigTransaction(claimTxn, escrowLogicSig);
+
+            // Sign only user txns
+            const signedUserTxns = await this.SignTxns([ groupedTxns[0], groupedTxns[1], groupedTxns[3] ]);
+            if (signedUserTxns === null) {
                 return;
             }
 
-            const allSignedTxns = [ ...userSignedTxns, signedLogicSig ];
+            // Construct back into specific order and publish
+            const allSignedTxns = [ signedUserTxns[0], signedUserTxns[1], signedEscrowTxn, signedUserTxns[2] ];
             const result = await this.PublishTxns(allSignedTxns);
             if (result) {
                 console.log("Published good!");
@@ -270,7 +296,7 @@ export default class NLLClaim extends React.Component {
                 {
                     [
                         {
-                            title: "Algos to Stake",
+                            title: "Algos to Stake (5% fee to stake)",
                             value: this.state.stakeAmount,
                             onChange: (e) => {
                                 this.setState({
