@@ -2,7 +2,9 @@ import React from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
-import { getUserStateValues } from "../../js/AlgoExplorerAPI";
+import { getContractValues, getUserStateValues } from "../../js/AlgoExplorerAPI";
+import { calculateYLDYRewardsFromDayPeriod } from "../../js/YLDYCalculation";
+import { getDayDifference } from "../../js/utility";
 
 const _algodClient = new algosdk.Algodv2('', "https://mainnet-api.algonode.cloud", 443);
 
@@ -284,11 +286,37 @@ export default class NLLClaim extends React.Component {
     }
 
     updateContractValues() {
+
+
         // Get ALGO staked
-        getUserStateValues(this.state.connectedWallet, NLL_APP_ID, [ "UA" ], (values) => {
+        getUserStateValues(this.state.connectedWallet, NLL_APP_ID, [ "UA", "USS", "UT" ], (values) => {
+            console.log("user", values);
             this.setState({
+                userAppValues: values,
                 userAlgoStaked: values.UA ?? undefined,
+                userUSS: values.USS ?? undefined,
                 unstakeAmount: values.UA ? values.UA / 1000000 : this.state.claimAmount,
+            }, () => {
+                // Determine YLDY staked
+                getContractValues(NLL_APP_ID, [ "GSS", "GT", "GA", "TYUL"], (obtainedVars) => {
+                    if (obtainedVars) {
+                        console.log(obtainedVars);
+                        console.log(this.state);
+                        const dayDiff = getDayDifference( this.state.userAppValues["UT"], obtainedVars["GT"] )
+                        let claimable = calculateYLDYRewardsFromDayPeriod(
+                            this.state.userUSS ?? 0,
+                            dayDiff,
+                            this.state.unstakeAmount * 1000000,
+                            obtainedVars.GSS,
+                            obtainedVars.TYUL,
+                        );
+
+                        console.log("claimable", claimable);
+                        this.setState({
+                            claimAmount: Math.floor( claimable / 1000 ) / 1000,
+                        });
+                    }
+                });
             });
         })
     }
