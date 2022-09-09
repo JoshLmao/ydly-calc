@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
+import { getUserStateValues } from "../../js/AlgoExplorerAPI";
 
 const _algodClient = new algosdk.Algodv2('', "https://mainnet-api.algonode.cloud", 443);
 
@@ -24,10 +25,13 @@ export default class NLLClaim extends React.Component {
         super(props);
 
         this.state = {
-            claimAmount: 0.001,
-            connectedWallet: "",// undefined,
+            claimAmount: 0,
+            connectedWallet: undefined,
             stakeAmount: 0,
             unstakeAmount: 0,
+            operationError: undefined,
+
+            signedInUserYldyStake: undefined,
         };
     }
 
@@ -36,6 +40,8 @@ export default class NLLClaim extends React.Component {
         this.setState({
             connectedWallet: address ? address : this.state.connectedWallet,
         });
+
+        this.updateContractValues();
     }
 
     async ConnectMyAlgo() {
@@ -50,6 +56,8 @@ export default class NLLClaim extends React.Component {
 
     async StakeAmount() {
         if (this.state.stakeAmount && this.state.stakeAmount > 0 && this.state.connectedWallet) {
+            this.setState({ operationError: undefined });
+
             const suggestedParamTxn = await _algodClient.getTransactionParams().do();
             if (!suggestedParamTxn) {
                 return;
@@ -85,7 +93,9 @@ export default class NLLClaim extends React.Component {
             // Make user sign fee, return if denied
             const signedFeeTxn = await this.SignTxns([ feeTxn ]);
             if (!signedFeeTxn) {
-                console.error("User denied fee txn, not publishing");
+                const err = "User denied fee txn, not publishing";
+                console.error(err);
+                this.setState({ operationError: err });
                 return;
             }
 
@@ -98,6 +108,7 @@ export default class NLLClaim extends React.Component {
                 }
                 else {
                     console.error("Error publishing algo stake txns");
+                    this.setState({ operationError: "Unable to publish stake txn. Check you have enough algos!" });
                 }
 
                 if (feeResult) {
@@ -105,6 +116,7 @@ export default class NLLClaim extends React.Component {
                 }
                 else {
                     console.error("Didn't pay fee!");
+                    this.setState({ operationError: "Not publishing txns. User didn't pay fee. Check you have enough algos!" });
                 }
             }
         }
@@ -112,6 +124,8 @@ export default class NLLClaim extends React.Component {
 
     async UnstakeAmount() {
         if (this.state.unstakeAmount && this.state.unstakeAmount > 0) {
+            this.setState({ operationError: undefined });
+
             const suggestedParamTxn = await _algodClient.getTransactionParams().do();
             if (!suggestedParamTxn) {
                 return;
@@ -156,6 +170,7 @@ export default class NLLClaim extends React.Component {
             const allSignedTxns = [ signedUserTxns[0], signedUserTxns[1], signedEscrowTxn, signedUserTxns[2] ];
             const published = await this.PublishTxns(allSignedTxns);
             if (!published) {
+                this.setState({ operationError: "Unable to publish stake txn. Check you have enough algos!" });
                 return;
             }
         }
@@ -163,6 +178,8 @@ export default class NLLClaim extends React.Component {
 
     async ClaimAmount() {
         if (this.state.claimAmount && this.state.claimAmount > 0) {
+            this.setState({ operationError: undefined });
+
             const suggestedParamTxn = await _algodClient.getTransactionParams().do();
             if (!suggestedParamTxn) {
                 return;
@@ -216,6 +233,7 @@ export default class NLLClaim extends React.Component {
             }
             else {
                 console.error("Not published!");
+                this.setState({ operationError: "Unable to publish stake txn. Check you have enough algos!" });
             }
 
         }
@@ -265,6 +283,16 @@ export default class NLLClaim extends React.Component {
         return false;
     }
 
+    updateContractValues() {
+        // Get ALGO staked
+        getUserStateValues(this.state.connectedWallet, NLL_APP_ID, [ "UA" ], (values) => {
+            this.setState({
+                userAlgoStaked: values.UA ?? undefined,
+                unstakeAmount: values.UA ? values.UA / 1000000 : this.state.claimAmount,
+            });
+        })
+    }
+
     render() {
         return (
             <Container
@@ -288,6 +316,26 @@ export default class NLLClaim extends React.Component {
                                 className="text-primary mx-auto"
                                 >
                                 { this.state.connectedWallet }
+                            </div>
+                        )
+                    }
+                    {
+                        this.state.operationError && (
+                            <div
+                                className="text-danger text-center border-danger border rounded my-2"
+                                >
+                                Oops! Something went wrong.
+                                <br />
+                                { this.state.operationError }
+                            </div> 
+                        )
+                    }
+                    {
+                        this.state.userAlgoStaked !== undefined && (
+                            <div
+                                className="text-center"
+                                >
+                                Staked ALGO: { (this.state.userAlgoStaked / 1000000) }
                             </div>
                         )
                     }
