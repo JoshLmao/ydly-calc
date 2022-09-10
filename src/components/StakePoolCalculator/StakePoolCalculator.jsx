@@ -7,7 +7,6 @@ import { unitToIcon } from "../../js/consts";
 import { calculateRewardsPoolPercentageShare, calculateYLDYRewardsFromDayPeriod } from '../../js/YLDYCalculation';
 import {
     getContractValues,
-    getCurrentBlockTimestamp,
     getUserStateValues,
 } from "../../js/AlgoExplorerAPI";
 
@@ -101,14 +100,6 @@ class StakePoolCalculator extends Component {
                 });
             });
         }
-
-        // Get latest block in chain and it's transaction timestamp (ts)
-        getCurrentBlockTimestamp((blockId, blockTs) => {
-            this.setState({
-                currentBlockTimestamp: blockTs,
-            });
-            console.log(`Successfully got latest block (ID '${blockId}') with timestamp ${blockTs}`);
-        });
     }
 
     componentDidUpdate(prevProps) {

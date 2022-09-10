@@ -54,8 +54,13 @@ class NoLossLottery extends Component {
                 </Container>
 
                 <Container>
-                    <NLLClaim
-                        />
+                    <div
+                        className="pb-4"
+                        >
+                        <NLLClaim
+                            />
+                    </div>
+                    
                     <StakePoolCalculator
                         stakePoolID={ this.state.appID }
                         applicationKeysConfig={ 

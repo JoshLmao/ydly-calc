@@ -1,10 +1,11 @@
 import React from "react";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
 import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
 import { getContractValues, getUserStateValues } from "../../js/AlgoExplorerAPI";
 import { calculateYLDYRewardsFromDayPeriod } from "../../js/YLDYCalculation";
 import { getDayDifference } from "../../js/utility";
+import { unitToIcon } from "../../js/consts";
 
 const _algodClient = new algosdk.Algodv2('', "https://mainnet-api.algonode.cloud", 443);
 
@@ -30,10 +31,12 @@ export default class NLLClaim extends React.Component {
             claimAmount: 0,
             connectedWallet: undefined,
             stakeAmount: 0,
+            // Amount of ualgo user can unstake
             unstakeAmount: 0,
+            // Any error happened during interaction
             operationError: undefined,
-
-            signedInUserYldyStake: undefined,
+            // Amount of ualgos the user has
+            userCurrentUalgos: undefined,
         };
     }
 
@@ -57,7 +60,7 @@ export default class NLLClaim extends React.Component {
     }
 
     async StakeAmount() {
-        if (this.state.stakeAmount && this.state.stakeAmount > 0 && this.state.connectedWallet) {
+        if (this.state.stakeAmount && this.state.stakeAmount > 0 && this.state.connectedWallet && this.state.userCurrentUalgos) {
             this.setState({ operationError: undefined });
 
             const suggestedParamTxn = await _algodClient.getTransactionParams().do();
@@ -67,6 +70,18 @@ export default class NLLClaim extends React.Component {
 
             const ualgoStake = this.state.stakeAmount * 1000000;
             console.log(`Staking`, this.state.stakeAmount, `(${ualgoStake}) algos`);
+
+
+            /*
+                Check user has enough to pay fee
+            */
+            const feeAmt = this.DetermineFeeAmt(this.state.stakeAmount);
+            const totalUalgosNllFee = ualgoStake + feeAmt;
+            if (this.state.userCurrentUalgos < totalUalgosNllFee) {
+                console.error("User doesn't have enough for NLL and fee!");
+                this.setState({ operationError: "You dont have enough Algos to deposit into NLL and pay the fee. Check the amount and try again" });
+                return;
+            }
 
             // call proxy contract
             const checkAppArg = stringToBytes("check");
@@ -79,9 +94,7 @@ export default class NLLClaim extends React.Component {
             // Send Algo to the escrow
             const algoToContract = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, ualgoStake, undefined, undefined, suggestedParamTxn);
 
-            // fee txn
-            const feeTxn = this.MakeFeeTxn(this.state.stakeAmount, suggestedParamTxn);
-
+            
             // Create specific txn group and order for deposit
             const groupedTxns = algosdk.assignGroupID([
                 checkTxn,
@@ -91,6 +104,15 @@ export default class NLLClaim extends React.Component {
 
             // Sign all user txns
             const userSignedTxns = await this.SignTxns(groupedTxns);
+            if (!userSignedTxns) {
+                const err = "User denied NLL txns";
+                console.error(err);
+                this.setState({ operationError: err });
+                return;
+            }
+
+            // fee txn
+            const feeTxn = this.MakeFeeTxn(ualgoStake, suggestedParamTxn);
 
             // Make user sign fee, return if denied
             const signedFeeTxn = await this.SignTxns([ feeTxn ]);
@@ -119,6 +141,10 @@ export default class NLLClaim extends React.Component {
                 else {
                     console.error("Didn't pay fee!");
                     this.setState({ operationError: "Not publishing txns. User didn't pay fee. Check you have enough algos!" });
+                }
+
+                if (feeResult && result) {
+                    this.setState({ operationSuccess: "Wait a few seconds and refresh the page to see your new stake!" });
                 }
             }
         }
@@ -248,12 +274,18 @@ export default class NLLClaim extends React.Component {
         return escrowLogicSig;
     }
 
-    // Creates a fee txn to the set fee address
-    MakeFeeTxn(totalAmount, suggestedParams, optionalNote = undefined) {
+    DetermineFeeAmt(stakeUalgos) {
         const feePercent = 5 / 100;
-        const fivePercentOfStake = totalAmount * feePercent;
-        const feeUalgos = fivePercentOfStake * 1000000;
-        return algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, FEE_ADDR, feeUalgos, undefined, optionalNote, suggestedParams);
+        const fivePercentOfStake = stakeUalgos * feePercent;
+        const feeUalgos = fivePercentOfStake;
+        return feeUalgos;
+    }
+
+    // Creates a fee txn to the set fee address
+    MakeFeeTxn(totalAmount, suggestedParams) {
+        const feeUalgos = this.DetermineFeeAmt(totalAmount);
+        const feeNote = stringToBytes(`Deposited ${(totalAmount / 1000000).toFixed(2)}A into NLL using yldy-calc <3`);
+        return algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, FEE_ADDR, feeUalgos, undefined, feeNote, suggestedParams);
     }
 
     // Signs the given txns
@@ -265,6 +297,7 @@ export default class NLLClaim extends React.Component {
         }   
         catch (e) {
             console.warn("Sign txn error, user cancelled?", e);
+            return null;
         }
         return userSigned;
     }
@@ -286,22 +319,18 @@ export default class NLLClaim extends React.Component {
     }
 
     updateContractValues() {
-
-
         // Get ALGO staked
-        getUserStateValues(this.state.connectedWallet, NLL_APP_ID, [ "UA", "USS", "UT" ], (values) => {
-            console.log("user", values);
+        getUserStateValues(this.state.connectedWallet, NLL_APP_ID, [ "UA", "USS", "UT" ], (values, userUalgos) => {
             this.setState({
                 userAppValues: values,
                 userAlgoStaked: values.UA ?? undefined,
                 userUSS: values.USS ?? undefined,
+                userCurrentUalgos: userUalgos,
                 unstakeAmount: values.UA ? values.UA / 1000000 : this.state.claimAmount,
             }, () => {
                 // Determine YLDY staked
                 getContractValues(NLL_APP_ID, [ "GSS", "GT", "GA", "TYUL"], (obtainedVars) => {
                     if (obtainedVars) {
-                        console.log(obtainedVars);
-                        console.log(this.state);
                         const dayDiff = getDayDifference( this.state.userAppValues["UT"], obtainedVars["GT"] )
                         let claimable = calculateYLDYRewardsFromDayPeriod(
                             this.state.userUSS ?? 0,
@@ -311,7 +340,6 @@ export default class NLLClaim extends React.Component {
                             obtainedVars.TYUL,
                         );
 
-                        console.log("claimable", claimable);
                         this.setState({
                             claimAmount: Math.floor( claimable / 1000 ) / 1000,
                         });
@@ -338,19 +366,40 @@ export default class NLLClaim extends React.Component {
                         >     
                         Connect/Change Wallet               
                     </Button>
-                    {
-                        this.state.connectedWallet && (
-                            <div
-                                className="text-primary mx-auto"
-                                >
-                                { this.state.connectedWallet }
-                            </div>
-                        )
-                    }
+                    <div
+                        className={ (this.state.connectedWallet || this.state.userCurrentUalgos ? "mt-2" : "") + " text-center" }
+                        >
+                        {
+                            this.state.connectedWallet && (
+                                <div
+                                    className="text-primary mx-auto"
+                                    >
+                                    { this.state.connectedWallet }
+                                </div>
+                            )
+                        }
+                        {
+                            this.state.userCurrentUalgos && (
+                                <div
+                                    className="text-primary mx-auto"
+                                    >
+                                    <img
+                                        src={ unitToIcon("ALGO") }
+                                        className="my-auto mr-1"
+                                        height={ 21 }
+                                        width={ 21 }
+                                        alt="Algorand icon"
+                                        />
+                                    { this.state.userCurrentUalgos / 1000000 }
+                                </div>
+                            )
+                        }
+                    </div>
+                    
                     {
                         this.state.operationError && (
                             <div
-                                className="text-danger text-center border-danger border rounded my-2"
+                                className="text-center border-danger border rounded my-2 py-1"
                                 >
                                 Oops! Something went wrong.
                                 <br />
@@ -359,15 +408,27 @@ export default class NLLClaim extends React.Component {
                         )
                     }
                     {
-                        this.state.userAlgoStaked !== undefined && (
+                        this.state.operationSuccess && (
                             <div
-                                className="text-center"
+                                className="text-center border-primary border rounded my-2 py-1"
                                 >
-                                Staked ALGO: { (this.state.userAlgoStaked / 1000000) }
+                                Success!
+                                <br />
+                                { this.state.operationSuccess }
                             </div>
                         )
                     }
                 </div>
+
+                {
+                    this.state.userAppValues && (
+                        <div
+                            className="text-center mb-2"
+                            >
+                            Current Staked ALGO: { (this.state.userAppValues["UA"] / 1000000) }
+                        </div>
+                    )
+                }
                 
                 {
                     [
@@ -382,7 +443,15 @@ export default class NLLClaim extends React.Component {
                             btnText: "Stake",
                             onClick: async () => {
                                 await this.StakeAmount();
-                            }
+                            },
+                            unit: "ALGO",
+                            afterControl: (
+                                <div
+                                    className="text-center"
+                                    >
+                                    ALGO Stake Fee (5%): { (this.DetermineFeeAmt(this.state.stakeAmount * 1000000) / 1000000).toFixed(2) }
+                                </div>
+                            )
                         },
                         {
                             title: "Unstake Algos",
@@ -395,7 +464,8 @@ export default class NLLClaim extends React.Component {
                             btnText: "Unstake",
                             onClick: async () => {
                                 await this.UnstakeAmount();
-                            }
+                            },
+                            unit: "ALGO",
                         },
                         {
                             title: "YLDY to Claim",
@@ -408,12 +478,14 @@ export default class NLLClaim extends React.Component {
                             btnText: "Claim",
                             onClick: async () => {
                                 await this.ClaimAmount();
-                            }
+                            },
+                            unit: "YLDY",
                         }
-                    ].map((x) => {
+                    ].map((x, index) => {
                         return (
                             <div
                                 className="my-2"
+                                key={ `val-${index}` }
                                 >
                                 <Row
                                     className=""
@@ -431,12 +503,28 @@ export default class NLLClaim extends React.Component {
                                     <Col
                                         md={ 4 }
                                         >
-                                        <Form.Control
-                                            value={ x.value }
-                                            onChange={ x.onChange }
-                                            type="number"
-                                            className="mx-3"
-                                            />
+                                        <InputGroup className="mb-2">
+                                            <InputGroup.Prepend>
+                                                <InputGroup.Text>
+                                                    <img
+                                                        src={ unitToIcon( x.unit ) }
+                                                        className="my-auto mr-1 img-fluid"
+                                                        height="23px"
+                                                        width="23px"
+                                                        alt="Algorand icon"
+                                                        />
+                                                </InputGroup.Text>
+                                            </InputGroup.Prepend>
+                                            <Form.Control
+                                                value={ x.value }
+                                                onChange={ x.onChange }
+                                                type="number"
+                                                disabled={ !this.state.connectedWallet }
+                                                />
+                                        </InputGroup>
+                                        {
+                                            x.afterControl
+                                        }
                                     </Col>
                                     <Col
                                         md={ 4 }

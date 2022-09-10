@@ -49,7 +49,7 @@ export function getUserStateValues (algoAddress, contractID, appKeys, callback) 
                         }
 
                         if (callback) {
-                            callback(userValues);
+                            callback(userValues, data.amount);
                             return;
                         }
                     }
@@ -83,7 +83,7 @@ export function queryAlgoExplorerAPI (endpointPrefix, endpointUrl, response) {
 // Gets the last block id and timestamp
 export function getCurrentBlockTimestamp(callback) {
     let endpoint = "health";
-    queryAlgoExplorerAPI("idx2", endpoint, (data) => {
+    queryAlgoExplorerAPI("", endpoint, (data) => {
         if (data && data.round) {
             let lastRound = data.round;
 
