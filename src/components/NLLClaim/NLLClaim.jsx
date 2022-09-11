@@ -37,6 +37,7 @@ export default class NLLClaim extends React.Component {
             operationError: undefined,
             // Amount of ualgos the user has
             userCurrentUalgos: undefined,
+            contractValuesLastEpochMs: undefined,
         };
     }
 
@@ -342,6 +343,7 @@ export default class NLLClaim extends React.Component {
 
                         this.setState({
                             claimAmount: Math.floor( claimable / 1000 ) / 1000,
+                            contractValuesLastEpochMs: new Date().getTime(),
                         });
                     }
                 });
@@ -545,6 +547,31 @@ export default class NLLClaim extends React.Component {
                             </div>
                         )
                     })
+                }
+                {
+                    this.state.connectedWallet && (
+                        <div
+                            className="d-flex flex-column justify-content-center align-items-center"
+                            >
+                            <Button
+                                className="mt-2"
+                                onClick={ () => {
+                                    this.updateContractValues();
+                                }}
+                                >
+                                Refresh Clamable Amount
+                            </Button>
+                            {
+                                this.state.contractValuesLastEpochMs && (
+                                    <div
+                                        className="text-muted"
+                                        >
+                                        Last updated at { new Date(this.state.contractValuesLastEpochMs).toString() }
+                                    </div>
+                                )
+                            }
+                        </div>
+                    )
                 }
             </Container>
         )
