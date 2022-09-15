@@ -323,15 +323,15 @@ export default class NLLClaim extends React.Component {
         // Get ALGO staked
         getUserStateValues(this.state.connectedWallet, NLL_APP_ID, [ "UA", "USS", "UT" ], (values, userUalgos) => {
             this.setState({
-                userAppValues: values,
-                userAlgoStaked: values.UA ?? undefined,
-                userUSS: values.USS ?? undefined,
+                userAppValues: values ?? undefined,
+                userAlgoStaked: values?.UA ?? undefined,
+                userUSS: values?.USS ?? undefined,
                 userCurrentUalgos: userUalgos,
-                unstakeAmount: values.UA ? values.UA / 1000000 : this.state.claimAmount,
+                unstakeAmount: values?.UA ? values.UA / 1000000 : this.state.claimAmount,
             }, () => {
                 // Determine YLDY staked
                 getContractValues(NLL_APP_ID, [ "GSS", "GT", "GA", "TYUL"], (obtainedVars) => {
-                    if (obtainedVars) {
+                    if (obtainedVars && this.state.userAppValues) {
                         const dayDiff = getDayDifference( this.state.userAppValues["UT"], obtainedVars["GT"] )
                         let claimable = calculateYLDYRewardsFromDayPeriod(
                             this.state.userUSS ?? 0,
