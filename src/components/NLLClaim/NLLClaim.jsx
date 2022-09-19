@@ -6,6 +6,7 @@ import { getContractValues, getUserStateValues } from "../../js/AlgoExplorerAPI"
 import { calculateYLDYRewardsFromDayPeriod } from "../../js/YLDYCalculation";
 import { getDayDifference } from "../../js/utility";
 import { unitToIcon } from "../../js/consts";
+import { DateTime } from "luxon";
 
 const _algodClient = new algosdk.Algodv2('', "https://mainnet-api.algonode.cloud", 443);
 
@@ -323,15 +324,15 @@ export default class NLLClaim extends React.Component {
         // Get ALGO staked
         getUserStateValues(this.state.connectedWallet, NLL_APP_ID, [ "UA", "USS", "UT" ], (values, userUalgos) => {
             this.setState({
-                userAppValues: values,
-                userAlgoStaked: values.UA ?? undefined,
-                userUSS: values.USS ?? undefined,
+                userAppValues: values ?? undefined,
+                userAlgoStaked: values?.UA ?? undefined,
+                userUSS: values?.USS ?? undefined,
                 userCurrentUalgos: userUalgos,
-                unstakeAmount: values.UA ? values.UA / 1000000 : this.state.claimAmount,
+                unstakeAmount: values?.UA ? values.UA / 1000000 : this.state.claimAmount,
             }, () => {
                 // Determine YLDY staked
                 getContractValues(NLL_APP_ID, [ "GSS", "GT", "GA", "TYUL"], (obtainedVars) => {
-                    if (obtainedVars) {
+                    if (obtainedVars && this.state.userAppValues) {
                         const dayDiff = getDayDifference( this.state.userAppValues["UT"], obtainedVars["GT"] )
                         let claimable = calculateYLDYRewardsFromDayPeriod(
                             this.state.userUSS ?? 0,
@@ -344,6 +345,7 @@ export default class NLLClaim extends React.Component {
                         this.setState({
                             claimAmount: Math.floor( claimable / 1000 ) / 1000,
                             contractValuesLastEpochMs: new Date().getTime(),
+                            globalAppVars: obtainedVars,
                         });
                     }
                 });
@@ -566,7 +568,7 @@ export default class NLLClaim extends React.Component {
                                     <div
                                         className="text-muted"
                                         >
-                                        Last updated at { new Date(this.state.contractValuesLastEpochMs).toString() }
+                                        Last updated at { DateTime.fromMillis(this.state.contractValuesLastEpochMs).toLocaleString(DateTime.DATETIME_FULL) }
                                     </div>
                                 )
                             }
