@@ -345,6 +345,7 @@ export default class NLLClaim extends React.Component {
                         this.setState({
                             claimAmount: Math.floor( claimable / 1000 ) / 1000,
                             contractValuesLastEpochMs: new Date().getTime(),
+                            contractRefreshGT: obtainedVars.GT ? obtainedVars.GT * 1000 : undefined,
                             globalAppVars: obtainedVars,
                         });
                     }
@@ -572,6 +573,15 @@ export default class NLLClaim extends React.Component {
                                     </div>
                                 )
                             }
+                        </div>
+                    )
+                }
+                {
+                    this.state.contractRefreshGT && (
+                        <div
+                            className="text-center text-muted"
+                            >
+                            Next Refresh Time (GT): { DateTime.fromMillis(this.state.contractRefreshGT).toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS) }
                         </div>
                     )
                 }
