@@ -2,10 +2,12 @@ import axios from "axios";
 
 import CONFIG from "../config.json";
 
-const NODE_BASE_URL = "https://node.algoexplorerapi.io/";
-const INDEXER_BASE_URL = "https://algoindexer.algoexplorerapi.io/";
+// Algorand Algod api
+const NODE_BASE_URL = "https://mainnet-api.algonode.cloud/";
+// Indexer api
+const INDEXER_BASE_URL = "	https://mainnet-idx.algonode.cloud/";
 
-/// Gets the global contract values from  the 
+/// Gets the global contract values from  the
 export function getContractValues(contractId, keys, callback) {
     // Query endpoint with id
     let endpoint = `applications/${contractId}`;
@@ -26,7 +28,7 @@ export function getContractValues(contractId, keys, callback) {
     });
 }
 
-// Gets the UserTime and UserAmount values from the 
+// Gets the UserTime and UserAmount values from the
 export function getUserStateValues (algoAddress, contractID, appKeys, callback) {
     let endpoint = `accounts/${algoAddress}`;
     queryAlgoExplorerAPI("v2", endpoint, (data) => {
@@ -38,7 +40,7 @@ export function getUserStateValues (algoAddress, contractID, appKeys, callback) 
                 for (let appState of appStates) {
                     if (appState.id === contractID && appState["key-value"]) {
                         let userValues = {};
-                        
+
                         for (let key of appKeys) {
                             for (let kvp of appState["key-value"]) {
                                 if (kvp.key === btoa(key)) {
@@ -54,7 +56,7 @@ export function getUserStateValues (algoAddress, contractID, appKeys, callback) 
                         }
                     }
                 }
-            }            
+            }
         }
 
         // No app state or no app state to match contract id
@@ -125,7 +127,7 @@ export async function getYLDYTokenTopHoldersAsync (limit, minAmount, next) {
     // If next-token is supplied, get the next set of data
     if (data["next-token"]) {
         // Append data to allHolders
-        return allHolders.concat( 
+        return allHolders.concat(
             await getYLDYTokenTopHoldersAsync(limit, minAmount, data["next-token"])
         );
     } else {
@@ -156,7 +158,7 @@ export async function getAddressTransactionsAsync(address, nextToken) {
     if (!address) {
         return null;
     }
-    
+
     let endpoint = `v2/transactions?address=${address}`;
 
     if (nextToken) {
@@ -168,7 +170,7 @@ export async function getAddressTransactionsAsync(address, nextToken) {
     let result = null;
     try {
         result = await axios.get(fullUrl);
-    } 
+    }
     catch (ex) {
         // Error on axios get
         return null;
@@ -176,7 +178,7 @@ export async function getAddressTransactionsAsync(address, nextToken) {
 
     if (result) {
         let allTransactions = result.data.transactions;
-    
+
         // if next token given
         if (result.data["next-token"]) {
             // Get next pages of transactions
