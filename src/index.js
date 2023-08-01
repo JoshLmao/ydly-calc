@@ -9,10 +9,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // Main app .scss
 import "./scss/App.scss";
 
-// ReactBootstrap Table 2
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-import 'react-bootstrap-table2-filter/dist/react-bootstrap-table2-filter.min.css';
-
 ReactDOM.render(
   <React.StrictMode>
     <App />
