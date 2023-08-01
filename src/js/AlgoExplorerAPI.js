@@ -57,6 +57,11 @@ export function getUserStateValues (algoAddress, contractID, appKeys, callback) 
                     }
                 }
             }
+
+            if (callback) {
+                callback(null, data.amount);
+                return;
+            }
         }
 
         // No app state or no app state to match contract id

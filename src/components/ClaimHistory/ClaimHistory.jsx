@@ -13,8 +13,6 @@ import { buildCsvDataFromTxs, formatNumber, fromMicroValue, getBestGraphHeight, 
 import ALGO_ICON from "../../svg/algo-icon.svg";
 import YLDY_ICON from "../../svg/yldy-icon.svg";
 
-// Adapter for ChartJS to use dates
-import 'chartjs-adapter-luxon';
 import ClaimTable from "./ClaimTable/ClaimTable";
 
 class ClaimHistory extends Component {
@@ -45,7 +43,7 @@ class ClaimHistory extends Component {
                 userAddress: this.props.userAddress,
                 errorMsg: null,
             });
-        } 
+        }
         if (prevProps.appAddress !== this.props.appAddress) {
             this.setState({ appAddress: this.props.appAddress });
         }
@@ -60,7 +58,7 @@ class ClaimHistory extends Component {
                 loadingGraphData: true,
                 errorMsg: null,
             });
-            
+
             let filteredTransactions = filterClaimTransactions(this.state.allTransactions, this.state.userAddress, this.state.appAddress);
             this.setState({
                 allUserClaims: filteredTransactions,
@@ -176,13 +174,13 @@ class ClaimHistory extends Component {
         let textColor = "white";
         return (
             <div>
-                <h1 
-                    id="claim-history" 
+                <h1
+                    id="claim-history"
                     className="yldy-title">
                     Claim History
                 </h1>
                 <p>
-                    View your history of claimed rewards between No Loss Lottery and YLDY Staking. Click the button below to view your history. 
+                    View your history of claimed rewards between No Loss Lottery and YLDY Staking. Click the button below to view your history.
                     Make sure your algorand address is entered at the top of the page.
                     This may take some time, depending on the amount of transactions.
                 </p>
@@ -195,10 +193,10 @@ class ClaimHistory extends Component {
                 }
                 {
                     this.state.loadingGraphData && (
-                        <FontAwesomeIcon 
-                            icon={faSpinner} 
-                            size="2x" 
-                            spin 
+                        <FontAwesomeIcon
+                            icon={faSpinner}
+                            size="2x"
+                            spin
                             />
                     )
                 }
@@ -241,7 +239,7 @@ class ClaimHistory extends Component {
                         />
                     )
                 }
-                <Row 
+                <Row
                     className="py-3"
                     xs={1}
                     sm={1}
@@ -257,24 +255,24 @@ class ClaimHistory extends Component {
                         this.state.lineData && this.state.lineData.datasets.map((dataset, index) => {
                             let isALGO = dataset.label.includes("ALGO");
                             let isNLL = dataset.label.includes("No Loss Lottery");
-                            let totalAmt = dataset.data.reduce(function(accumulation, b) { 
+                            let totalAmt = dataset.data.reduce(function(accumulation, b) {
                                 return accumulation + b.y;
                             }, 0);
                             return (
                                 <Col>
-                                    <Card 
+                                    <Card
                                         key={index}
                                         border={ isNLL ? "primary" : "info" }
                                         className="rounded bg-dark my-2"
                                         >
                                         <Card.Body>
-                                            <Card.Title 
+                                            <Card.Title
                                                 className="yldy-title">
                                                 { dataset.label }
                                             </Card.Title>
                                             <div>
                                                 <b>Total Claimed:</b>
-                                                <img 
+                                                <img
                                                     className="ml-2 mr-1"
                                                     alt={ isALGO ? "ALGO icon" : "YLDY icon" }
                                                     src={ isALGO ? ALGO_ICON :YLDY_ICON }
@@ -283,7 +281,7 @@ class ClaimHistory extends Component {
                                                     />
                                                 <span
                                                     title={totalAmt}>
-                                                    { 
+                                                    {
                                                         formatNumber(totalAmt.toFixed(2))
                                                     }
                                                 </span>
@@ -299,7 +297,7 @@ class ClaimHistory extends Component {
                 </Row>
                 {
                     this.state.allUserClaims && this.state.allUserClaims.length > 0 && (
-                        <Row 
+                        <Row
                             className="py-3">
                             <div
                                 className="d-flex w-100">
@@ -313,13 +311,13 @@ class ClaimHistory extends Component {
                                     data={ buildCsvDataFromTxs(this.state.allUserClaims) }
                                     >
                                     Download as CSV
-                                    <FontAwesomeIcon 
+                                    <FontAwesomeIcon
                                         className="mx-2"
                                         icon={faDownload}
                                         />
                                 </CSVLink>
                             </div>
-                            
+
                             <ClaimTable
                                 claimTransactions={this.state.allUserClaims}
                                 purposeText="Claim"
