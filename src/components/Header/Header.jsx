@@ -17,11 +17,11 @@ class Header extends Component {
     }
 
     componentDidMount() {
-        getYLDYPrice((price) => {
-            this.setState({
-                YLDYPrice: price,
-            });
-        });
+        // getYLDYPrice((price) => {
+        //     this.setState({
+        //         YLDYPrice: price,
+        //     });
+        // });
     }
 
     render() {
@@ -39,10 +39,10 @@ class Header extends Component {
                     <small className="text-muted">
                         {pkg ? "v" + pkg.version : "v0.0.0"}
                     </small>
-                    
+
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
-                        <Nav className="w-100">   
+                        <Nav className="w-100">
                             {
                                 [
                                     {
@@ -63,11 +63,11 @@ class Header extends Component {
                                 ].map((info, index) => {
                                     if (info.href) {
                                         return (
-                                            <a 
+                                            <a
                                                 key={`pool-${index}`}
-                                                className="nav-link ml-lg-2" 
+                                                className="nav-link ml-lg-2"
                                                 href={ info.href }>
-                                                <Button 
+                                                <Button
                                                     variant={ info.variant }
                                                     className="text-white font-weight-bold">
                                                     { info.text }
@@ -76,11 +76,11 @@ class Header extends Component {
                                         );
                                     } else if (info.to) {
                                         return (
-                                            <Link 
+                                            <Link
                                                 key={`pool-${index}`}
-                                                className="nav-link ml-lg-2" 
+                                                className="nav-link ml-lg-2"
                                                 to={ info.to }>
-                                                <Button 
+                                                <Button
                                                     variant={ info.variant }
                                                     className="text-white font-weight-bold">
                                                     { info.text }
@@ -92,18 +92,18 @@ class Header extends Component {
                                 })
                             }
                             <a className="nav-link ml-lg-2" href="/stake-claim-stats">
-                                <Button 
-                                    variant="outline-light" 
+                                <Button
+                                    variant="outline-light"
                                     className="font-weight-bold">
                                     Stake/Claim Statistics
                                 </Button>
                             </a>
-                            
+
                             {/* Invis Margin separator */}
                             <div className="ml-auto"></div>
 
                             <div className="d-flex my-auto mx-1 py-1">
-                                <img 
+                                <img
                                     className="my-auto mx-2"
                                     src={YLDY_ICON}
                                     alt="Yieldly icon"
