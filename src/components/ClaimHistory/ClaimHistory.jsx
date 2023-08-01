@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Line } from "react-chartjs-2";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { Card, Row, Col } from "react-bootstrap";
@@ -198,45 +197,6 @@ class ClaimHistory extends Component {
                             size="2x"
                             spin
                             />
-                    )
-                }
-                {
-                    this.state.lineData && (
-                        <Line
-                            height={ getBestGraphHeight() }
-                            data={ this.state.lineData }
-                            options={{
-                                scales: {
-                                    x: {
-                                        type: 'time',
-                                        time: {
-                                            displayFormats: {
-                                                'day': 'DD',
-                                            },
-                                            unit: 'day',
-                                        },
-                                        title: {
-                                            display: true,
-                                            text: "Date",
-                                            color: textColor
-                                        },
-                                        ticks: {
-                                            color: textColor,
-                                        }
-                                    },
-                                    y: {
-                                        title: {
-                                            display: true,
-                                            text: "Claimed Amount",
-                                            color: textColor,
-                                        },
-                                        ticks: {
-                                            color: textColor,
-                                        }
-                                    }
-                                }
-                            }}
-                        />
                     )
                 }
                 <Row

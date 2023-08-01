@@ -2,7 +2,6 @@ import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
 import { Container, Form, InputGroup, Row, Col } from 'react-bootstrap';
-import { Line } from "react-chartjs-2";
 
 import { constants, unitToDecimals } from "../../js/consts";
 import { getApplicationData } from '../../js/FirebaseAPI';
@@ -46,7 +45,7 @@ class HistoricalRewards extends Component {
         if (newVal < 1)
             newVal = 1;
 
-        this.setState({ 
+        this.setState({
             stakedAmount: newVal,
         }, () => this.updateGraphData());
     }
@@ -56,7 +55,7 @@ class HistoricalRewards extends Component {
             loadingFirebaseData: true,
         });
 
-        let dataAmt = 6 * this.state.fbDataDayLimit; 
+        let dataAmt = 6 * this.state.fbDataDayLimit;
         getApplicationData(this.state.appID, dataAmt, (data) => {
             if (data) {
                 this.setState({
@@ -83,7 +82,7 @@ class HistoricalRewards extends Component {
             for (let config of this.state.rewardKeysConfig) {
                 claimableRewardsData[config.key] = [];
             }
-            
+
             // Iterate over stored data in firebase db
             for (let epochTimeKey in this.state.firebaseData) {
                 let dt = new Date(parseInt(epochTimeKey));
@@ -108,7 +107,7 @@ class HistoricalRewards extends Component {
                         if (config.decimals) {
                             claimableAmount = convertToMicroValue(claimableAmount, config.decimals);
                         }
-                        
+
                         claimableRewardsData[config.key].push({
                             x: dt.toISOString(),
                             y: claimableAmount,
@@ -193,7 +192,7 @@ class HistoricalRewards extends Component {
                     }
                 };
             }
-            
+
             this.setState({
                 loadingGraphData: false,
                 lineData: {
@@ -213,14 +212,14 @@ class HistoricalRewards extends Component {
                         When is the best time to claim your rewards? The graph below shows how your rewards fluctuate over time, even during the day.
                         To maximise your rewards, you should claim when the rewards are the highest, which appears to be before the rewards update to a new day.
                         <br/>
-                        Credit to Tommasso. Check out his detailed explaination 
-                        <a 
+                        Credit to Tommasso. Check out his detailed explaination
+                        <a
                             href="https://www.reddit.com/r/algorand/comments/ojhord/yieldly_algo_staking_nll_new_rewards_unlock/"
                             className="mx-1">
                             here
-                        </a> 
-                        and his more detailed charts 
-                        <a 
+                        </a>
+                        and his more detailed charts
+                        <a
                             href="https://yieldly-charts.vercel.app/"
                             className="mx-1">
                             here
@@ -228,7 +227,7 @@ class HistoricalRewards extends Component {
                     </p>
                     <Row>
                         <Col md={6}>
-                            <Form.Group 
+                            <Form.Group
                                 controlId="stakedAmount">
                                 <Form.Label className="lead font-weight-bold">
                                     Staked { this.state.stakeToken }
@@ -277,8 +276,8 @@ class HistoricalRewards extends Component {
                                             { val: 30, name: "month" },
                                         ].map((value) => {
                                             return (
-                                                <option 
-                                                    value={value.val} 
+                                                <option
+                                                    value={value.val}
                                                     key={value.name}>
                                                         { value.name }
                                                     </option>
@@ -292,35 +291,6 @@ class HistoricalRewards extends Component {
                     {
                         (this.state.loadingFirebaseData || this.state.loadingGraphData) && (
                             <FontAwesomeIcon icon={faSpinner} spin size="lg" />
-                        )
-                    }
-                    {
-                        !this.state.loadingFirebaseData && !this.state.loadingGraphData && this.state.lineData && (
-                            <Line
-                                data={ this.state.lineData }
-                                height={ getBestGraphHeight() }
-                                options={{
-                                    scales: this.state.lineScales,
-                                    plugins: {
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function(context) {
-                                                    // Build label string
-                                                    let label = context.dataset.label || '';
-                                                    if (label) {
-                                                        label += ': ';
-                                                    }
-                                                    if (context.parsed.y !== null) {
-                                                        // Use 5 decimal places
-                                                        label += context.parsed.y.toFixed(5);
-                                                    }
-                                                    return label;
-                                                }
-                                            }
-                                        }
-                                    },
-                                }}
-                                />
                         )
                     }
                 </Container>
