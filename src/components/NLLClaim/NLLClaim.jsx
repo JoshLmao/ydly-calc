@@ -1,16 +1,16 @@
 import React from "react";
 import { Button, Col, Container, Form, InputGroup, Row } from "react-bootstrap";
-import MyAlgoConnect from "@randlabs/myalgo-connect";
 import algosdk from "algosdk";
 import { getContractValues, getUserStateValues } from "../../js/AlgoExplorerAPI";
 import { calculateYLDYRewardsFromDayPeriod } from "../../js/YLDYCalculation";
 import { getDayDifference } from "../../js/utility";
 import { unitToIcon } from "../../js/consts";
 import { DateTime } from "luxon";
+import { PeraWalletConnect } from "@perawallet/connect"
 
 const _algodClient = new algosdk.Algodv2('', "https://mainnet-api.algonode.cloud", 443);
 
-const _myAlgoWallet = new MyAlgoConnect();
+const peraWallet = new PeraWalletConnect();
 
 const NLL_PROXY_APP_ID = 233725848;
 const NLL_APP_ID = 233725844;
@@ -42,6 +42,14 @@ export default class NLLClaim extends React.Component {
         };
     }
 
+    async componentDidMount() {
+        const addresses = await peraWallet.reconnectSession();
+        this.setState({
+            connectedWallet: addresses && addresses.length > 0 ? addresses[0] : this.state.connectedWallet,
+        });
+        this.updateContractValues();
+    }
+
     async OnConnectWallet() {
         const address = await this.ConnectMyAlgo();
         this.setState({
@@ -53,8 +61,8 @@ export default class NLLClaim extends React.Component {
 
     async ConnectMyAlgo() {
         try {
-            const accounts = await _myAlgoWallet.connect();
-            return accounts[0].address;
+            const accounts = await peraWallet.connect();
+            return accounts[0];
         }
         catch (e) {
             console.error("MyAlgo Connect error", e);
@@ -270,11 +278,10 @@ export default class NLLClaim extends React.Component {
     }
 
     // Signs the given txns
-    async SignTxns(txns) {
-        let byteTxns = txns.map(x => x.toByte())
+    async SignTxns(signedTxns) {
         let userSigned = null;
         try {
-            userSigned = await _myAlgoWallet.signTransaction(byteTxns);
+            userSigned = await peraWallet.signTransaction(signedTxns);
         }
         catch (e) {
             console.warn("Sign txn error, user cancelled?", e);
@@ -421,7 +428,7 @@ export default class NLLClaim extends React.Component {
                             value: this.state.stakeAmount,
                             onChange: (e) => {
                                 this.setState({
-                                    stakeAmount: e.target.value,
+                                    stakeAmount: parseInt(e.target.value),
                                 });
                             },
                             btnText: "Stake",
@@ -442,7 +449,7 @@ export default class NLLClaim extends React.Component {
                             value: this.state.unstakeAmount,
                             onChange: (e) => {
                                 this.setState({
-                                    unstakeAmount: e.target.value,
+                                    unstakeAmount: parseInt(e.target.value),
                                 });
                             },
                             btnText: "Unstake",
@@ -456,7 +463,7 @@ export default class NLLClaim extends React.Component {
                             value: this.state.claimAmount,
                             onChange: (e) => {
                                 this.setState({
-                                    claimAmount: e.target.value,
+                                    claimAmount: parseInt(e.target.value),
                                 });
                             },
                             btnText: "Claim",
