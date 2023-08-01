@@ -115,7 +115,7 @@ export default class NLLClaim extends React.Component {
 
             // Publish user txns
             if (userSignedTxns) {
-                const result = await this.PublishTxns(userSignedTxns);
+                const result = await AlgoInterface.PublishTxns(userSignedTxns);
                 if (result) {
                     console.log("Staked Algo ok!");
                 }
@@ -170,14 +170,14 @@ export default class NLLClaim extends React.Component {
             const signedEscrowTxn = algosdk.signLogicSigTransactionObject(groupedTxns[2], escrowLogicSigAccount);
 
             // Prompt user to sign
-            const signedUserTxns = await this.SignTxns([ groupedTxns[0], groupedTxns[1], groupedTxns[3] ]);
+            const signedUserTxns = await AlgoInterface.SignTxns([ groupedTxns[0], groupedTxns[1], groupedTxns[3] ]);
             if (!signedUserTxns) {
                 return;
             }
 
             // Join logic sig txn and user signed ones *in specific order*
             const allSignedTxns = [ signedUserTxns[0], signedUserTxns[1], signedEscrowTxn, signedUserTxns[2] ];
-            const published = await this.PublishTxns(allSignedTxns);
+            const published = await AlgoInterface.PublishTxns(allSignedTxns);
             if (!published) {
                 this.setState({ operationError: "Unable to publish stake txn. Check you have enough algos!" });
                 return;
@@ -229,14 +229,14 @@ export default class NLLClaim extends React.Component {
             const signedEscrowTxn = algosdk.signLogicSigTransaction(claimTxn, escrowLogicSig);
 
             // Sign only user txns
-            const signedUserTxns = await this.SignTxns([ groupedTxns[0], groupedTxns[1], groupedTxns[3] ]);
+            const signedUserTxns = await AlgoInterface.SignTxns([ groupedTxns[0], groupedTxns[1], groupedTxns[3] ]);
             if (signedUserTxns === null) {
                 return;
             }
 
             // Construct back into specific order and publish
             const allSignedTxns = [ signedUserTxns[0], signedUserTxns[1], signedEscrowTxn, signedUserTxns[2] ];
-            const result = await this.PublishTxns(allSignedTxns);
+            const result = await AlgoInterface.PublishTxns(allSignedTxns);
             if (result) {
                 console.log("Published good!");
             }

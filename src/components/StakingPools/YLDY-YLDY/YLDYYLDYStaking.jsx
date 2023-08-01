@@ -91,7 +91,7 @@ class YLDYYLDYStaking extends Component {
 
     async ConnectWallet() {
         const address = await AlgoInterface.Connect();
-        this.setState({ userAddress: address });
+        this.setState({ connectedWallet: address });
     }
 
     async OptInYldyContract() {
@@ -111,15 +111,23 @@ class YLDYYLDYStaking extends Component {
     }
 
     async StakeAmount() {
-
-
+        const suggestedParams = await AlgoInterface.GetSuggestedParams();
+        const unstakeGroupedTxns = YieldlyAPI.MakeYldyStakeTxns(this.state.connectedWallet, suggestedParams, 1000000);
+        const signedTxns = await AlgoInterface.SignTxns(unstakeGroupedTxns);
+        const result = await AlgoInterface.PublishTxns(signedTxns);
+        if (!result) {
+            console.error("Error unstaking!");
+        }
+        else {
+            console.log("Successfully submitted!")
+        }
     }
 
     async UnstakeAmount() {
         const suggestedParams = await AlgoInterface.GetSuggestedParams();
-        const unstakeGroupedTxns = YieldlyAPI.MakeYldyUnstakeTxn(this.state.userAlgoAddress, suggestedParams, 1000000);
-        const signedTxns = AlgoInterface.SignTxns([ unstakeGroupedTxns ]);
-        const result = AlgoInterface.PublishTxns(signedTxns);
+        const unstakeGroupedTxns = YieldlyAPI.MakeYldyUnstakeTxn(this.state.connectedWallet, suggestedParams, 1000000);
+        const signedTxns = await AlgoInterface.SignTxns(unstakeGroupedTxns);
+        const result = await AlgoInterface.PublishTxns(signedTxns);
         if (!result) {
             console.error("Error unstaking!");
         }
