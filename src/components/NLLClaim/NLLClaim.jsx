@@ -4,17 +4,13 @@ import algosdk from "algosdk";
 import { getContractValues, getUserStateValues } from "../../js/AlgoExplorerAPI";
 import { calculateYLDYRewardsFromDayPeriod } from "../../js/YLDYCalculation";
 import { getDayDifference } from "../../js/utility";
-import { unitToIcon } from "../../js/consts";
+import { constants, unitToIcon } from "../../js/consts";
 import { DateTime } from "luxon";
-import { PeraWalletConnect } from "@perawallet/connect"
+import AlgoInterface from "../../js/AlgoInterface";
+import YieldlyAPI from "../../js/yieldly/YieldlyAPI";
 
 const _algodClient = new algosdk.Algodv2('', "https://mainnet-api.algonode.cloud", 443);
 
-const peraWallet = new PeraWalletConnect();
-
-const NLL_PROXY_APP_ID = 233725848;
-const NLL_APP_ID = 233725844;
-const ESCROW_ADDR = "FMBXOFAQCSAD4UWU4Q7IX5AV4FRV6AKURJQYGXLW3CTPTQ7XBX6MALMSPY";
 const YLDY_ASA_ID = 226701642;
 const ESCROW_PROGRAM_STR = "AiAGAgaYv7lvAAUBMgQiDzIEIw4QQQAuMwAYJBJAAANCACMzABAjEjMAGSUSIQQzABkSERAzASAyAxIQMwAgMgMSEEAAAiVDIQVD";
 const FEE_ADDR = "IM6CZ4KUPWT23PKA23MW5S4ZQVF4376GWELLAL5QA5NCMB635JTRUGIDPY";
@@ -43,15 +39,15 @@ export default class NLLClaim extends React.Component {
     }
 
     async componentDidMount() {
-        const addresses = await peraWallet.reconnectSession();
+        const address = await AlgoInterface.Reconnect();
         this.setState({
-            connectedWallet: addresses && addresses.length > 0 ? addresses[0] : this.state.connectedWallet,
+            connectedWallet: address ? address : this.state.connectedWallet,
         });
         this.updateContractValues();
     }
 
     async OnConnectWallet() {
-        const address = await this.ConnectMyAlgo();
+        const address = await AlgoInterface.Connect();
         this.setState({
             connectedWallet: address ? address : this.state.connectedWallet,
         });
@@ -60,13 +56,9 @@ export default class NLLClaim extends React.Component {
     }
 
     async ConnectMyAlgo() {
-        try {
-            const accounts = await peraWallet.connect();
-            return accounts[0];
-        }
-        catch (e) {
-            console.error("MyAlgo Connect error", e);
-        }
+        this.setState({
+            connectedWallet: await AlgoInterface.Connect(),
+        });
     }
 
     async StakeAmount() {
@@ -95,14 +87,14 @@ export default class NLLClaim extends React.Component {
 
             // call proxy contract
             const checkAppArg = stringToBytes("check");
-            const checkTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_PROXY_APP_ID, [ checkAppArg ]);
+            const checkTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, constants.PROXY_APP_ID, [ checkAppArg ]);
 
             // Call NLL contract
             const depositAppArg = stringToBytes("D");
-            const stakingCall = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_APP_ID, [ depositAppArg ], [ ESCROW_ADDR ]);
+            const stakingCall = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, constants.NO_LOSS_LOTTERY_APP_ID, [ depositAppArg ], [ constants.YLDY_ESCROW_ADDR ]);
 
             // Send Algo to the escrow
-            const algoToContract = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, ualgoStake, undefined, undefined, suggestedParamTxn);
+            const algoToContract = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, constants.YLDY_ESCROW_ADDR, ualgoStake, undefined, undefined, suggestedParamTxn);
 
 
             // Create specific txn group and order for deposit
@@ -113,7 +105,7 @@ export default class NLLClaim extends React.Component {
             ]);
 
             // Sign all user txns
-            const userSignedTxns = await this.SignTxns(groupedTxns);
+            const userSignedTxns = await AlgoInterface.SignTxns(groupedTxns);
             if (!userSignedTxns) {
                 const err = "User denied NLL txns";
                 console.error(err);
@@ -153,18 +145,18 @@ export default class NLLClaim extends React.Component {
 
             // proxy contract
             const checkArg = stringToBytes("check");
-            const checkProxyTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_PROXY_APP_ID, [ checkArg ]);
+            const checkProxyTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, constants.PROXY_APP_ID, [ checkArg ]);
 
             // Withdraw algos from NLL contract
             const wAppArg = stringToBytes("W");
-            const withdrawTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_APP_ID, [ wAppArg ], [ ESCROW_ADDR ]);
+            const withdrawTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, constants.NO_LOSS_LOTTERY_APP_ID, [ wAppArg ], [ constants.YLDY_ESCROW_ADDR ]);
 
             // Algo from Escrow
             const escrowLogicSigAccount = this.GetNllLogicSigAccount();
-            const escrowToUserTxn = algosdk.makePaymentTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, unstakeUalgos, undefined, undefined, suggestedParamTxn);
+            const escrowToUserTxn = algosdk.makePaymentTxnWithSuggestedParams(constants.YLDY_ESCROW_ADDR, this.state.connectedWallet, unstakeUalgos, undefined, undefined, suggestedParamTxn);
 
             // Pay for withdraw txn fee
-            const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, 1000, undefined, undefined, suggestedParamTxn);
+            const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, constants.YLDY_ESCROW_ADDR, 1000, undefined, undefined, suggestedParamTxn);
 
             // Group all user txns
             const groupedTxns = algosdk.assignGroupID([
@@ -211,19 +203,19 @@ export default class NLLClaim extends React.Component {
             // Call proxy contract
             const checkAppArg = stringToBytes("check");
             console.log(checkAppArg);
-            const checkTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_PROXY_APP_ID, [ checkAppArg ]);
+            const checkTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, constants.PROXY_APP_ID, [ checkAppArg ]);
 
             // Claim YLDY from NLL
             const caAppArg =  stringToBytes("CA");
-            const appAccounts = [ ESCROW_ADDR ];
-            const appWithdrawTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, NLL_APP_ID, [ caAppArg ], appAccounts, undefined, undefined, flavourNote);
+            const appAccounts = [ constants.YLDY_ESCROW_ADDR ];
+            const appWithdrawTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, constants.NO_LOSS_LOTTERY_APP_ID, [ caAppArg ], appAccounts, undefined, undefined, flavourNote);
 
             // Pay for txn transfer fee
-            const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, 1000, undefined, flavourNote, suggestedParamTxn);
+            const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, constants.YLDY_ESCROW_ADDR, 1000, undefined, flavourNote, suggestedParamTxn);
 
             // Tranfer YLDY from escrow to claimer, sign with logic sig
             const escrowLogicSig = this.GetNllLogicSigAccount();
-            const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, yldyClaimAmt, undefined, YLDY_ASA_ID, suggestedParamTxn);
+            const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(constants.YLDY_ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, yldyClaimAmt, undefined, YLDY_ASA_ID, suggestedParamTxn);
 
             // Create group in specific orderr
             const groupedTxns = algosdk.assignGroupID([
@@ -257,20 +249,14 @@ export default class NLLClaim extends React.Component {
     }
 
     async OptInNll() {
-
-        const suggestedParamTxn = await _algodClient.getTransactionParams().do();
+        const suggestedParamTxn = await AlgoInterface.GetSuggestedParams();
         if (!suggestedParamTxn) {
             return;
         }
 
-        const optInNllTxn = algosdk.makeApplicationOptInTxnFromObject({
-            from: this.state.connectedWallet,
-            appIndex: NLL_APP_ID,
-            suggestedParams: suggestedParamTxn,
-        });
-
-        const signedTxns = await this.SignTxns([optInNllTxn]);
-        const result = await this.PublishTxns(signedTxns);
+        const optInNllTxn = YieldlyAPI.MakeOptInNll(this.state.connectedWallet, suggestedParamTxn);
+        const signedTxns = await AlgoInterface.SignTxns([optInNllTxn]);
+        const result = await AlgoInterface.PublishTxns(signedTxns);
         if (!result) {
             console.error("Not published!");
             this.setState({ operationError: "Unable to publish opt in Nll txn" });
@@ -298,42 +284,9 @@ export default class NLLClaim extends React.Component {
         return algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, FEE_ADDR, feeUalgos, undefined, feeNote, suggestedParams);
     }
 
-    // Signs the given txns
-    async SignTxns(signedTxns) {
-        let userSigned = null;
-        signedTxns = signedTxns.map((txn) => {
-            return {
-                txn: txn
-            };
-        })
-        try {
-            userSigned = await peraWallet.signTransaction([signedTxns]);
-        }
-        catch (e) {
-            console.warn("Sign txn error, user cancelled?", e);
-            return null;
-        }
-        return userSigned;
-    }
-
-    // Publishes the given signed txns
-    async PublishTxns(allSignedTxns) {
-        try {
-            const published = await _algodClient.sendRawTransaction(allSignedTxns).do().catch(x => console.error("Error publishing txns", x));
-            if (published) {
-                return true;
-            }
-
-        }
-        catch (e) {
-            console.error("Error submitting", e);
-        }
-        return false;
-    }
-
     updateContractValues() {
         // Get ALGO staked
-        getUserStateValues(this.state.connectedWallet, NLL_APP_ID, [ "UA", "USS", "UT" ], (values, userUalgos) => {
+        getUserStateValues(this.state.connectedWallet, constants.NO_LOSS_LOTTERY_APP_ID, [ "UA", "USS", "UT" ], (values, userUalgos) => {
             this.setState({
                 userAppValues: values ?? undefined,
                 userAlgoStaked: values?.UA ?? undefined,
@@ -342,7 +295,7 @@ export default class NLLClaim extends React.Component {
                 unstakeAmount: values?.UA ? values.UA / 1000000 : this.state.claimAmount,
             }, () => {
                 // Determine YLDY staked
-                getContractValues(NLL_APP_ID, [ "GSS", "GT", "GA", "TYUL"], (obtainedVars) => {
+                getContractValues(constants.NO_LOSS_LOTTERY_APP_ID, [ "GSS", "GT", "GA", "TYUL"], (obtainedVars) => {
                     if (obtainedVars && this.state.userAppValues) {
                         const dayDiff = getDayDifference( this.state.userAppValues["UT"], obtainedVars["GT"] )
                         let claimable = calculateYLDYRewardsFromDayPeriod(
@@ -463,11 +416,10 @@ export default class NLLClaim extends React.Component {
                     </Button>
                 </div>
 
-
                 {
                     [
                         {
-                            title: "Algos to Stake (5% fee to stake)",
+                            title: "Algos to Stake",
                             value: this.state.stakeAmount,
                             onChange: (e) => {
                                 this.setState({

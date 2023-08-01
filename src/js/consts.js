@@ -10,6 +10,8 @@ import CHOICE_ICON from "../svg/choice-icon.svg";
 export const constants = {
     // Algorand application id for the No Loss Lottery
     NO_LOSS_LOTTERY_APP_ID: 233725844,
+    PROXY_APP_ID: 233725848,
+
     // Algorand application id for YLDY staking
     YLDY_STAKING_APP_ID: 233725850,
     // Algorand application id for OPUL staking
@@ -29,6 +31,8 @@ export const constants = {
     // YLDY/XET
     YLDY_XET_APP_ID: 424101057,
     YLDY_CHOICE_APP_ID: 447336112,
+
+    YLDY_ESCROW_ADDR: "FMBXOFAQCSAD4UWU4Q7IX5AV4FRV6AKURJQYGXLW3CTPTQ7XBX6MALMSPY",
 
     // Algorand asset id for YLDY
     YLDY_ASSET_ID: 226701642,
@@ -65,7 +69,7 @@ export function appIDToName (appID) {
 }
 
 export function appIDToIcon(appID) {
-    switch(appID){ 
+    switch(appID){
         case constants.NO_LOSS_LOTTERY_APP_ID:
             return unitToIcon("ALGO");
         case constants.YLDY_STAKING_APP_ID:
@@ -94,7 +98,7 @@ export function appIDToIcon(appID) {
 
 // Converts an app id to the unit of currency used to stake in the pool
 export function appIDToStakingUnit (appID) {
-    switch(appID){ 
+    switch(appID){
         case constants.NO_LOSS_LOTTERY_APP_ID:
             return "ALGO";
         case constants.YLDY_STAKING_APP_ID:
@@ -110,8 +114,8 @@ export function appIDToStakingUnit (appID) {
         case constants.SMILE_SMILE_POOL_APP_ID:
             return "SMILE";
         case constants.GEMS_GEMS_APP_ID:
-            return "GEMS";       
-             
+            return "GEMS";
+
         default:
             return null;
     }

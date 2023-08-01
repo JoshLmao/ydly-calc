@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
-import { Container } from 'react-bootstrap';
+import { Button, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 
-import { constants } from '../../../js/consts';
+import { constants, unitToIcon } from '../../../js/consts';
 import HistoricalRewards from '../../HistoricalRewards';
 import PoolStatistics from '../../PoolStatistics/';
 import StakePoolCalculator from '../../StakePoolCalculator';
 import StakePoolJumbo from '../../StakePoolJumbo/StakePoolJumbo';
+import AlgoInterface from '../../../js/AlgoInterface';
+import YieldlyAPI from '../../../js/yieldly/YieldlyAPI';
+import { DateTime } from 'luxon';
 
 class YLDYYLDYStaking extends Component {
     constructor(props) {
@@ -72,14 +75,53 @@ class YLDYYLDYStaking extends Component {
                     hidden: true,
                 }
             ],
+
+
+            yldyStakeAmt: 0,
+            yldyUnstakeAmt: 0,
+            yldyClaimAmt: 0,
+            connectedWallet: null,
         }
     }
 
-    componentDidUpdate(prevProps) {
-        if (prevProps.userAlgoAddress !== this.props.userAlgoAddress) {
-            this.setState({
-                userAlgoAddress: this.props.userAlgoAddress,
-            });
+    async componentDidMount() {
+        const address = await AlgoInterface.Reconnect();
+        this.setState({ connectedWallet: address }, () => { console.log("mounted wallet " + this.state.connectedWallet)});
+    }
+
+    async ConnectWallet() {
+        const address = await AlgoInterface.Connect();
+        this.setState({ userAddress: address });
+    }
+
+    async OptInYldyContract() {
+        const suggestedParamTxn = await AlgoInterface.GetSuggestedParams();
+        if (!suggestedParamTxn) {
+            return;
+        }
+
+        const optInYldyYldyContractTxn = YieldlyAPI.MakeOptInYldyYldy(this.state.connectedWallet, suggestedParamTxn);
+
+        const signedTxns = await AlgoInterface.SignTxns([optInYldyYldyContractTxn]);
+        const result = await AlgoInterface.PublishTxns(signedTxns);
+        if (!result) {
+            console.error("Not published!");
+            this.setState({ operationError: "Unable to publish opt in Nll txn" });
+        }
+    }
+
+    async StakeAmount() {
+
+
+    }
+
+    async UnstakeAmount() {
+        const suggestedParams = await AlgoInterface.GetSuggestedParams();
+        const unstakeGroupedTxns = YieldlyAPI.MakeYldyUnstakeTxn(this.state.userAlgoAddress, suggestedParams, 1000000);
+        const signedTxns = AlgoInterface.SignTxns([ unstakeGroupedTxns ]);
+        const result = AlgoInterface.PublishTxns(signedTxns);
+        if (!result) {
+            console.error("Error unstaking!");
         }
     }
 
@@ -107,12 +149,189 @@ class YLDYYLDYStaking extends Component {
                         />
                 </Container>
 
+                <Container
+                    className="mb-3 mt-2 border border-info rounded p-3"
+                    >
+                    <div
+                        className="d-flex flex-column justify-content-center mb-3"
+                        >
+
+                        <div
+                            className="mx-auto"
+                            >
+                            <Button
+                                variant="info mb-3"
+                                onClick={ async () => {
+                                    await this.ConnectWallet();
+                                }}
+                                >
+                                Connect Wallet
+                            </Button>
+                        </div>
+                        {
+                            this.state.userAddress && (
+                                <div>
+                                    { this.state.userAddress }
+                                </div>
+                            )
+                        }
+                        <Button
+                            className="ms-3 mx-auto"
+                            variant="outline-info"
+                            style={{
+                                minWidth: "150px"
+                            }}
+                            onClick={ async () => {
+                                await this.OptInYldyContract();
+                            }}
+                            >
+                            Opt in to YLDY/YLDY Contract
+                        </Button>
+
+                        {
+                            [
+                                {
+                                    title: "YLDY to Stake",
+                                    value: this.state.yldyStakeAmt,
+                                    onChange: (e) => {
+                                        this.setState({
+                                            yldyStakeAmt: parseInt(e.target.value),
+                                        });
+                                    },
+                                    btnText: "Stake",
+                                    onClick: async () => {
+                                        await this.StakeAmount();
+                                    },
+                                    unit: "YLDY",
+                                },
+                                {
+                                    title: "Unstake YLDY",
+                                    value: this.state.yldyUnstakeAmt,
+                                    onChange: (e) => {
+                                        this.setState({
+                                            yldyUnstakeAmt: parseInt(e.target.value),
+                                        });
+                                    },
+                                    btnText: "Unstake",
+                                    onClick: async () => {
+                                        await this.UnstakeAmount();
+                                    },
+                                    unit: "YLDY",
+                                },
+                                // {
+                                //     title: "YLDY to Claim",
+                                //     value: this.state.claimAmount,
+                                //     onChange: (e) => {
+                                //         this.setState({
+                                //             yldyClaimAmt: parseInt(e.target.value),
+                                //         });
+                                //     },
+                                //     btnText: "Claim",
+                                //     onClick: async () => {
+                                //         await this.ClaimAmount();
+                                //     },
+                                //     unit: "YLDY",
+                                // }
+                            ].map((x, index) => {
+                                return (
+                                    <div
+                                        className="my-2"
+                                        key={ `val-${index}` }
+                                        >
+                                        <Row
+                                            className=""
+                                            >
+                                            <Col
+                                                md={ 4 }
+                                                className="text-right"
+                                                >
+                                                <div
+                                                    className="me-3"
+                                                    >
+                                                    { x.title }
+                                                </div>
+                                            </Col>
+                                            <Col
+                                                md={ 4 }
+                                                >
+                                                <InputGroup className="mb-2">
+                                                    <InputGroup.Prepend>
+                                                        <InputGroup.Text>
+                                                            <img
+                                                                src={ x.unit ? unitToIcon( x.unit ) : null }
+                                                                className="my-auto mr-1 img-fluid"
+                                                                height="23px"
+                                                                width="23px"
+                                                                alt="Algorand icon"
+                                                                />
+                                                        </InputGroup.Text>
+                                                    </InputGroup.Prepend>
+                                                    <Form.Control
+                                                        value={ x.value }
+                                                        onChange={ x.onChange }
+                                                        type="number"
+                                                        //disabled={ !this.state.connectedWallet }
+                                                        />
+                                                </InputGroup>
+                                                {
+                                                    x.afterControl
+                                                }
+                                            </Col>
+                                            <Col
+                                                md={ 4 }
+                                                className="text-left"
+                                                >
+                                                <Button
+                                                    className="ms-3"
+                                                    variant="outline-primary"
+                                                    onClick={ x.onClick }
+                                                    style={{
+                                                        minWidth: "150px"
+                                                    }}
+                                                    >
+                                                    { x.btnText }
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    </div>
+                                )
+                            })
+                        }
+                        {
+                            this.state.connectedWallet && (
+                                <div
+                                    className="d-flex flex-column justify-content-center align-items-center"
+                                    >
+                                    <Button
+                                        className="mt-2"
+                                        onClick={ () => {
+                                            this.updateContractValues();
+                                        }}
+                                        >
+                                        Refresh Clamable Amount
+                                    </Button>
+                                    {
+                                        this.state.contractValuesLastEpochMs && (
+                                            <div
+                                                className="text-muted"
+                                                >
+                                                Last updated at { DateTime.fromMillis(this.state.contractValuesLastEpochMs).toLocaleString(DateTime.DATETIME_FULL) }
+                                            </div>
+                                        )
+                                    }
+                                </div>
+                            )
+                        }
+
+                    </div>
+                </Container>
+
                 <div className="border-yldy border-top mt-5 pb-5" />
 
                 <Container>
                     <HistoricalRewards
                         appID={ this.state.appID }
-                        rewardKeysConfig={[ 
+                        rewardKeysConfig={[
                             {
                                 key: "TYUL",
                                 unit: "YLDY",
