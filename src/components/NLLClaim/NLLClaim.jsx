@@ -96,7 +96,7 @@ export default class NLLClaim extends React.Component {
             // Send Algo to the escrow
             const algoToContract = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, ualgoStake, undefined, undefined, suggestedParamTxn);
 
-            
+
             // Create specific txn group and order for deposit
             const groupedTxns = algosdk.assignGroupID([
                 checkTxn,
@@ -113,22 +113,9 @@ export default class NLLClaim extends React.Component {
                 return;
             }
 
-            // fee txn
-            const feeTxn = this.MakeFeeTxn(ualgoStake, suggestedParamTxn);
-
-            // Make user sign fee, return if denied
-            const signedFeeTxn = await this.SignTxns([ feeTxn ]);
-            if (!signedFeeTxn) {
-                const err = "User denied fee txn, not publishing";
-                console.error(err);
-                this.setState({ operationError: err });
-                return;
-            }
-
             // Publish user txns
             if (userSignedTxns) {
                 const result = await this.PublishTxns(userSignedTxns);
-                const feeResult = await this.PublishTxns(signedFeeTxn);
                 if (result) {
                     console.log("Staked Algo ok!");
                 }
@@ -137,15 +124,7 @@ export default class NLLClaim extends React.Component {
                     this.setState({ operationError: "Unable to publish stake txn. Check you have enough algos!" });
                 }
 
-                if (feeResult) {
-                    console.log("Paid fee ok!");
-                }
-                else {
-                    console.error("Didn't pay fee!");
-                    this.setState({ operationError: "Not publishing txns. User didn't pay fee. Check you have enough algos!" });
-                }
-
-                if (feeResult && result) {
+                if (result) {
                     this.setState({ operationSuccess: "Wait a few seconds and refresh the page to see your new stake!" });
                 }
             }
@@ -179,7 +158,7 @@ export default class NLLClaim extends React.Component {
             // Pay for withdraw txn fee
             const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, ESCROW_ADDR, 1000, undefined, undefined, suggestedParamTxn);
 
-            // Group all user txns 
+            // Group all user txns
             const groupedTxns = algosdk.assignGroupID([
                 checkProxyTxn,
                 withdrawTxn,
@@ -237,7 +216,7 @@ export default class NLLClaim extends React.Component {
             // Tranfer YLDY from escrow to claimer, sign with logic sig
             const escrowLogicSig = this.GetNllLogicSigAccount();
             const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, yldyClaimAmt, undefined, YLDY_ASA_ID, suggestedParamTxn);
-    
+
             // Create group in specific orderr
             const groupedTxns = algosdk.assignGroupID([
                 checkTxn,
@@ -296,7 +275,7 @@ export default class NLLClaim extends React.Component {
         let userSigned = null;
         try {
             userSigned = await _myAlgoWallet.signTransaction(byteTxns);
-        }   
+        }
         catch (e) {
             console.warn("Sign txn error, user cancelled?", e);
             return null;
@@ -368,8 +347,8 @@ export default class NLLClaim extends React.Component {
                         onClick={ async () => {
                             this.OnConnectWallet({ shouldSelectOneAccount: true, });
                         }}
-                        >     
-                        Connect/Change Wallet               
+                        >
+                        Connect/Change Wallet
                     </Button>
                     <div
                         className={ (this.state.connectedWallet || this.state.userCurrentUalgos ? "mt-2" : "") + " text-center" }
@@ -400,7 +379,7 @@ export default class NLLClaim extends React.Component {
                             )
                         }
                     </div>
-                    
+
                     {
                         this.state.operationError && (
                             <div
@@ -409,7 +388,7 @@ export default class NLLClaim extends React.Component {
                                 Oops! Something went wrong.
                                 <br />
                                 { this.state.operationError }
-                            </div> 
+                            </div>
                         )
                     }
                     {
@@ -434,7 +413,7 @@ export default class NLLClaim extends React.Component {
                         </div>
                     )
                 }
-                
+
                 {
                     [
                         {
