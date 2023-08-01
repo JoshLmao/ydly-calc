@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Line } from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
@@ -15,7 +14,7 @@ const DATA_ENTRIES_ONE_DAY = 6;
 class AppStateHistoryGraph extends Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             // Application ID to use for this graph
             applicationID: props.applicationID,
@@ -43,7 +42,7 @@ class AppStateHistoryGraph extends Component {
             dataTitle: props.dataTitle,
             // Height of the overall graph
             graphHeight: props.graphHeight ?? null,
-            
+
             // Color of the handles of the data line
             lineHandleColor: props.lineHandleColor ?? 'rgba(254, 215, 56, 1)',
             // Color of the line of the data
@@ -94,7 +93,7 @@ class AppStateHistoryGraph extends Component {
         let graphData = [];
 
         // Call firebase and get data
-        if (firebase) { 
+        if (firebase) {
             // db/{application_id}, limit data to certain amount
             getApplicationData(this.state.applicationID, this.state.dataLimit, (data) => {
                 if (!data) {
@@ -161,63 +160,16 @@ class AppStateHistoryGraph extends Component {
                         )
                     }
                 </div>
-               
+
                 {
                     this.state.loadingFirebaseData &&
                         <div className="w-100">
                             Fetching the latest data...
-                            <FontAwesomeIcon 
+                            <FontAwesomeIcon
                                 spin
                                 className="mx-auto"
                                 icon={faSpinner} size="2x" />
                         </div>
-                }
-                {
-                    this.state.lineState && !this.state.loadingFirebaseData &&
-                    <Line 
-                        data={ this.state.lineState }
-                        height={ this.state.graphHeight }
-                        options={{
-                            legend: {
-                                display: true,
-                                position: 'right',
-                                color: "white",
-                            },
-                            scales: {
-                                // X axis
-                                x: {
-                                    display: true,
-                                    title: {
-                                        display: true,
-                                        text: this.state.xAxisLabel,
-                                        color: "white"
-                                    },
-                                    ticks: {
-                                        color: "white"
-                                    },
-                                    type: 'time',
-                                    time: {
-                                        unit: 'day',
-                                        displayFormats: {
-                                            'day': 'DD',
-                                        },
-                                    },
-                                },
-                                // Y Axis
-                                y: {
-                                    display: true,
-                                    title: {
-                                        display: true,
-                                        text: this.state.yAxisLabel,
-                                        color: "white"
-                                    },
-                                    ticks: {
-                                        color: "white"
-                                    }
-                                }
-                            }
-                        }}
-                        />
                 }
             </div>
         );

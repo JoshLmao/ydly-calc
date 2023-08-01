@@ -2,7 +2,6 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component } from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
-import { Line } from 'react-chartjs-2';
 import { CSVLink } from 'react-csv';
 
 import { getDateTimeFromTransaction } from '../../js/AlgoExplorerAPI';
@@ -49,10 +48,10 @@ function getDepositTxs (allGroupTxs, usrAddress) {
 class StakeHistory extends Component {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             userAddress: props.userAddress,
-            appAddress: props.appAddress, 
+            appAddress: props.appAddress,
             allTransactions: props.allTransactions,
         };
 
@@ -127,7 +126,7 @@ class StakeHistory extends Component {
                     }
                 }
             }
-            
+
 
             let cumulativeNllTotalData = [];
             let cumulativeYLDYStakingTotalData = [];
@@ -209,7 +208,7 @@ class StakeHistory extends Component {
                     Stake History
                 </h1>
                 <p>
-                    View your history of staking between No Loss Lottery and YLDY Staking. Click the button below to view your history. 
+                    View your history of staking between No Loss Lottery and YLDY Staking. Click the button below to view your history.
                     Make sure your algorand address is entered at the top of the page. This may take some time, depending on the amount of transactions.
                 </p>
                 {
@@ -258,7 +257,7 @@ class StakeHistory extends Component {
                             />
                     )
                 }
-                <Row 
+                <Row
                     className="py-3"
                     xs={1}
                     sm={1}
@@ -277,24 +276,24 @@ class StakeHistory extends Component {
                             }
                             let isALGO = dataset.label.includes("ALGO");
                             let isNLL = dataset.label.includes("No Loss Lottery");
-                            let totalAmt = dataset.data.reduce(function(accumulation, b) { 
+                            let totalAmt = dataset.data.reduce(function(accumulation, b) {
                                 return accumulation + b.y;
                             }, 0);
                             return (
                                 <Col>
-                                    <Card 
+                                    <Card
                                         key={index}
                                         border={ isNLL ? "primary" : "info" }
                                         className="rounded bg-dark my-2"
                                         >
                                         <Card.Body>
-                                            <Card.Title 
+                                            <Card.Title
                                                 className="yldy-title">
                                                 { dataset.label }
                                             </Card.Title>
                                             <div>
                                                 <b>Total stake:</b>
-                                                <img 
+                                                <img
                                                     className="ml-2 mr-1"
                                                     alt={ isALGO ? "ALGO icon" : "YLDY icon" }
                                                     src={ isALGO ? ALGO_ICON :YLDY_ICON }
@@ -303,7 +302,7 @@ class StakeHistory extends Component {
                                                     />
                                                 <span
                                                     title={totalAmt}>
-                                                    { 
+                                                    {
                                                         formatNumber(totalAmt.toFixed(2))
                                                     }
                                                 </span>
@@ -319,7 +318,7 @@ class StakeHistory extends Component {
                 </Row>
                 {
                     this.state.depositTransactions && this.state.depositTransactions.length > 0 && (
-                        <Row 
+                        <Row
                             className="py-3">
                             <div
                                 className="w-100 d-flex">
@@ -333,13 +332,13 @@ class StakeHistory extends Component {
                                     data={ buildCsvDataFromTxs(this.state.depositTransactions) }
                                     >
                                     Download as CSV
-                                    <FontAwesomeIcon 
+                                    <FontAwesomeIcon
                                         className="mx-2"
                                         icon={faDownload}
                                         />
                                 </CSVLink>
                             </div>
-                            
+
 
                             <ClaimTable
                                 claimTransactions={this.state.depositTransactions}
