@@ -256,6 +256,27 @@ export default class NLLClaim extends React.Component {
         }
     }
 
+    async OptInNll() {
+
+        const suggestedParamTxn = await _algodClient.getTransactionParams().do();
+        if (!suggestedParamTxn) {
+            return;
+        }
+
+        const optInNllTxn = algosdk.makeApplicationOptInTxnFromObject({
+            from: this.state.connectedWallet,
+            appIndex: NLL_APP_ID,
+            suggestedParams: suggestedParamTxn,
+        });
+
+        const signedTxns = await this.SignTxns([optInNllTxn]);
+        const result = await this.PublishTxns(signedTxns);
+        if (!result) {
+            console.error("Not published!");
+            this.setState({ operationError: "Unable to publish opt in Nll txn" });
+        }
+    }
+
     // Creates the LogicSig Account for the NLL escrow
     GetNllLogicSigAccount() {
         const program = new Uint8Array(Buffer.from(ESCROW_PROGRAM_STR, "base64"));
@@ -424,6 +445,24 @@ export default class NLLClaim extends React.Component {
                         </div>
                     )
                 }
+
+                <div
+                    className="text-center"
+                    >
+                    <Button
+                        className="ms-3 mx-auto"
+                        variant="outline-primary"
+                        style={{
+                            minWidth: "150px"
+                        }}
+                        onClick={ async () => {
+                            await this.OptInNll();
+                        }}
+                        >
+                        Opt in to NLL
+                    </Button>
+                </div>
+
 
                 {
                     [
