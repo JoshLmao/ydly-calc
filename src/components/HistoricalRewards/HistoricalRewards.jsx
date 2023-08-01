@@ -293,35 +293,6 @@ class HistoricalRewards extends Component {
                             <FontAwesomeIcon icon={faSpinner} spin size="lg" />
                         )
                     }
-                    {
-                        !this.state.loadingFirebaseData && !this.state.loadingGraphData && this.state.lineData && (
-                            <Line
-                                data={ this.state.lineData }
-                                height={ getBestGraphHeight() }
-                                options={{
-                                    scales: this.state.lineScales,
-                                    plugins: {
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function(context) {
-                                                    // Build label string
-                                                    let label = context.dataset.label || '';
-                                                    if (label) {
-                                                        label += ': ';
-                                                    }
-                                                    if (context.parsed.y !== null) {
-                                                        // Use 5 decimal places
-                                                        label += context.parsed.y.toFixed(5);
-                                                    }
-                                                    return label;
-                                                }
-                                            }
-                                        }
-                                    },
-                                }}
-                                />
-                        )
-                    }
                 </Container>
             </div>
         );

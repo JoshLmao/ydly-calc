@@ -218,45 +218,6 @@ class StakeHistory extends Component {
                         </div>
                     )
                 }
-                {
-                    this.state.lineData && (
-                        <Line
-                            height={ getBestGraphHeight() }
-                            data={ this.state.lineData }
-                            options={{
-                                scales: {
-                                    x: {
-                                        type: 'time',
-                                        time: {
-                                            unit: 'day',
-                                            displayFormats: {
-                                                'day': 'DD',
-                                            },
-                                        },
-                                        title: {
-                                            display: true,
-                                            text: "Date",
-                                            color: textColor
-                                        },
-                                        ticks: {
-                                            color: textColor
-                                        }
-                                    },
-                                    y: {
-                                        title: {
-                                            display: true,
-                                            text: "Amount",
-                                            color: textColor,
-                                        },
-                                        ticks: {
-                                            color: textColor,
-                                        }
-                                    }
-                                }
-                            }}
-                            />
-                    )
-                }
                 <Row
                     className="py-3"
                     xs={1}
