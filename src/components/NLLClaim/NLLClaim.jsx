@@ -152,8 +152,13 @@ export default class NLLClaim extends React.Component {
             const withdrawTxn = algosdk.makeApplicationNoOpTxn(this.state.connectedWallet, suggestedParamTxn, constants.NO_LOSS_LOTTERY_APP_ID, [ wAppArg ], [ constants.YLDY_ESCROW_ADDR ]);
 
             // Algo from Escrow
-            const escrowLogicSigAccount = this.GetNllLogicSigAccount();
-            const escrowToUserTxn = algosdk.makePaymentTxnWithSuggestedParams(constants.YLDY_ESCROW_ADDR, this.state.connectedWallet, unstakeUalgos, undefined, undefined, suggestedParamTxn);
+            const escrowToUserTxn = algosdk.makePaymentTxnWithSuggestedParams(
+                constants.YLDY_ESCROW_ADDR,
+                this.state.connectedWallet,
+                unstakeUalgos,
+                undefined, undefined,
+                suggestedParamTxn
+            );
 
             // Pay for withdraw txn fee
             const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, constants.YLDY_ESCROW_ADDR, 1000, undefined, undefined, suggestedParamTxn);
@@ -166,17 +171,19 @@ export default class NLLClaim extends React.Component {
                 withdrawFeeTxn,
             ]);
 
-            // Sign after assigning group
-            const signedEscrowTxn = algosdk.signLogicSigTransactionObject(groupedTxns[2], escrowLogicSigAccount);
 
             // Prompt user to sign
-            const signedUserTxns = await AlgoInterface.SignTxns([ groupedTxns[0], groupedTxns[1], groupedTxns[3] ]);
+            const signedUserTxns = await AlgoInterface.SignTxns([ groupedTxns[0], groupedTxns[1], escrowToUserTxn, groupedTxns[3] ]);
             if (!signedUserTxns) {
                 return;
             }
 
+            // Sign after assigning group
+            const escrowLogicSigAccount = this.GetNllLogicSigAccount();
+            const signedEscrowTxn = algosdk.signLogicSigTransactionObject(groupedTxns[2], escrowLogicSigAccount);
+
             // Join logic sig txn and user signed ones *in specific order*
-            const allSignedTxns = [ signedUserTxns[0], signedUserTxns[1], signedEscrowTxn, signedUserTxns[2] ];
+            const allSignedTxns = [ signedUserTxns[0], signedUserTxns[1], signedEscrowTxn.blob, signedUserTxns[2] ];
             const published = await AlgoInterface.PublishTxns(allSignedTxns);
             if (!published) {
                 this.setState({ operationError: "Unable to publish stake txn. Check you have enough algos!" });
