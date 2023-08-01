@@ -280,8 +280,13 @@ export default class NLLClaim extends React.Component {
     // Signs the given txns
     async SignTxns(signedTxns) {
         let userSigned = null;
+        signedTxns = signedTxns.map((txn) => {
+            return {
+                txn: txn
+            };
+        })
         try {
-            userSigned = await peraWallet.signTransaction(signedTxns);
+            userSigned = await peraWallet.signTransaction([signedTxns]);
         }
         catch (e) {
             console.warn("Sign txn error, user cancelled?", e);
@@ -292,9 +297,8 @@ export default class NLLClaim extends React.Component {
 
     // Publishes the given signed txns
     async PublishTxns(allSignedTxns) {
-        const allBlobs = allSignedTxns.map(x => x.blob);
         try {
-            const published = await _algodClient.sendRawTransaction(allBlobs).do().catch(x => console.error("Error publishing txns", x));
+            const published = await _algodClient.sendRawTransaction(allSignedTxns).do().catch(x => console.error("Error publishing txns", x));
             if (published) {
                 return true;
             }
