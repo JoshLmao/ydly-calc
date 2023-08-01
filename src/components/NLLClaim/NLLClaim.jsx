@@ -12,7 +12,6 @@ import YieldlyAPI from "../../js/yieldly/YieldlyAPI";
 const _algodClient = new algosdk.Algodv2('', "https://mainnet-api.algonode.cloud", 443);
 
 const YLDY_ASA_ID = 226701642;
-const ESCROW_PROGRAM_STR = "AiAGAgaYv7lvAAUBMgQiDzIEIw4QQQAuMwAYJBJAAANCACMzABAjEjMAGSUSIQQzABkSERAzASAyAxIQMwAgMgMSEEAAAiVDIQVD";
 const FEE_ADDR = "IM6CZ4KUPWT23PKA23MW5S4ZQVF4376GWELLAL5QA5NCMB635JTRUGIDPY";
 
 const stringToBytes = (arg) => {
@@ -96,7 +95,6 @@ export default class NLLClaim extends React.Component {
             // Send Algo to the escrow
             const algoToContract = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, constants.YLDY_ESCROW_ADDR, ualgoStake, undefined, undefined, suggestedParamTxn);
 
-
             // Create specific txn group and order for deposit
             const groupedTxns = algosdk.assignGroupID([
                 checkTxn,
@@ -179,7 +177,7 @@ export default class NLLClaim extends React.Component {
             }
 
             // Sign after assigning group
-            const escrowLogicSigAccount = this.GetNllLogicSigAccount();
+            const escrowLogicSigAccount = YieldlyAPI.GetLogicSigAccount();
             const signedEscrowTxn = algosdk.signLogicSigTransactionObject(groupedTxns[2], escrowLogicSigAccount);
 
             // Join logic sig txn and user signed ones *in specific order*
@@ -221,7 +219,7 @@ export default class NLLClaim extends React.Component {
             const withdrawFeeTxn = algosdk.makePaymentTxnWithSuggestedParams(this.state.connectedWallet, constants.YLDY_ESCROW_ADDR, 1000, undefined, flavourNote, suggestedParamTxn);
 
             // Tranfer YLDY from escrow to claimer, sign with logic sig
-            const escrowLogicSig = this.GetNllLogicSigAccount();
+            const escrowLogicSig = YieldlyAPI.GetLogicSigAccount();
             const claimTxn = algosdk.makeAssetTransferTxnWithSuggestedParams(constants.YLDY_ESCROW_ADDR, this.state.connectedWallet, undefined, undefined, yldyClaimAmt, undefined, YLDY_ASA_ID, suggestedParamTxn);
 
             // Create group in specific orderr
@@ -242,7 +240,7 @@ export default class NLLClaim extends React.Component {
             }
 
             // Construct back into specific order and publish
-            const allSignedTxns = [ signedUserTxns[0], signedUserTxns[1], signedEscrowTxn, signedUserTxns[2] ];
+            const allSignedTxns = [ signedUserTxns[0], signedUserTxns[1], signedEscrowTxn.blob, signedUserTxns[2] ];
             const result = await AlgoInterface.PublishTxns(allSignedTxns);
             if (result) {
                 console.log("Published good!");
@@ -268,13 +266,6 @@ export default class NLLClaim extends React.Component {
             console.error("Not published!");
             this.setState({ operationError: "Unable to publish opt in Nll txn" });
         }
-    }
-
-    // Creates the LogicSig Account for the NLL escrow
-    GetNllLogicSigAccount() {
-        const program = new Uint8Array(Buffer.from(ESCROW_PROGRAM_STR, "base64"));
-        const escrowLogicSig = new algosdk.LogicSigAccount(program);
-        return escrowLogicSig;
     }
 
     DetermineFeeAmt(stakeUalgos) {

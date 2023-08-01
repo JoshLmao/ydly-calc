@@ -9,6 +9,7 @@ import StakePoolJumbo from '../../StakePoolJumbo/StakePoolJumbo';
 import AlgoInterface from '../../../js/AlgoInterface';
 import YieldlyAPI from '../../../js/yieldly/YieldlyAPI';
 import { DateTime } from 'luxon';
+import algosdk from 'algosdk';
 
 class YLDYYLDYStaking extends Component {
     constructor(props) {
@@ -112,11 +113,11 @@ class YLDYYLDYStaking extends Component {
 
     async StakeAmount() {
         const suggestedParams = await AlgoInterface.GetSuggestedParams();
-        const unstakeGroupedTxns = YieldlyAPI.MakeYldyStakeTxns(this.state.connectedWallet, suggestedParams, 1000000);
-        const signedTxns = await AlgoInterface.SignTxns(unstakeGroupedTxns);
+        const stakeGroupedTxns = YieldlyAPI.MakeYldyStakeTxns(this.state.connectedWallet, suggestedParams, this.state.yldyStakeAmt * 1000000);
+        const signedTxns = await AlgoInterface.SignTxns(stakeGroupedTxns);
         const result = await AlgoInterface.PublishTxns(signedTxns);
         if (!result) {
-            console.error("Error unstaking!");
+            console.error("Error staking!");
         }
         else {
             console.log("Successfully submitted!")
@@ -125,9 +126,15 @@ class YLDYYLDYStaking extends Component {
 
     async UnstakeAmount() {
         const suggestedParams = await AlgoInterface.GetSuggestedParams();
-        const unstakeGroupedTxns = YieldlyAPI.MakeYldyUnstakeTxn(this.state.connectedWallet, suggestedParams, 1000000);
+        const unstakeGroupedTxns = YieldlyAPI.MakeYldyUnstakeTxn(this.state.connectedWallet, suggestedParams, this.state.yldyUnstakeAmt * 1000000);
         const signedTxns = await AlgoInterface.SignTxns(unstakeGroupedTxns);
-        const result = await AlgoInterface.PublishTxns(signedTxns);
+
+        // get lsig txn back out to sign
+        const lsigAccount = YieldlyAPI.GetLogicSigAccount();
+        const signedEscrowTxn = algosdk.signLogicSigTransactionObject(unstakeGroupedTxns[2], lsigAccount);
+
+        const allSignedTxns = [ signedTxns[0], signedTxns[1], signedEscrowTxn.blob, signedTxns[2] ];
+        const result = await AlgoInterface.PublishTxns(allSignedTxns);
         if (!result) {
             console.error("Error unstaking!");
         }
